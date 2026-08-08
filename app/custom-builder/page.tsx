@@ -240,7 +240,10 @@ function CustomBuilderPageInner() {
     }
   };
 
-  const canGoNext = (currentStepIndex > 0 || !!state.eventTypeId) && !cateringTimingMissing;
+  const nameAndPhoneMissing =
+    currentStepIndex === 0 && (!state.eventDetails.customerName.trim() || !state.eventDetails.customerPhone.trim());
+  const canGoNext =
+    (currentStepIndex > 0 || !!state.eventTypeId) && !cateringTimingMissing && !nameAndPhoneMissing;
   const { required: requiredFieldChecks, optional: optionalFieldChecks } = getEventDetailsFieldChecks(state);
 
   return (
@@ -320,6 +323,11 @@ function CustomBuilderPageInner() {
           {currentStepIndex === 0 && !state.eventTypeId && (
             <p className="text-[11px] text-rose-600 font-bold -mt-4">
               We still need to know what type of event you&apos;re planning before you continue.
+            </p>
+          )}
+          {currentStepIndex === 0 && !!state.eventTypeId && nameAndPhoneMissing && (
+            <p className="text-[11px] text-rose-600 font-bold -mt-4">
+              Please enter your name and phone number before you continue.
             </p>
           )}
           {cateringTimingMissing && (

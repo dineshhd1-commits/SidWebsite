@@ -86,22 +86,25 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 9. Photography Catalog Items - not offered for Wedding events; scoped to where
--- they genuinely apply otherwise. Items that were wedding-exclusive are seeded
--- with an empty supported_event_types so they stay inactive everywhere.
+-- they genuinely apply otherwise. Candid Photography/Videography, Cinematic
+-- Wedding Film, Pre-Wedding Shoot, Drone Shoot, LED Wall, Wedding Album,
+-- Traditional Photography/Videography and Instant Photography/Prints have all
+-- been discontinued and are seeded with an empty supported_event_types so they
+-- stay inactive everywhere.
 INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, metadata, display_order) VALUES
 ('photo-event-photo', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Photography', 'Full-day event photography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 1),
 ('photo-event-video', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Videography', 'Full-day event videography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 2),
-('photo-candid-photo', ARRAY['engagement','reception','anniversary'], 'photography', 'photo-services', 'Candid Photography', 'Storytelling candid photography coverage.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 3),
+('photo-candid-photo', ARRAY[]::text[], 'photography', 'photo-services', 'Candid Photography', 'Storytelling candid photography coverage.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 3),
 ('photo-candid-video', ARRAY[]::text[], 'photography', 'photo-services', 'Candid Videography', 'Cinematic candid videography coverage.', '', '[]', 'gold', 40000, 'per event', 'team_size', '{"teamSize": 2}', 4),
 ('photo-cinematic', ARRAY[]::text[], 'photography', 'photo-services', 'Cinematic Wedding Film', 'Full cinematic wedding film with same-day teaser.', '', '[]', 'premium', 60000, 'package', 'single', '{}', 5),
 ('photo-pre-wedding', ARRAY[]::text[], 'photography', 'photo-services', 'Pre-Wedding Shoot', 'Outdoor or studio pre-wedding photo and video shoot.', '', '[]', 'premium', 30000, 'package', 'single', '{}', 6),
 ('photo-drone', ARRAY[]::text[], 'photography', 'photo-services', 'Drone Shoot', '4K aerial drone coverage of the venue and event.', '', '[]', 'gold', 20000, 'per event', 'single', '{}', 7),
 ('photo-led-wall', ARRAY[]::text[], 'photography', 'photo-services', 'LED Wall', 'Live LED screen stage backdrop display.', '', '[]', 'premium', 30000, 'per event', 'single', '{}', 8),
 ('photo-live-streaming', ARRAY['corporate_event','reception'], 'photography', 'photo-services', 'Live Streaming', 'Live stream the event for remote guests.', '', '[]', 'premium', 15000, 'per event', 'single', '{}', 9),
-('photo-traditional-photo', ARRAY['haldi_function','traditional_home_function','housewarming'], 'photography', 'photo-services', 'Traditional Photography', 'Classic posed traditional photography for rituals and ceremonies.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 10),
-('photo-traditional-video', ARRAY['haldi_function','traditional_home_function','housewarming'], 'photography', 'photo-services', 'Traditional Videography', 'Classic full-ceremony traditional videography.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 11),
+('photo-traditional-photo', ARRAY[]::text[], 'photography', 'photo-services', 'Traditional Photography', 'Classic posed traditional photography for rituals and ceremonies.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 10),
+('photo-traditional-video', ARRAY[]::text[], 'photography', 'photo-services', 'Traditional Videography', 'Classic full-ceremony traditional videography.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 11),
 ('photo-album', ARRAY[]::text[], 'photography', 'photo-services', 'Wedding Album', 'Premium non-tearable printed photo album.', '', '[]', 'standard', 8000, 'unit', 'stepper', '{}', 12),
-('photo-instant', ARRAY['birthday','get_together'], 'photography', 'photo-services', 'Instant Photography / Prints', 'On-the-spot instant photo printing booth for guests.', '', '[]', 'standard', 12000, 'per event', 'single', '{}', 13)
+('photo-instant', ARRAY[]::text[], 'photography', 'photo-services', 'Instant Photography / Prints', 'On-the-spot instant photo printing booth for guests.', '', '[]', 'standard', 12000, 'per event', 'single', '{}', 13)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 10. Catering Catalog Items (Wedding menu) -----------------------------------

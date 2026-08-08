@@ -16,19 +16,16 @@ export const IntroSplash: React.FC = () => {
     const seen = sessionStorage.getItem(SESSION_KEY);
     if (seen) return;
 
+    // Purely decorative - the rest of the page renders and is interactive
+    // underneath it immediately, it just isn't blocked on this finishing.
     setVisible(true);
-    document.body.style.overflow = 'hidden';
 
     const timer = setTimeout(() => {
       setVisible(false);
-      document.body.style.overflow = '';
       sessionStorage.setItem(SESSION_KEY, '1');
-    }, 2800);
+    }, 1200);
 
-    return () => {
-      clearTimeout(timer);
-      document.body.style.overflow = '';
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   if (!mounted) return null;

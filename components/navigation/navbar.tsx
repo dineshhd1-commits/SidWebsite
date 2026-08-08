@@ -15,8 +15,14 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+        ticking = false;
+      });
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });

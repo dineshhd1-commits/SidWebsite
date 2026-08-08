@@ -46,7 +46,7 @@ export default function BookingPage() {
   const validate = (): string[] => {
     const errors: string[] = [];
     if (!formData.fullName.trim()) errors.push('We still need your name before submitting your enquiry.');
-    if (!formData.phone.trim()) errors.push('We still need your phone number before submitting your enquiry.');
+    if (!/^\d{10}$/.test(formData.phone.trim())) errors.push('We still need a valid 10-digit phone number before submitting your enquiry.');
     if (!formData.weddingDate) errors.push('Please choose a valid event date.');
     return errors;
   };
@@ -141,9 +141,11 @@ export default function BookingPage() {
                   <label className="block text-xs font-bold text-maroon-900 mb-1">Phone Number <span className="text-rose-600">*</span></label>
                   <input
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    inputMode="numeric"
+                    maxLength={10}
+                    placeholder="98765 43210"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                     className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 transition-all duration-200 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
                   />
                 </div>

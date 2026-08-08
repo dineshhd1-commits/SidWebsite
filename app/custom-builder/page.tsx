@@ -241,7 +241,8 @@ function CustomBuilderPageInner() {
   };
 
   const nameAndPhoneMissing =
-    currentStepIndex === 0 && (!state.eventDetails.customerName.trim() || !state.eventDetails.customerPhone.trim());
+    currentStepIndex === 0 &&
+    (!state.eventDetails.customerName.trim() || !/^\d{10}$/.test(state.eventDetails.customerPhone.trim()));
   const canGoNext =
     (currentStepIndex > 0 || !!state.eventTypeId) && !cateringTimingMissing && !nameAndPhoneMissing;
   const { required: requiredFieldChecks, optional: optionalFieldChecks } = getEventDetailsFieldChecks(state);
@@ -327,7 +328,7 @@ function CustomBuilderPageInner() {
           )}
           {currentStepIndex === 0 && !!state.eventTypeId && nameAndPhoneMissing && (
             <p className="text-[11px] text-rose-600 font-bold -mt-4">
-              Please enter your name and phone number before you continue.
+              Please enter your name and a valid 10-digit phone number before you continue.
             </p>
           )}
           {cateringTimingMissing && (

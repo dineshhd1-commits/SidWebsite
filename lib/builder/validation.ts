@@ -21,7 +21,7 @@ export function getEventDetailsFieldChecks(state: EventBuilderState): { required
       { key: 'guestCount', label: 'Number of Guests', filled: eventDetails.guestCount > 0 },
       { key: 'location', label: 'Event Location', filled: !!eventDetails.location.trim() },
       { key: 'customerName', label: 'Your Name', filled: !!eventDetails.customerName.trim() },
-      { key: 'customerPhone', label: 'Phone Number', filled: !!eventDetails.customerPhone.trim() },
+      { key: 'customerPhone', label: 'Phone Number', filled: /^\d{10}$/.test(eventDetails.customerPhone.trim()) },
     ],
     optional: [
       { key: 'customerEmail', label: 'Email Address', filled: !!eventDetails.customerEmail.trim() },
@@ -47,7 +47,7 @@ export function getFriendlyMissingFieldMessage(fieldKey: string): string {
     guestCount: 'Let us know roughly how many guests to expect.',
     location: 'We still need your event location before submitting your enquiry.',
     customerName: 'We still need your name before submitting your enquiry.',
-    customerPhone: 'We still need your phone number before submitting your enquiry.',
+    customerPhone: 'We still need a valid 10-digit phone number before submitting your enquiry.',
   };
   return messages[fieldKey] || 'This detail is still missing.';
 }

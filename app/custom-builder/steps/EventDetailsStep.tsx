@@ -90,9 +90,11 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
             <label className="block text-xs font-bold text-maroon-900 mb-1">Phone Number <span className="text-rose-600">*</span></label>
             <input
               type="tel"
-              placeholder="+91 98765 43210"
+              inputMode="numeric"
+              maxLength={10}
+              placeholder="98765 43210"
               value={eventDetails.customerPhone}
-              onChange={(e) => onChange({ customerPhone: e.target.value })}
+              onChange={(e) => onChange({ customerPhone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
               className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
             />
           </div>

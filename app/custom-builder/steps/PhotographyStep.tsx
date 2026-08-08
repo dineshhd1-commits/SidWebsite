@@ -30,7 +30,12 @@ export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdate
   }
 
   if (items.length === 0) {
-    return (
+    return state.eventTypeId === 'wedding' ? (
+      <EmptyState
+        title="Photography is not offered for Weddings"
+        description="We don't provide photography or videography services for wedding events. You can continue to the next step."
+      />
+    ) : (
       <EmptyState
         title="Photography catalog not available yet"
         description="Our photography and videography services for this event type are still being added."

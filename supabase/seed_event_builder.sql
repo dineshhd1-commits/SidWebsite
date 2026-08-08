@@ -97,7 +97,7 @@ ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_
 
 -- 5. Photography / Venue / Additional Services groups ----------------------
 INSERT INTO catalog_groups (id, supported_event_types, category_key, name, default_max_selections, free_included_count, requires_approval_after_limit, approval_message, display_order, active) VALUES
-('photo-services', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'Photography & Videography', NULL, 0, false, NULL, 1, true),
+('photo-services', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'Photography & Videography', NULL, 0, false, NULL, 1, true),
 ('venue-options', ARRAY['wedding','reception'], 'venue', 'Venue', 1, 0, false, NULL, 1, true),
 ('addon-services', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'additional_services', 'Additional Services', NULL, 0, false, NULL, 1, true)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
@@ -155,22 +155,23 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('dec-general-01', ARRAY['other_events'], 'decoration', 'dec-general', 'Custom Event Decoration', 'Flexible decoration setup tailored to your specific event.', '', '[]', 'standard', 20000, 'setup', 'single', 1)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
--- 9. Photography Catalog Items - two generic items are shared across every
--- catalog-ready event type; the rest stay scoped to where they genuinely apply.
+-- 9. Photography Catalog Items - not offered for Wedding events; scoped to where
+-- they genuinely apply otherwise. Items that were wedding-exclusive are seeded
+-- with an empty supported_event_types so they stay inactive everywhere.
 INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, metadata, display_order) VALUES
-('photo-event-photo', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Photography', 'Full-day event photography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 1),
-('photo-event-video', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Videography', 'Full-day event videography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 2),
-('photo-candid-photo', ARRAY['wedding','engagement','reception','anniversary'], 'photography', 'photo-services', 'Candid Photography', 'Storytelling candid photography coverage.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 3),
-('photo-candid-video', ARRAY['wedding'], 'photography', 'photo-services', 'Candid Videography', 'Cinematic candid videography coverage.', '', '[]', 'gold', 40000, 'per event', 'team_size', '{"teamSize": 2}', 4),
-('photo-cinematic', ARRAY['wedding'], 'photography', 'photo-services', 'Cinematic Wedding Film', 'Full cinematic wedding film with same-day teaser.', '', '[]', 'premium', 60000, 'package', 'single', '{}', 5),
-('photo-pre-wedding', ARRAY['wedding'], 'photography', 'photo-services', 'Pre-Wedding Shoot', 'Outdoor or studio pre-wedding photo and video shoot.', '', '[]', 'premium', 30000, 'package', 'single', '{}', 6),
-('photo-drone', ARRAY['wedding'], 'photography', 'photo-services', 'Drone Shoot', '4K aerial drone coverage of the venue and event.', '', '[]', 'gold', 20000, 'per event', 'single', '{}', 7),
-('photo-led-wall', ARRAY['wedding'], 'photography', 'photo-services', 'LED Wall', 'Live LED screen stage backdrop display.', '', '[]', 'premium', 30000, 'per event', 'single', '{}', 8),
-('photo-live-streaming', ARRAY['wedding','corporate_event','reception'], 'photography', 'photo-services', 'Live Streaming', 'Live stream the event for remote guests.', '', '[]', 'premium', 15000, 'per event', 'single', '{}', 9),
-('photo-traditional-photo', ARRAY['wedding','haldi_function','traditional_home_function','housewarming'], 'photography', 'photo-services', 'Traditional Photography', 'Classic posed traditional photography for rituals and ceremonies.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 10),
-('photo-traditional-video', ARRAY['wedding','haldi_function','traditional_home_function','housewarming'], 'photography', 'photo-services', 'Traditional Videography', 'Classic full-ceremony traditional videography.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 11),
-('photo-album', ARRAY['wedding'], 'photography', 'photo-services', 'Wedding Album', 'Premium non-tearable printed photo album.', '', '[]', 'standard', 8000, 'unit', 'stepper', '{}', 12),
-('photo-instant', ARRAY['wedding','birthday','get_together'], 'photography', 'photo-services', 'Instant Photography / Prints', 'On-the-spot instant photo printing booth for guests.', '', '[]', 'standard', 12000, 'per event', 'single', '{}', 13)
+('photo-event-photo', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Photography', 'Full-day event photography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 1),
+('photo-event-video', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Videography', 'Full-day event videography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 2),
+('photo-candid-photo', ARRAY['engagement','reception','anniversary'], 'photography', 'photo-services', 'Candid Photography', 'Storytelling candid photography coverage.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 3),
+('photo-candid-video', ARRAY[]::text[], 'photography', 'photo-services', 'Candid Videography', 'Cinematic candid videography coverage.', '', '[]', 'gold', 40000, 'per event', 'team_size', '{"teamSize": 2}', 4),
+('photo-cinematic', ARRAY[]::text[], 'photography', 'photo-services', 'Cinematic Wedding Film', 'Full cinematic wedding film with same-day teaser.', '', '[]', 'premium', 60000, 'package', 'single', '{}', 5),
+('photo-pre-wedding', ARRAY[]::text[], 'photography', 'photo-services', 'Pre-Wedding Shoot', 'Outdoor or studio pre-wedding photo and video shoot.', '', '[]', 'premium', 30000, 'package', 'single', '{}', 6),
+('photo-drone', ARRAY[]::text[], 'photography', 'photo-services', 'Drone Shoot', '4K aerial drone coverage of the venue and event.', '', '[]', 'gold', 20000, 'per event', 'single', '{}', 7),
+('photo-led-wall', ARRAY[]::text[], 'photography', 'photo-services', 'LED Wall', 'Live LED screen stage backdrop display.', '', '[]', 'premium', 30000, 'per event', 'single', '{}', 8),
+('photo-live-streaming', ARRAY['corporate_event','reception'], 'photography', 'photo-services', 'Live Streaming', 'Live stream the event for remote guests.', '', '[]', 'premium', 15000, 'per event', 'single', '{}', 9),
+('photo-traditional-photo', ARRAY['haldi_function','traditional_home_function','housewarming'], 'photography', 'photo-services', 'Traditional Photography', 'Classic posed traditional photography for rituals and ceremonies.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 10),
+('photo-traditional-video', ARRAY['haldi_function','traditional_home_function','housewarming'], 'photography', 'photo-services', 'Traditional Videography', 'Classic full-ceremony traditional videography.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 11),
+('photo-album', ARRAY[]::text[], 'photography', 'photo-services', 'Wedding Album', 'Premium non-tearable printed photo album.', '', '[]', 'standard', 8000, 'unit', 'stepper', '{}', 12),
+('photo-instant', ARRAY['birthday','get_together'], 'photography', 'photo-services', 'Instant Photography / Prints', 'On-the-spot instant photo printing booth for guests.', '', '[]', 'standard', 12000, 'per event', 'single', '{}', 13)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 10. Catering Catalog Items (Wedding menu) -----------------------------------
@@ -278,12 +279,13 @@ INSERT INTO package_group_limits (package_id, group_id, max_selections, free_inc
 ('pkg-luxury-tier', 'venue-options', 1, 0)
 ON CONFLICT (package_id, group_id) DO NOTHING;
 
--- 17. Package Included Items - representative starter inclusions per package
+-- 17. Package Included Items - representative starter inclusions per package.
+-- Photography is not offered for Wedding events, so no photo-* items are included here.
 INSERT INTO package_included_items (package_id, catalog_item_id, quantity) VALUES
-('pkg-normal', 'dec-stage-01', 1), ('pkg-normal', 'dec-mandap-01', 1), ('pkg-normal', 'cater-wd-01', 1), ('pkg-normal', 'photo-traditional-photo', 1),
-('pkg-standard', 'dec-stage-01', 1), ('pkg-standard', 'dec-mandap-01', 1), ('pkg-standard', 'cater-wd-02', 1), ('pkg-standard', 'photo-event-photo', 1), ('pkg-standard', 'photo-event-video', 1),
-('pkg-silver-tier', 'dec-stage-01', 1), ('pkg-silver-tier', 'dec-mandap-01', 1), ('pkg-silver-tier', 'dec-entrance-01', 1), ('pkg-silver-tier', 'cater-wd-02', 1), ('pkg-silver-tier', 'photo-event-photo', 1), ('pkg-silver-tier', 'photo-event-video', 1),
-('pkg-gold-tier', 'dec-stage-02', 1), ('pkg-gold-tier', 'dec-mandap-02', 1), ('pkg-gold-tier', 'dec-entrance-01', 1), ('pkg-gold-tier', 'cater-wd-03', 1), ('pkg-gold-tier', 'cater-live-01', 1), ('pkg-gold-tier', 'photo-candid-photo', 1), ('pkg-gold-tier', 'photo-candid-video', 1), ('pkg-gold-tier', 'photo-drone', 1),
-('pkg-premium-tier', 'dec-stage-02', 1), ('pkg-premium-tier', 'dec-mandap-02', 1), ('pkg-premium-tier', 'dec-entrance-02', 1), ('pkg-premium-tier', 'cater-wd-03', 1), ('pkg-premium-tier', 'cater-live-01', 1), ('pkg-premium-tier', 'cater-live-02', 1), ('pkg-premium-tier', 'photo-cinematic', 1), ('pkg-premium-tier', 'photo-drone', 1), ('pkg-premium-tier', 'photo-led-wall', 1),
-('pkg-luxury-tier', 'dec-stage-03', 1), ('pkg-luxury-tier', 'dec-mandap-02', 1), ('pkg-luxury-tier', 'dec-entrance-02', 1), ('pkg-luxury-tier', 'cater-wd-03', 1), ('pkg-luxury-tier', 'cater-live-01', 1), ('pkg-luxury-tier', 'cater-live-02', 1), ('pkg-luxury-tier', 'photo-cinematic', 1), ('pkg-luxury-tier', 'photo-drone', 1), ('pkg-luxury-tier', 'photo-led-wall', 1), ('pkg-luxury-tier', 'photo-live-streaming', 1), ('pkg-luxury-tier', 'venue-palace', 1)
+('pkg-normal', 'dec-stage-01', 1), ('pkg-normal', 'dec-mandap-01', 1), ('pkg-normal', 'cater-wd-01', 1),
+('pkg-standard', 'dec-stage-01', 1), ('pkg-standard', 'dec-mandap-01', 1), ('pkg-standard', 'cater-wd-02', 1),
+('pkg-silver-tier', 'dec-stage-01', 1), ('pkg-silver-tier', 'dec-mandap-01', 1), ('pkg-silver-tier', 'dec-entrance-01', 1), ('pkg-silver-tier', 'cater-wd-02', 1),
+('pkg-gold-tier', 'dec-stage-02', 1), ('pkg-gold-tier', 'dec-mandap-02', 1), ('pkg-gold-tier', 'dec-entrance-01', 1), ('pkg-gold-tier', 'cater-wd-03', 1), ('pkg-gold-tier', 'cater-live-01', 1),
+('pkg-premium-tier', 'dec-stage-02', 1), ('pkg-premium-tier', 'dec-mandap-02', 1), ('pkg-premium-tier', 'dec-entrance-02', 1), ('pkg-premium-tier', 'cater-wd-03', 1), ('pkg-premium-tier', 'cater-live-01', 1), ('pkg-premium-tier', 'cater-live-02', 1),
+('pkg-luxury-tier', 'dec-stage-03', 1), ('pkg-luxury-tier', 'dec-mandap-02', 1), ('pkg-luxury-tier', 'dec-entrance-02', 1), ('pkg-luxury-tier', 'cater-wd-03', 1), ('pkg-luxury-tier', 'cater-live-01', 1), ('pkg-luxury-tier', 'cater-live-02', 1), ('pkg-luxury-tier', 'venue-palace', 1)
 ON CONFLICT (package_id, catalog_item_id) DO NOTHING;

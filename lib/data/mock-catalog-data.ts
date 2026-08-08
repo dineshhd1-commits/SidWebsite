@@ -77,6 +77,9 @@ function group(
 /** Event types with a dedicated Breakfast menu - now offered for every event type. */
 export const BREAKFAST_EVENT_TYPES = ALL_EVENT_TYPES;
 
+/** Photography & Videography is not offered for Wedding events. */
+export const PHOTOGRAPHY_EVENT_TYPES = ALL_EVENT_TYPES.filter((t) => t !== 'wedding');
+
 export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   group('dec-stage', ['wedding'], 'decoration', 'Stage Decoration', 2, 1, false, null, 1),
   group('dec-mandap', ['wedding'], 'decoration', 'Mandap Decoration', 2, 1, false, null, 2),
@@ -122,7 +125,8 @@ export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   group('cat-breakfast', BREAKFAST_EVENT_TYPES, 'catering', 'Breakfast', null, 0, false, null, 13, ['breakfast']),
   group('cat-snacks', ALL_EVENT_TYPES, 'catering', 'Snacks', null, 0, false, null, 14, ['lunch', 'dinner']),
 
-  group('photo-services', ALL_EVENT_TYPES, 'photography', 'Photography & Videography', null, 0, false, null, 1),
+  // Photography is not offered for Wedding events - see PHOTOGRAPHY_EVENT_TYPES below.
+  group('photo-services', PHOTOGRAPHY_EVENT_TYPES, 'photography', 'Photography & Videography', null, 0, false, null, 1),
   group('venue-options', ['wedding', 'reception'], 'venue', 'Venue', 1, 0, false, null, 1),
   group('addon-services', ALL_EVENT_TYPES, 'additional_services', 'Additional Services', null, 0, false, null, 1),
 ];
@@ -186,20 +190,14 @@ export const MOCK_CATALOG_ITEMS: CatalogItem[] = [
   item({ id: 'dec-bar-lounge-01', supportedEventTypes: ['bachelor_party'], categoryKey: 'decoration', groupId: 'dec-bar-lounge', name: 'Bar & Lounge Theme Decoration', description: 'Moody lounge lighting, signage and lounge seating decor.', imageUrl: '', packageLevel: 'standard', price: 15000, unit: 'setup', displayOrder: 1 }),
   item({ id: 'dec-general-01', supportedEventTypes: ['other_events'], categoryKey: 'decoration', groupId: 'dec-general', name: 'Custom Event Decoration', description: 'Flexible decoration setup tailored to your specific event.', imageUrl: '', packageLevel: 'standard', price: 20000, unit: 'setup', displayOrder: 1 }),
 
-  // Photography (shared broadly; premium add-ons stay wedding-exclusive)
-  item({ id: 'photo-event-photo', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Event Photography', description: 'Full-day event photography coverage.', imageUrl: '', packageLevel: 'standard', price: 25000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 1 }),
-  item({ id: 'photo-event-video', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Event Videography', description: 'Full-day event videography coverage.', imageUrl: '', packageLevel: 'standard', price: 25000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 2 }),
-  item({ id: 'photo-candid-photo', supportedEventTypes: ['wedding', 'engagement', 'reception', 'anniversary'], categoryKey: 'photography', groupId: 'photo-services', name: 'Candid Photography', description: 'Storytelling candid photography coverage.', imageUrl: '', packageLevel: 'gold', price: 35000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 3 }),
-  item({ id: 'photo-candid-video', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-services', name: 'Candid Videography', description: 'Cinematic candid videography coverage.', imageUrl: '', packageLevel: 'gold', price: 40000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 4 }),
-  item({ id: 'photo-cinematic', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-services', name: 'Cinematic Wedding Film', description: 'Full cinematic wedding film with same-day teaser.', imageUrl: '', packageLevel: 'premium', price: 60000, unit: 'package', displayOrder: 5 }),
-  item({ id: 'photo-pre-wedding', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-services', name: 'Pre-Wedding Shoot', description: 'Outdoor or studio pre-wedding photo and video shoot.', imageUrl: '', packageLevel: 'premium', price: 30000, unit: 'package', displayOrder: 6 }),
-  item({ id: 'photo-drone', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-services', name: 'Drone Shoot', description: '4K aerial drone coverage of the venue and event.', imageUrl: '', packageLevel: 'gold', price: 20000, unit: 'per event', displayOrder: 7 }),
-  item({ id: 'photo-led-wall', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-services', name: 'LED Wall', description: 'Live LED screen stage backdrop display.', imageUrl: '', packageLevel: 'premium', price: 30000, unit: 'per event', displayOrder: 8 }),
-  item({ id: 'photo-live-streaming', supportedEventTypes: ['wedding', 'corporate_event', 'reception'], categoryKey: 'photography', groupId: 'photo-services', name: 'Live Streaming', description: 'Live stream the event for remote guests.', imageUrl: '', packageLevel: 'premium', price: 15000, unit: 'per event', displayOrder: 9 }),
-  item({ id: 'photo-traditional-photo', supportedEventTypes: ['wedding', 'haldi_function', 'traditional_home_function', 'housewarming'], categoryKey: 'photography', groupId: 'photo-services', name: 'Traditional Photography', description: 'Classic posed traditional photography for rituals and ceremonies.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 10 }),
-  item({ id: 'photo-traditional-video', supportedEventTypes: ['wedding', 'haldi_function', 'traditional_home_function', 'housewarming'], categoryKey: 'photography', groupId: 'photo-services', name: 'Traditional Videography', description: 'Classic full-ceremony traditional videography.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 11 }),
-  item({ id: 'photo-album', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-services', name: 'Wedding Album', description: 'Premium non-tearable printed photo album.', imageUrl: '', packageLevel: 'standard', price: 8000, unit: 'unit', quantityMode: 'stepper', displayOrder: 12 }),
-  item({ id: 'photo-instant', supportedEventTypes: ['wedding', 'birthday', 'get_together'], categoryKey: 'photography', groupId: 'photo-services', name: 'Instant Photography / Prints', description: 'On-the-spot instant photo printing booth for guests.', imageUrl: '', packageLevel: 'standard', price: 12000, unit: 'per event', displayOrder: 13 }),
+  // Photography (not offered for Wedding events - see PHOTOGRAPHY_EVENT_TYPES)
+  item({ id: 'photo-event-photo', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Event Photography', description: 'Full-day event photography coverage.', imageUrl: '', packageLevel: 'standard', price: 25000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 1 }),
+  item({ id: 'photo-event-video', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Event Videography', description: 'Full-day event videography coverage.', imageUrl: '', packageLevel: 'standard', price: 25000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 2 }),
+  item({ id: 'photo-candid-photo', supportedEventTypes: ['engagement', 'reception', 'anniversary'], categoryKey: 'photography', groupId: 'photo-services', name: 'Candid Photography', description: 'Storytelling candid photography coverage.', imageUrl: '', packageLevel: 'gold', price: 35000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 3 }),
+  item({ id: 'photo-live-streaming', supportedEventTypes: ['corporate_event', 'reception'], categoryKey: 'photography', groupId: 'photo-services', name: 'Live Streaming', description: 'Live stream the event for remote guests.', imageUrl: '', packageLevel: 'premium', price: 15000, unit: 'per event', displayOrder: 4 }),
+  item({ id: 'photo-traditional-photo', supportedEventTypes: ['haldi_function', 'traditional_home_function', 'housewarming'], categoryKey: 'photography', groupId: 'photo-services', name: 'Traditional Photography', description: 'Classic posed traditional photography for rituals and ceremonies.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 5 }),
+  item({ id: 'photo-traditional-video', supportedEventTypes: ['haldi_function', 'traditional_home_function', 'housewarming'], categoryKey: 'photography', groupId: 'photo-services', name: 'Traditional Videography', description: 'Classic full-ceremony traditional videography.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 6 }),
+  item({ id: 'photo-instant', supportedEventTypes: ['birthday', 'get_together'], categoryKey: 'photography', groupId: 'photo-services', name: 'Instant Photography / Prints', description: 'On-the-spot instant photo printing booth for guests.', imageUrl: '', packageLevel: 'standard', price: 12000, unit: 'per event', displayOrder: 7 }),
 
   // Catering - Wedding menu (unchanged, wedding-only)
   item({ id: 'cater-wd-01', supportedEventTypes: ['wedding'], categoryKey: 'catering', groupId: 'cat-welcome-drinks', name: 'Tender Coconut Water', description: 'Fresh tender coconut water welcome drink.', imageUrl: '', packageLevel: 'normal', price: 40, unit: 'per guest', displayOrder: 1 }),
@@ -283,11 +281,11 @@ export const MOCK_CATALOG_ITEMS: CatalogItem[] = [
 ];
 
 export const MOCK_PACKAGE_DEFINITIONS: PackageDefinition[] = [
-  { id: 'pkg-normal', eventTypeId: 'wedding', name: 'Normal Wedding Package', tagline: 'Simple & Elegant', packageLevel: 'normal', basePrice: 250000, guestCapacity: 200, description: 'Essential decor, catering and photography for an intimate wedding.', isPopular: false },
+  { id: 'pkg-normal', eventTypeId: 'wedding', name: 'Normal Wedding Package', tagline: 'Simple & Elegant', packageLevel: 'normal', basePrice: 250000, guestCapacity: 200, description: 'Essential decor and catering for an intimate wedding.', isPopular: false },
   { id: 'pkg-standard', eventTypeId: 'wedding', name: 'Standard Wedding Package', tagline: 'Thoughtful Essentials', packageLevel: 'standard', basePrice: 400000, guestCapacity: 300, description: 'A well-rounded package covering all core wedding needs.', isPopular: false },
-  { id: 'pkg-silver-tier', eventTypeId: 'wedding', name: 'Silver Wedding Package', tagline: 'Elegant & Traditional', packageLevel: 'silver', basePrice: 550000, guestCapacity: 400, description: 'Traditional decor, full catering menu and candid coverage.', isPopular: false },
-  { id: 'pkg-gold-tier', eventTypeId: 'wedding', name: 'Gold Wedding Package', tagline: 'Our Most Popular Choice', packageLevel: 'gold', basePrice: 800000, guestCapacity: 600, description: 'Comprehensive luxury setup with live counters and drone coverage.', isPopular: true },
-  { id: 'pkg-premium-tier', eventTypeId: 'wedding', name: 'Premium Wedding Package', tagline: 'Opulent Grandeur', packageLevel: 'premium', basePrice: 1300000, guestCapacity: 1000, description: 'Premium venues, cinematic films and extensive add-ons.', isPopular: false },
+  { id: 'pkg-silver-tier', eventTypeId: 'wedding', name: 'Silver Wedding Package', tagline: 'Elegant & Traditional', packageLevel: 'silver', basePrice: 550000, guestCapacity: 400, description: 'Traditional decor and a full catering menu.', isPopular: false },
+  { id: 'pkg-gold-tier', eventTypeId: 'wedding', name: 'Gold Wedding Package', tagline: 'Our Most Popular Choice', packageLevel: 'gold', basePrice: 800000, guestCapacity: 600, description: 'Comprehensive luxury setup with live catering counters.', isPopular: true },
+  { id: 'pkg-premium-tier', eventTypeId: 'wedding', name: 'Premium Wedding Package', tagline: 'Opulent Grandeur', packageLevel: 'premium', basePrice: 1300000, guestCapacity: 1000, description: 'Premium venues and extensive decor add-ons.', isPopular: false },
   { id: 'pkg-luxury-tier', eventTypeId: 'wedding', name: 'Luxury Wedding Package', tagline: 'Regal Palace Level', packageLevel: 'luxury', basePrice: 2200000, guestCapacity: 1500, description: 'Bespoke palace-level celebration with every premium inclusion.', isPopular: false },
 ];
 
@@ -295,13 +293,14 @@ function inc(packageId: string, catalogItemId: string, quantity: number = 1): Pa
   return { packageId, catalogItemId, quantity };
 }
 
+// Photography is not offered for Wedding events, so no photo-* items are included here.
 export const MOCK_PACKAGE_INCLUDED_ITEMS: PackageIncludedItem[] = [
-  inc('pkg-normal', 'dec-stage-01'), inc('pkg-normal', 'dec-mandap-01'), inc('pkg-normal', 'cater-wd-01'), inc('pkg-normal', 'photo-traditional-photo'),
-  inc('pkg-standard', 'dec-stage-01'), inc('pkg-standard', 'dec-mandap-01'), inc('pkg-standard', 'cater-wd-02'), inc('pkg-standard', 'photo-event-photo'), inc('pkg-standard', 'photo-event-video'),
-  inc('pkg-silver-tier', 'dec-stage-01'), inc('pkg-silver-tier', 'dec-mandap-01'), inc('pkg-silver-tier', 'dec-entrance-01'), inc('pkg-silver-tier', 'cater-wd-02'), inc('pkg-silver-tier', 'photo-event-photo'), inc('pkg-silver-tier', 'photo-event-video'),
-  inc('pkg-gold-tier', 'dec-stage-02'), inc('pkg-gold-tier', 'dec-mandap-02'), inc('pkg-gold-tier', 'dec-entrance-01'), inc('pkg-gold-tier', 'cater-wd-03'), inc('pkg-gold-tier', 'cater-live-01'), inc('pkg-gold-tier', 'photo-candid-photo'), inc('pkg-gold-tier', 'photo-candid-video'), inc('pkg-gold-tier', 'photo-drone'),
-  inc('pkg-premium-tier', 'dec-stage-02'), inc('pkg-premium-tier', 'dec-mandap-02'), inc('pkg-premium-tier', 'dec-entrance-02'), inc('pkg-premium-tier', 'cater-wd-03'), inc('pkg-premium-tier', 'cater-live-01'), inc('pkg-premium-tier', 'cater-live-02'), inc('pkg-premium-tier', 'photo-cinematic'), inc('pkg-premium-tier', 'photo-drone'), inc('pkg-premium-tier', 'photo-led-wall'),
-  inc('pkg-luxury-tier', 'dec-stage-03'), inc('pkg-luxury-tier', 'dec-mandap-02'), inc('pkg-luxury-tier', 'dec-entrance-02'), inc('pkg-luxury-tier', 'cater-wd-03'), inc('pkg-luxury-tier', 'cater-live-01'), inc('pkg-luxury-tier', 'cater-live-02'), inc('pkg-luxury-tier', 'photo-cinematic'), inc('pkg-luxury-tier', 'photo-drone'), inc('pkg-luxury-tier', 'photo-led-wall'), inc('pkg-luxury-tier', 'photo-live-streaming'), inc('pkg-luxury-tier', 'venue-palace'),
+  inc('pkg-normal', 'dec-stage-01'), inc('pkg-normal', 'dec-mandap-01'), inc('pkg-normal', 'cater-wd-01'),
+  inc('pkg-standard', 'dec-stage-01'), inc('pkg-standard', 'dec-mandap-01'), inc('pkg-standard', 'cater-wd-02'),
+  inc('pkg-silver-tier', 'dec-stage-01'), inc('pkg-silver-tier', 'dec-mandap-01'), inc('pkg-silver-tier', 'dec-entrance-01'), inc('pkg-silver-tier', 'cater-wd-02'),
+  inc('pkg-gold-tier', 'dec-stage-02'), inc('pkg-gold-tier', 'dec-mandap-02'), inc('pkg-gold-tier', 'dec-entrance-01'), inc('pkg-gold-tier', 'cater-wd-03'), inc('pkg-gold-tier', 'cater-live-01'),
+  inc('pkg-premium-tier', 'dec-stage-02'), inc('pkg-premium-tier', 'dec-mandap-02'), inc('pkg-premium-tier', 'dec-entrance-02'), inc('pkg-premium-tier', 'cater-wd-03'), inc('pkg-premium-tier', 'cater-live-01'), inc('pkg-premium-tier', 'cater-live-02'),
+  inc('pkg-luxury-tier', 'dec-stage-03'), inc('pkg-luxury-tier', 'dec-mandap-02'), inc('pkg-luxury-tier', 'dec-entrance-02'), inc('pkg-luxury-tier', 'cater-wd-03'), inc('pkg-luxury-tier', 'cater-live-01'), inc('pkg-luxury-tier', 'cater-live-02'), inc('pkg-luxury-tier', 'venue-palace'),
 ];
 
 export const MOCK_PACKAGE_GROUP_LIMITS: PackageGroupLimit[] = [

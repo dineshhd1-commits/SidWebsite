@@ -22,7 +22,7 @@ export interface EventType {
   active: boolean;
 }
 
-export type PackageLevelId = 'normal' | 'standard' | 'silver' | 'gold' | 'premium' | 'luxury';
+export type PackageLevelId = 'normal' | 'standard' | 'silver' | 'gold' | 'premium' | 'luxury' | 'platinum';
 
 export interface PackageLevel {
   id: PackageLevelId;

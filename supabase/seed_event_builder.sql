@@ -43,39 +43,14 @@ INSERT INTO package_levels (id, name, rank, display_order, active) VALUES
 ('silver', 'Silver', 2, 3, true),
 ('gold', 'Gold', 3, 4, true),
 ('premium', 'Premium', 4, 5, true),
-('luxury', 'Luxury', 5, 6, true)
+('luxury', 'Luxury', 5, 6, true),
+('platinum', 'Platinum', 6, 7, true)
 ON CONFLICT (id) DO NOTHING;
 
--- 3. Decoration Groups -------------------------------------------------------
+-- 3. Decoration Groups - a single choice of one of three tiers (Silver, Gold,
+-- Platinum), offered identically across every event type.
 INSERT INTO catalog_groups (id, supported_event_types, category_key, name, default_max_selections, free_included_count, requires_approval_after_limit, approval_message, display_order, active) VALUES
-('dec-stage', ARRAY['wedding'], 'decoration', 'Stage Decoration', 2, 1, false, NULL, 1, true),
-('dec-mandap', ARRAY['wedding'], 'decoration', 'Mandap Decoration', 2, 1, false, NULL, 2, true),
-('dec-entrance', ARRAY['wedding','birthday','engagement','reception','anniversary','get_together','housewarming','traditional_home_function'], 'decoration', 'Entrance Decoration', 1, 1, false, NULL, 3, true),
-('dec-pathway', ARRAY['wedding'], 'decoration', 'Pathway Decoration', 1, 1, false, NULL, 4, true),
-('dec-passage', ARRAY['wedding'], 'decoration', 'Passage Decoration', 1, 1, false, NULL, 5, true),
-('dec-garland', ARRAY['wedding','haldi_function'], 'decoration', 'Garland Selection', 3, 1, false, NULL, 6, true),
-('dec-nadaswara', ARRAY['wedding','haldi_function','traditional_home_function'], 'decoration', 'Nadaswara', 1, 1, false, NULL, 7, true),
-('dec-house', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'House Decoration', 2, 1, false, NULL, 8, true),
-('dec-main-door', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'Main Door Decoration', 1, 1, false, NULL, 9, true),
-('dec-haldi', ARRAY['wedding','haldi_function'], 'decoration', 'Haldi Decoration', 1, 1, false, NULL, 10, true),
-('dec-reception', ARRAY['wedding','reception'], 'decoration', 'Reception Decoration', 2, 1, false, NULL, 11, true),
-('dec-traditional-home', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'Traditional Home Decoration', 1, 1, false, NULL, 12, true),
-('dec-front-canopy', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'Front Canopy / Chapra Decoration', 1, 1, false, NULL, 13, true),
-('dec-bridal-room', ARRAY['wedding'], 'decoration', 'Bridal Room Decoration', 1, 1, false, NULL, 14, true),
-('dec-birthday-stage', ARRAY['birthday'], 'decoration', 'Birthday Stage Decoration', 1, 1, false, NULL, 15, true),
-('dec-balloon', ARRAY['birthday','get_together','bachelor_party'], 'decoration', 'Balloon Decoration', 1, 1, false, NULL, 16, true),
-('dec-theme', ARRAY['birthday','get_together','bachelor_party','other_events'], 'decoration', 'Theme Decoration', 1, 1, false, NULL, 17, true),
-('dec-cake-table', ARRAY['birthday','anniversary'], 'decoration', 'Cake Table Decoration', 1, 1, false, NULL, 18, true),
-('dec-engagement-stage', ARRAY['engagement'], 'decoration', 'Engagement Stage Decoration', 1, 1, false, NULL, 19, true),
-('dec-ring-ceremony', ARRAY['engagement'], 'decoration', 'Ring Ceremony Setup', 1, 1, false, NULL, 20, true),
-('dec-floral', ARRAY['engagement','anniversary'], 'decoration', 'Floral Decoration', 1, 1, false, NULL, 21, true),
-('dec-corporate-stage', ARRAY['corporate_event'], 'decoration', 'Corporate Stage', 1, 1, false, NULL, 22, true),
-('dec-branding', ARRAY['corporate_event'], 'decoration', 'Branding Setup', 1, 1, false, NULL, 23, true),
-('dec-candlelit-dinner', ARRAY['anniversary'], 'decoration', 'Candlelit Dinner Setup', 1, 1, false, NULL, 24, true),
-('dec-griha-pravesh', ARRAY['housewarming'], 'decoration', 'Griha Pravesh Pooja Decoration', 1, 1, false, NULL, 25, true),
-('dec-cradle-ceremony', ARRAY['traditional_home_function'], 'decoration', 'Cradle Ceremony Decoration', 1, 1, false, NULL, 26, true),
-('dec-bar-lounge', ARRAY['bachelor_party'], 'decoration', 'Bar / Lounge Decoration', 1, 1, false, NULL, 27, true),
-('dec-general', ARRAY['other_events'], 'decoration', 'Event Decoration', 1, 1, false, NULL, 28, true)
+('dec-package', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'decoration', 'Decoration Package', 1, 1, false, NULL, 1, true)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 4. Catering Groups (Wedding keeps its detailed menu structure; other event types
@@ -102,57 +77,12 @@ INSERT INTO catalog_groups (id, supported_event_types, category_key, name, defau
 ('addon-services', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'additional_services', 'Additional Services', NULL, 0, false, NULL, 1, true)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
--- 6. Decoration Catalog Items (Wedding) --------------------------------------
+-- 6. Decoration Catalog Items - exactly three tiers, offered identically across
+-- every event type.
 INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, display_order) VALUES
-('dec-stage-01', ARRAY['wedding'], 'decoration', 'dec-stage', 'Classic Floral Stage', 'Fresh marigold and jasmine stage backdrop with brass lamps.', '', '[]', 'standard', 45000, 'setup', 'single', 1),
-('dec-stage-02', ARRAY['wedding'], 'decoration', 'dec-stage', 'Royal Brass Mandapam Stage', 'Grand brass-themed stage with layered floral drape and lighting.', '', '[]', 'gold', 95000, 'setup', 'single', 2),
-('dec-stage-03', ARRAY['wedding'], 'decoration', 'dec-stage', 'Luxury Crystal & Floral Stage', 'Premium crystal drop backdrop with imported floral arrangement.', '', '[]', 'luxury', 175000, 'setup', 'single', 3),
-('dec-mandap-01', ARRAY['wedding'], 'decoration', 'dec-mandap', 'Traditional Chepparam Mandap', 'Authentic temple-style mandap backdrop with golden drapes.', '', '[]', 'standard', 55000, 'setup', 'single', 1),
-('dec-mandap-02', ARRAY['wedding'], 'decoration', 'dec-mandap', 'Saptapadi Royal Mandap', 'Fresh jasmine and lotus royal brass mandapam.', '', '[]', 'gold', 120000, 'setup', 'single', 2),
-('dec-entrance-01', ARRAY['wedding','birthday','engagement','reception','anniversary','get_together','housewarming','traditional_home_function'], 'decoration', 'dec-entrance', 'Floral Arch Entrance', 'Marigold and rose arch with hanging bells.', '', '[]', 'standard', 18000, 'setup', 'single', 1),
-('dec-entrance-02', ARRAY['wedding','engagement','reception','anniversary'], 'decoration', 'dec-entrance', 'Grand Welcome Entrance', 'Illuminated floral entrance with traditional welcome signage.', '', '[]', 'premium', 38000, 'setup', 'single', 2),
-('dec-pathway-01', ARRAY['wedding'], 'decoration', 'dec-pathway', 'Petal Pathway', 'Rose petal scattered aisle with candle lining.', '', '[]', 'standard', 12000, 'setup', 'single', 1),
-('dec-pathway-02', ARRAY['wedding'], 'decoration', 'dec-pathway', 'Illuminated Grand Pathway', 'LED-lit walkway with floral garlands on both sides.', '', '[]', 'gold', 28000, 'setup', 'single', 2),
-('dec-passage-01', ARRAY['wedding'], 'decoration', 'dec-passage', 'Traditional Passage Decor', 'Coconut leaf and floral passage arrangement.', '', '[]', 'standard', 10000, 'setup', 'single', 1),
-('dec-passage-02', ARRAY['wedding'], 'decoration', 'dec-passage', 'Premium Floral Passage', 'Layered floral passage with hanging lanterns.', '', '[]', 'premium', 24000, 'setup', 'single', 2),
-('dec-garland-01', ARRAY['wedding','haldi_function'], 'decoration', 'dec-garland', 'Classic Rose Garlands', 'Fresh rose garlands for the couple.', '', '[]', 'normal', 3000, 'pair', 'stepper', 1),
-('dec-garland-02', ARRAY['wedding','haldi_function'], 'decoration', 'dec-garland', 'Jasmine & Marigold Garlands', 'Fragrant mixed-flower garlands.', '', '[]', 'standard', 4500, 'pair', 'stepper', 2),
-('dec-garland-03', ARRAY['wedding'], 'decoration', 'dec-garland', 'Designer Orchid Garlands', 'Imported orchid designer garlands.', '', '[]', 'luxury', 9000, 'pair', 'stepper', 3),
-('dec-nadaswara-01', ARRAY['wedding','haldi_function','traditional_home_function'], 'decoration', 'dec-nadaswara', 'Live Nadaswaram & Thavil Duo', 'Traditional auspicious live ensemble for muhurtham and home rituals.', '', '[]', 'standard', 25000, 'per event', 'single', 1),
-('dec-house-01', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'dec-house', 'Home Entrance Rangoli & Torans', 'Traditional rangoli with mango leaf torans.', '', '[]', 'standard', 8000, 'setup', 'single', 1),
-('dec-house-02', ARRAY['wedding','housewarming'], 'decoration', 'dec-house', 'Complete Home Floral Decor', 'Full home floral and lighting decoration.', '', '[]', 'gold', 32000, 'setup', 'single', 2),
-('dec-main-door-01', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'dec-main-door', 'Traditional Main Door Toran', 'Mango leaf and marigold main door toran.', '', '[]', 'normal', 4000, 'setup', 'single', 1),
-('dec-haldi-01', ARRAY['wedding','haldi_function'], 'decoration', 'dec-haldi', 'Yellow Marigold Haldi Setup', 'Bright marigold-themed Haldi seating with decorated urli and backdrop.', '', '[]', 'standard', 22000, 'setup', 'single', 1),
-('dec-reception-01', ARRAY['wedding','reception'], 'decoration', 'dec-reception', 'Reception Stage & Table Decor', 'Elegant reception stage with themed table centerpieces.', '', '[]', 'standard', 60000, 'setup', 'single', 1),
-('dec-reception-02', ARRAY['wedding','reception'], 'decoration', 'dec-reception', 'Luxury Reception Ambience', 'Premium lighting, drapery and floral reception setup.', '', '[]', 'luxury', 145000, 'setup', 'single', 2),
-('dec-trad-home-01', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'dec-traditional-home', 'Traditional Home Function Decor', 'Classic South Indian home ceremony decoration.', '', '[]', 'standard', 15000, 'setup', 'single', 1),
-('dec-canopy-01', ARRAY['wedding','housewarming','traditional_home_function'], 'decoration', 'dec-front-canopy', 'Front Canopy / Chapra Setup', 'Traditional decorated chapra canopy for the home front.', '', '[]', 'standard', 20000, 'setup', 'single', 1),
-('dec-bridal-room-01', ARRAY['wedding'], 'decoration', 'dec-bridal-room', 'Bridal Room Decoration', 'Floral and fairy-light bridal getting-ready room styling.', '', '[]', 'standard', 15000, 'setup', 'single', 1)
-ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
-
--- 7. Decoration Catalog Items (Birthday, Engagement, Corporate Event) --------
-INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, display_order) VALUES
-('dec-bday-stage-01', ARRAY['birthday'], 'decoration', 'dec-birthday-stage', 'Themed Birthday Stage', 'Colourful themed stage backdrop for the birthday star.', '', '[]', 'standard', 15000, 'setup', 'single', 1),
-('dec-balloon-01', ARRAY['birthday','get_together','bachelor_party'], 'decoration', 'dec-balloon', 'Balloon Arch & Backdrop', 'Full balloon arch with matching backdrop wall.', '', '[]', 'normal', 6000, 'setup', 'single', 1),
-('dec-balloon-02', ARRAY['birthday'], 'decoration', 'dec-balloon', 'Premium Balloon Ceiling Decor', 'Ceiling-to-floor balloon decor with organic garlands.', '', '[]', 'gold', 18000, 'setup', 'single', 2),
-('dec-theme-01', ARRAY['birthday'], 'decoration', 'dec-theme', 'Kids Cartoon Theme Setup', 'Full cartoon-character themed decor and props.', '', '[]', 'standard', 12000, 'setup', 'single', 1),
-('dec-theme-02', ARRAY['birthday','get_together','bachelor_party','other_events'], 'decoration', 'dec-theme', 'Custom Theme Setup', 'Custom themed backdrop, props and table decor for any occasion.', '', '[]', 'standard', 12000, 'setup', 'single', 2),
-('dec-cake-table-01', ARRAY['birthday','anniversary'], 'decoration', 'dec-cake-table', 'Designer Cake Table', 'Styled cake table with floral and fairy-light accents.', '', '[]', 'normal', 4000, 'setup', 'single', 1),
-('dec-eng-stage-01', ARRAY['engagement'], 'decoration', 'dec-engagement-stage', 'Elegant Engagement Stage', 'Sophisticated floral stage for the ring ceremony.', '', '[]', 'standard', 35000, 'setup', 'single', 1),
-('dec-ring-ceremony-01', ARRAY['engagement'], 'decoration', 'dec-ring-ceremony', 'Ring Platter & Ceremony Setup', 'Ring exchange platter, seating and ceremony styling.', '', '[]', 'standard', 12000, 'setup', 'single', 1),
-('dec-floral-01', ARRAY['engagement','anniversary'], 'decoration', 'dec-floral', 'Premium Floral Decoration', 'Fresh flower decor across stage and seating areas.', '', '[]', 'gold', 40000, 'setup', 'single', 1),
-('dec-corp-stage-01', ARRAY['corporate_event'], 'decoration', 'dec-corporate-stage', 'Corporate Stage Setup', 'Clean professional stage setup for conferences and launches.', '', '[]', 'standard', 40000, 'setup', 'single', 1),
-('dec-branding-01', ARRAY['corporate_event'], 'decoration', 'dec-branding', 'Branding & Backdrop Setup', 'Company-branded backdrop, standees and signage.', '', '[]', 'standard', 20000, 'setup', 'single', 1)
-ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
-
--- 8. Decoration Catalog Items (Anniversary, Housewarming, Naming Ceremony,
--- Bachelor Party, Other Events)
-INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, display_order) VALUES
-('dec-candlelit-01', ARRAY['anniversary'], 'decoration', 'dec-candlelit-dinner', 'Romantic Candlelit Dinner Setup', 'Private candlelit table setup with florals and fairy lights.', '', '[]', 'gold', 20000, 'setup', 'single', 1),
-('dec-griha-01', ARRAY['housewarming'], 'decoration', 'dec-griha-pravesh', 'Griha Pravesh Pooja Setup', 'Kalash, floral curtain and pooja area decoration for the house-warming ritual.', '', '[]', 'standard', 14000, 'setup', 'single', 1),
-('dec-cradle-01', ARRAY['traditional_home_function'], 'decoration', 'dec-cradle-ceremony', 'Traditional Cradle Decoration', 'Floral cradle decor with traditional backdrop for the naming ceremony.', '', '[]', 'standard', 10000, 'setup', 'single', 1),
-('dec-bar-lounge-01', ARRAY['bachelor_party'], 'decoration', 'dec-bar-lounge', 'Bar & Lounge Theme Decoration', 'Moody lounge lighting, signage and lounge seating decor.', '', '[]', 'standard', 15000, 'setup', 'single', 1),
-('dec-general-01', ARRAY['other_events'], 'decoration', 'dec-general', 'Custom Event Decoration', 'Flexible decoration setup tailored to your specific event.', '', '[]', 'standard', 20000, 'setup', 'single', 1)
+('dec-silver', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'decoration', 'dec-package', 'Silver Decoration', 'Elegant stage, entrance and seating decor with fresh florals and classic drapery.', '', '[]', 'silver', 45000, 'package', 'single', 1),
+('dec-gold', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'decoration', 'dec-package', 'Gold Decoration', 'Premium themed decor with layered floral arrangements, upgraded lighting and richer drapery.', '', '[]', 'gold', 85000, 'package', 'single', 2),
+('dec-platinum', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'decoration', 'dec-package', 'Platinum Decoration', 'Our most opulent decor - imported florals, crystal and brass accents, and a fully bespoke design consultation.', '', '[]', 'platinum', 150000, 'package', 'single', 3)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 9. Photography Catalog Items - not offered for Wedding events; scoped to where
@@ -254,38 +184,31 @@ ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_
 -- 15. Six-tier Wedding Package Definitions (new ids; legacy pkg-silver/gold/diamond/royal
 -- rows from seed.sql are untouched placeholder data, superseded going forward) ---
 INSERT INTO wedding_packages (id, name, tagline, tier, base_price, guest_capacity, description, is_popular, event_type_id, package_level) VALUES
-('pkg-normal', 'Normal Wedding Package', 'Simple & Elegant', 'silver', 250000, 200, 'Essential decor, catering and photography for an intimate wedding.', false, 'wedding', 'normal'),
+('pkg-normal', 'Normal Wedding Package', 'Simple & Elegant', 'silver', 250000, 200, 'Essential decor and catering for an intimate wedding.', false, 'wedding', 'normal'),
 ('pkg-standard', 'Standard Wedding Package', 'Thoughtful Essentials', 'silver', 400000, 300, 'A well-rounded package covering all core wedding needs.', false, 'wedding', 'standard'),
-('pkg-silver-tier', 'Silver Wedding Package', 'Elegant & Traditional', 'silver', 550000, 400, 'Traditional decor, full catering menu and candid coverage.', false, 'wedding', 'silver'),
-('pkg-gold-tier', 'Gold Wedding Package', 'Our Most Popular Choice', 'gold', 800000, 600, 'Comprehensive luxury setup with live counters and drone coverage.', true, 'wedding', 'gold'),
-('pkg-premium-tier', 'Premium Wedding Package', 'Opulent Grandeur', 'diamond', 1300000, 1000, 'Premium venues, cinematic films and extensive add-ons.', false, 'wedding', 'premium'),
+('pkg-silver-tier', 'Silver Wedding Package', 'Elegant & Traditional', 'silver', 550000, 400, 'Traditional decor and a full catering menu.', false, 'wedding', 'silver'),
+('pkg-gold-tier', 'Gold Wedding Package', 'Our Most Popular Choice', 'gold', 800000, 600, 'Comprehensive luxury setup with live catering counters.', true, 'wedding', 'gold'),
+('pkg-premium-tier', 'Premium Wedding Package', 'Opulent Grandeur', 'diamond', 1300000, 1000, 'Premium venues and extensive decor add-ons.', false, 'wedding', 'premium'),
 ('pkg-luxury-tier', 'Luxury Wedding Package', 'Regal Palace Level', 'royal', 2200000, 1500, 'Bespoke palace-level celebration with every premium inclusion.', false, 'wedding', 'luxury')
 ON CONFLICT (id) DO NOTHING;
 
--- 16. Package Group Limits - demonstrates the Starters 2-vs-3 rule and
--- decoration-group overrides varying by package level.
+-- 16. Package Group Limits - demonstrates the Starters 2-vs-3 rule.
 INSERT INTO package_group_limits (package_id, group_id, max_selections, free_included_count) VALUES
 ('pkg-normal', 'cat-starters', 2, 2),
 ('pkg-standard', 'cat-starters', 2, 2),
 ('pkg-silver-tier', 'cat-starters', 3, 2),
 ('pkg-gold-tier', 'cat-starters', 3, 3),
 ('pkg-premium-tier', 'cat-starters', 3, 3),
-('pkg-luxury-tier', 'cat-starters', 3, 3),
-('pkg-normal', 'venue-options', 1, 0),
-('pkg-standard', 'venue-options', 1, 0),
-('pkg-silver-tier', 'venue-options', 1, 0),
-('pkg-gold-tier', 'venue-options', 1, 0),
-('pkg-premium-tier', 'venue-options', 1, 0),
-('pkg-luxury-tier', 'venue-options', 1, 0)
+('pkg-luxury-tier', 'cat-starters', 3, 3)
 ON CONFLICT (package_id, group_id) DO NOTHING;
 
 -- 17. Package Included Items - representative starter inclusions per package.
--- Photography is not offered for Wedding events, so no photo-* items are included here.
+-- Photography and Venue are not offered, so no photo-* or venue-* items are included here.
 INSERT INTO package_included_items (package_id, catalog_item_id, quantity) VALUES
-('pkg-normal', 'dec-stage-01', 1), ('pkg-normal', 'dec-mandap-01', 1), ('pkg-normal', 'cater-wd-01', 1),
-('pkg-standard', 'dec-stage-01', 1), ('pkg-standard', 'dec-mandap-01', 1), ('pkg-standard', 'cater-wd-02', 1),
-('pkg-silver-tier', 'dec-stage-01', 1), ('pkg-silver-tier', 'dec-mandap-01', 1), ('pkg-silver-tier', 'dec-entrance-01', 1), ('pkg-silver-tier', 'cater-wd-02', 1),
-('pkg-gold-tier', 'dec-stage-02', 1), ('pkg-gold-tier', 'dec-mandap-02', 1), ('pkg-gold-tier', 'dec-entrance-01', 1), ('pkg-gold-tier', 'cater-wd-03', 1), ('pkg-gold-tier', 'cater-live-01', 1),
-('pkg-premium-tier', 'dec-stage-02', 1), ('pkg-premium-tier', 'dec-mandap-02', 1), ('pkg-premium-tier', 'dec-entrance-02', 1), ('pkg-premium-tier', 'cater-wd-03', 1), ('pkg-premium-tier', 'cater-live-01', 1), ('pkg-premium-tier', 'cater-live-02', 1),
-('pkg-luxury-tier', 'dec-stage-03', 1), ('pkg-luxury-tier', 'dec-mandap-02', 1), ('pkg-luxury-tier', 'dec-entrance-02', 1), ('pkg-luxury-tier', 'cater-wd-03', 1), ('pkg-luxury-tier', 'cater-live-01', 1), ('pkg-luxury-tier', 'cater-live-02', 1), ('pkg-luxury-tier', 'venue-palace', 1)
+('pkg-normal', 'dec-silver', 1), ('pkg-normal', 'cater-wd-01', 1),
+('pkg-standard', 'dec-silver', 1), ('pkg-standard', 'cater-wd-02', 1),
+('pkg-silver-tier', 'dec-silver', 1), ('pkg-silver-tier', 'cater-wd-02', 1),
+('pkg-gold-tier', 'dec-gold', 1), ('pkg-gold-tier', 'cater-wd-03', 1), ('pkg-gold-tier', 'cater-live-01', 1),
+('pkg-premium-tier', 'dec-platinum', 1), ('pkg-premium-tier', 'cater-wd-03', 1), ('pkg-premium-tier', 'cater-live-01', 1), ('pkg-premium-tier', 'cater-live-02', 1),
+('pkg-luxury-tier', 'dec-platinum', 1), ('pkg-luxury-tier', 'cater-wd-03', 1), ('pkg-luxury-tier', 'cater-live-01', 1), ('pkg-luxury-tier', 'cater-live-02', 1)
 ON CONFLICT (package_id, catalog_item_id) DO NOTHING;

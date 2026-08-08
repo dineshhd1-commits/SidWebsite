@@ -11,6 +11,7 @@ const LEVEL_LABELS: Record<PackageLevelId, string> = {
   gold: 'Gold',
   premium: 'Premium',
   luxury: 'Luxury',
+  platinum: 'Platinum',
 };
 
 const LEVEL_CLASSES: Record<PackageLevelId, string> = {
@@ -20,6 +21,7 @@ const LEVEL_CLASSES: Record<PackageLevelId, string> = {
   gold: 'bg-gold-100 text-maroon-900 border-gold-400',
   premium: 'bg-maroon-100 text-maroon-900 border-maroon-300',
   luxury: 'bg-maroon-900 text-gold-300 border-gold-500',
+  platinum: 'bg-zinc-800 text-zinc-100 border-zinc-500',
 };
 
 export function PackageLevelBadge({ level, className }: { level: PackageLevelId; className?: string }) {

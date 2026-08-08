@@ -63,9 +63,10 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
 
         {/* Row 3: Event Location */}
         <div>
-          <label className="block text-xs font-bold text-maroon-900 mb-1">Event Location</label>
+          <label className="block text-xs font-bold text-maroon-900 mb-1">Event Location <span className="text-rose-600">*</span></label>
           <input
             type="text"
+            required
             placeholder="e.g. Davanagere"
             value={eventDetails.location}
             onChange={(e) => onChange({ location: e.target.value })}

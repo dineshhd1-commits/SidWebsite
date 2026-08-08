@@ -16,16 +16,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
   photography: 'Photography & Videography',
   catering: 'Catering',
-  venue: 'Venue',
   additional_services: 'Additional Services',
 };
 
-const CATEGORY_STEP_INDEX: Record<CatalogCategoryKey, number> = {
+const CATEGORY_STEP_INDEX: Partial<Record<CatalogCategoryKey, number>> = {
   decoration: 1,
   photography: 2,
   catering: 3,
-  venue: 4,
-  additional_services: 5,
+  additional_services: 4,
 };
 
 const CATERING_TIMING_LABELS: Record<string, string> = {
@@ -118,7 +116,7 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-gold-700">{CATEGORY_LABELS[categoryKey] || categoryKey}</span>
                 <button
-                  onClick={() => onGoToStep(CATEGORY_STEP_INDEX[categoryKey])}
+                  onClick={() => onGoToStep(CATEGORY_STEP_INDEX[categoryKey] ?? 0)}
                   className="inline-flex items-center gap-1 text-[11px] font-bold text-gold-700 hover:text-maroon-900"
                 >
                   <Edit3 className="w-3 h-3" /> Edit

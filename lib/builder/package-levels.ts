@@ -7,6 +7,7 @@ export const PACKAGE_LEVEL_RANK: Record<PackageLevelId, number> = {
   gold: 3,
   premium: 4,
   luxury: 5,
+  platinum: 6,
 };
 
 export const PACKAGE_LEVEL_NAMES: Record<PackageLevelId, string> = {
@@ -16,6 +17,7 @@ export const PACKAGE_LEVEL_NAMES: Record<PackageLevelId, string> = {
   gold: 'Gold',
   premium: 'Premium',
   luxury: 'Luxury',
+  platinum: 'Platinum',
 };
 
 /** True when an item's package level is higher than the customer's currently

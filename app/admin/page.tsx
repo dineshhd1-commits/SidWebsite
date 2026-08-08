@@ -1714,7 +1714,7 @@ export default function AdminDashboardPage() {
 
             <div className="space-y-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-gold-700">Category Limits</h4>
-              {['cat-starters', 'venue-options'].map((groupId) => {
+              {['cat-starters'].map((groupId) => {
                 const limit = editPackageDetail.groupLimits.find((l) => l.groupId === groupId);
                 const groupName = catalogGroups.find((g) => g.id === groupId)?.name || groupId;
                 return (

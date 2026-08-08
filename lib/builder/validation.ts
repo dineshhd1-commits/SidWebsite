@@ -19,11 +19,11 @@ export function getEventDetailsFieldChecks(state: EventBuilderState): { required
       { key: 'eventType', label: 'Event Type', filled: !!eventTypeId },
       { key: 'date', label: 'Event Date', filled: !!eventDetails.date },
       { key: 'guestCount', label: 'Number of Guests', filled: eventDetails.guestCount > 0 },
+      { key: 'location', label: 'Event Location', filled: !!eventDetails.location.trim() },
       { key: 'customerName', label: 'Your Name', filled: !!eventDetails.customerName.trim() },
       { key: 'customerPhone', label: 'Phone Number', filled: !!eventDetails.customerPhone.trim() },
     ],
     optional: [
-      { key: 'location', label: 'Event Location', filled: !!eventDetails.location.trim() },
       { key: 'customerEmail', label: 'Email Address', filled: !!eventDetails.customerEmail.trim() },
       { key: 'specialRequirements', label: 'Special Requirements', filled: !!eventDetails.specialRequirements.trim() },
     ],
@@ -45,6 +45,7 @@ export function getFriendlyMissingFieldMessage(fieldKey: string): string {
     eventType: "We still need to know what type of event you're planning.",
     date: 'Please choose a valid event date before submitting.',
     guestCount: 'Let us know roughly how many guests to expect.',
+    location: 'We still need your event location before submitting your enquiry.',
     customerName: 'We still need your name before submitting your enquiry.',
     customerPhone: 'We still need your phone number before submitting your enquiry.',
   };
@@ -56,7 +57,6 @@ const STEP_CATEGORY_KEYS: (CatalogCategoryKey | null)[] = [
   'decoration',
   'photography',
   'catering',
-  'venue',
   'additional_services',
   null, // Review - handled separately
 ];

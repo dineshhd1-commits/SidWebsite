@@ -22,7 +22,6 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
   const [groups, setGroups] = useState<CatalogGroup[] | null>(null);
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [packageLimits, setPackageLimits] = useState<PackageGroupLimit[]>([]);
-  const [activeGroupId, setActiveGroupId] = useState<string>('all');
   const [galleryItem, setGalleryItem] = useState<CatalogItem | null>(null);
   const [pendingReplace, setPendingReplace] = useState<CatalogItem | null>(null);
 
@@ -53,8 +52,8 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
   }
 
   const packageLimitByGroup = new Map(packageLimits.map((pl) => [pl.groupId, pl]));
-  const visibleItems = activeGroupId === 'all' ? items : items.filter((i) => i.groupId === activeGroupId);
-  const activeGroup = groups.find((g) => g.id === activeGroupId) || null;
+  const visibleItems = items;
+  const activeGroup = groups[0] || null;
 
   const handleSelect = (item: CatalogItem) => {
     const isSelected = !!state.cart[item.id];
@@ -84,35 +83,8 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
       <div className="border-b border-gold-300/40 pb-4">
         <h2 className="font-playfair text-2xl font-bold text-maroon-900">Step 2: Decoration</h2>
         <p className="text-xs text-maroon-700/80">
-          Browse each category and select your designs - each has its own selection limit.
+          Choose one decoration tier - Silver, Gold or Platinum.
         </p>
-      </div>
-
-      <div className="flex flex-wrap gap-2 pb-2">
-        <button
-          onClick={() => setActiveGroupId('all')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
-            activeGroupId === 'all' ? 'bg-maroon-800 text-gold-300 border-gold-400 shadow-sm' : 'bg-white text-maroon-900 border-gold-300 hover:bg-gold-50'
-          }`}
-        >
-          All Categories
-        </button>
-        {groups.map((group) => {
-          const count = getGroupSelectionCount(state, group.id);
-          const { maxSelections } = getEffectiveGroupLimit(group, packageLimitByGroup.get(group.id));
-          return (
-            <button
-              key={group.id}
-              onClick={() => setActiveGroupId(group.id)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
-                activeGroupId === group.id ? 'bg-maroon-800 text-gold-300 border-gold-400 shadow-sm' : 'bg-white text-maroon-900 border-gold-300 hover:bg-gold-50'
-              }`}
-            >
-              {group.name}
-              {maxSelections !== null && <span className="ml-1 opacity-70">({count}/{maxSelections})</span>}
-            </button>
-          );
-        })}
       </div>
 
       {activeGroup && (() => {

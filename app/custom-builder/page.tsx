@@ -3,7 +3,7 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Palette, Camera, Utensils, MapPin, Sparkles, CheckCircle, ClipboardList, RefreshCw } from 'lucide-react';
+import { Palette, Camera, Utensils, Sparkles, CheckCircle, ClipboardList, RefreshCw } from 'lucide-react';
 import { useEventBuilder } from '@/lib/store/event-builder-context';
 import { getEventTypes } from '@/lib/data/event-types';
 import { EventType } from '@/lib/types/catalog';
@@ -19,7 +19,6 @@ import { EventDetailsStep } from './steps/EventDetailsStep';
 import { DecorationStep } from './steps/DecorationStep';
 import { PhotographyStep } from './steps/PhotographyStep';
 import { CateringStep } from './steps/CateringStep';
-import { VenueStep } from './steps/VenueStep';
 import { AdditionalServicesStep } from './steps/AdditionalServicesStep';
 import { ReviewCartStep } from './steps/ReviewCartStep';
 import { GoldButton } from '@/components/ui/gold-button';
@@ -31,7 +30,6 @@ const STEP_DEFS: BuilderStepDef[] = [
   { title: 'Decoration', icon: <Palette className="w-4 h-4" /> },
   { title: 'Photography', icon: <Camera className="w-4 h-4" /> },
   { title: 'Catering', icon: <Utensils className="w-4 h-4" /> },
-  { title: 'Venue', icon: <MapPin className="w-4 h-4" /> },
   { title: 'Additional Services', icon: <Sparkles className="w-4 h-4" /> },
   { title: 'Review & Cart', icon: <CheckCircle className="w-4 h-4" /> },
 ];
@@ -41,7 +39,6 @@ const STEP_WELCOME_MESSAGES = [
   "Now choose your Decoration package.",
   "Let's pick your Photography & Videography.",
   "Now let's build your Catering menu.",
-  "Time to choose your Venue.",
   'Add any Additional Services you need.',
   "Let's review your complete package before you submit.",
 ];
@@ -229,16 +226,6 @@ function CustomBuilderPageInner() {
         );
       case 4:
         return (
-          <VenueStep
-            state={state}
-            onAddToCart={(item) => addToCart(item, 1, 'paid_extra')}
-            onRemoveFromCart={removeFromCart}
-            onReplace={(oldId, item) => replaceInCart(oldId, item, 1, 'paid_extra')}
-            onSelectPackage={selectPackage}
-          />
-        );
-      case 5:
-        return (
           <AdditionalServicesStep
             state={state}
             onAddToCart={(item) => addToCart(item, 1, 'paid_extra')}
@@ -246,7 +233,7 @@ function CustomBuilderPageInner() {
             onUpdateQuantity={updateQuantity}
           />
         );
-      case 6:
+      case 5:
         return <ReviewCartStep state={state} quoteId={quoteId} onGoToStep={goToStep} />;
       default:
         return null;

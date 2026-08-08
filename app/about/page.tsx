@@ -29,6 +29,7 @@ export default function AboutPage() {
             src="/Sid2.png"
             alt="The SID Events studio in Davanagere - Planning, Design, Perfection"
             fill
+            sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover"
           />
         </div>

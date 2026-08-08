@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { GalleryItem } from '@/lib/types/wedding';
 import { getGalleryItems } from '@/lib/data/gallery';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
+import { LazyVideo } from '@/components/ui/lazy-video';
 import { LoadingState } from '@/components/builder/EmptyState';
 import { X, ZoomIn, PlayCircle, Images, VolumeX } from 'lucide-react';
 
@@ -90,13 +91,8 @@ export default function GalleryPage() {
             className="group relative h-96 sm:h-[420px] rounded-2xl overflow-hidden shadow-lg cursor-pointer border border-gold-300/40"
           >
             {item.mediaType === 'video' ? (
-              <video
+              <LazyVideo
                 src={item.url}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 style={{ transform: item.rotate ? `rotate(${item.rotate}deg) scale(1.45)` : undefined }}
               />
@@ -105,6 +101,7 @@ export default function GalleryPage() {
                 src={item.url}
                 alt={item.title}
                 fill
+                sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                 style={{ transform: item.rotate ? `rotate(${item.rotate}deg) scale(1.45)` : undefined }}
               />
@@ -185,6 +182,7 @@ export default function GalleryPage() {
                       src={src}
                       alt={`${lightboxItem.title} - photo ${i + 1}`}
                       fill
+                      sizes="100vw"
                       className="object-contain"
                       style={{ transform: lightboxItem.rotate ? `rotate(${lightboxItem.rotate}deg) scale(0.85)` : undefined }}
                     />
@@ -197,6 +195,7 @@ export default function GalleryPage() {
                   src={lightboxItem.url}
                   alt={lightboxItem.title}
                   fill
+                  sizes="100vw"
                   className="object-contain"
                   style={{ transform: lightboxItem.rotate ? `rotate(${lightboxItem.rotate}deg) scale(0.85)` : undefined }}
                 />

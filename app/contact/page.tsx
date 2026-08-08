@@ -132,7 +132,7 @@ export default function ContactPage() {
         {/* Contact Info (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           <div className="relative h-56 rounded-3xl overflow-hidden shadow-xl border-4 border-gold-400">
-            <Image src="/Sid3.png" alt="SID Events studio storefront in Davanagere" fill className="object-cover" />
+            <Image src="/Sid3.png" alt="SID Events studio storefront in Davanagere" fill sizes="(min-width: 1024px) 42vw, 100vw" className="object-cover" />
           </div>
 
           <GlassCard variant="dark" className="border-2 border-gold-400 space-y-6">

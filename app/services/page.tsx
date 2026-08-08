@@ -30,6 +30,7 @@ export default function ServicesPage() {
           src="/Sid1.png"
           alt="Dream. Plan. Create. Celebrate. - SID Events"
           fill
+          sizes="100vw"
           className="object-cover opacity-90 transition-transform duration-1000 hover:scale-105"
           priority
         />
@@ -60,7 +61,7 @@ export default function ServicesPage() {
               className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative h-48 w-full">
-                <Image src={offering.imageUrl} alt={offering.title} fill className="object-cover" />
+                <Image src={offering.imageUrl} alt={offering.title} fill sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/20 via-transparent to-transparent" />
               </div>
               <div className="p-6 space-y-2 flex-1 flex flex-col justify-between">

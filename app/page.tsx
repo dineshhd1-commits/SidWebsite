@@ -295,7 +295,7 @@ export default function HomePage() {
           {pillars.map((p, idx) => (
             <div key={idx} className="flex flex-col justify-between bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <div className="relative h-96 sm:h-[440px] lg:h-[500px] w-full">
-                <Image src={p.img} alt={p.title} fill className="object-cover transition-transform duration-700 hover:scale-105" />
+                <Image src={p.img} alt={p.title} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover transition-transform duration-700 hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/40 via-transparent to-transparent" />
                 <span className="absolute top-4 left-4 bg-maroon-900/90 text-gold-300 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-gold-400/40 backdrop-blur-md shadow-md">
                   {p.badge}
@@ -356,7 +356,7 @@ export default function HomePage() {
               onClick={() => setLightboxImg(item)}
               className="group relative h-96 sm:h-[420px] rounded-3xl overflow-hidden shadow-lg cursor-pointer border border-gold-400/30"
             >
-              <Image src={item.url} alt={item.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+              <Image src={item.url} alt={item.title} fill sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/60 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity" />
               
               <div className="absolute top-4 right-4 bg-maroon-950/80 text-gold-300 p-2 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-gold-400/30">
@@ -589,7 +589,7 @@ export default function HomePage() {
             </button>
 
             <div className="relative h-[65vh] w-full rounded-2xl overflow-hidden mb-4">
-              <Image src={lightboxImg.url} alt={lightboxImg.title} fill className="object-contain" />
+              <Image src={lightboxImg.url} alt={lightboxImg.title} fill sizes="100vw" className="object-contain" />
             </div>
 
             <div className="text-center text-silk-50 space-y-1">

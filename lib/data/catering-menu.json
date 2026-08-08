@@ -665,5 +665,5 @@
     "lunch": ["welcome_drinks", "chats", "soups", "starters", "kosumbri", "pickles", "dry_palya", "roti", "gravies", "pulao_biryani", "bajji_bonda", "chatpata_papad", "curd_raitha", "sambar", "rasam", "ice_cream", "paan", "snacks"],
     "dinner": ["welcome_drinks", "chats", "soups", "starters", "kosumbri", "pickles", "dry_palya", "roti", "gravies", "pulao_biryani", "bajji_bonda", "chatpata_papad", "curd_raitha", "sambar", "rasam", "ice_cream", "paan", "snacks"]
   },
-  "breakfastEventTypes": ["wedding", "engagement", "reception", "housewarming", "traditional_home_function"]
+  "breakfastEventTypes": ["wedding", "engagement", "reception", "birthday", "anniversary", "get_together", "bachelor_party", "housewarming", "haldi_function", "corporate_event", "traditional_home_function", "other_events"]
 }

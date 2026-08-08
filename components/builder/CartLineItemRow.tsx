@@ -3,7 +3,6 @@
 import React from 'react';
 import { X, RefreshCw } from 'lucide-react';
 import { CartLine } from '@/lib/types/event-builder';
-import { formatCurrency } from './useCartSummary';
 
 interface CartLineItemRowProps {
   line: CartLine;
@@ -34,9 +33,6 @@ export function CartLineItemRow({ line, onRemove, onViewDetails, compact }: Cart
           )}
         </div>
       </button>
-      <span className="text-xs font-bold text-gold-200 shrink-0">
-        {line.origin === 'requested_extra' ? '—' : formatCurrency(line.unitPrice * line.quantity)}
-      </span>
       <button
         type="button"
         onClick={() => onRemove(line.id)}

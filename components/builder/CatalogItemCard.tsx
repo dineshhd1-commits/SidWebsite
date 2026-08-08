@@ -8,10 +8,6 @@ import { PackageLevelBadge } from './PackageLevelBadge';
 import { GlassCard } from '../ui/glass-card';
 import { GoldButton } from '../ui/gold-button';
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 interface CatalogItemCardProps {
   item: CatalogItem;
   isSelected: boolean;
@@ -65,9 +61,6 @@ export function CatalogItemCard({ item, isSelected, isLocked, onSelect, onOpenGa
           <PackageLevelBadge level={item.packageLevel} />
         </div>
         <p className="text-xs text-maroon-700/80 mb-2 line-clamp-2">{item.description}</p>
-        <p className="text-sm font-bold text-maroon-900">
-          {formatCurrency(item.price)} <span className="text-[11px] font-normal text-maroon-700/70">/ {item.unit}</span>
-        </p>
       </div>
 
       <div className="pt-2 flex items-center justify-between border-t border-gold-200">

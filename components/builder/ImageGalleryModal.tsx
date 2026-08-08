@@ -15,10 +15,6 @@ interface ImageGalleryModalProps {
   onSelect: () => void;
 }
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 export function ImageGalleryModal({ item, isSelected, isLocked, onClose, onSelect }: ImageGalleryModalProps) {
   const images = (item.images.length > 0 ? item.images : [item.imageUrl]).filter(Boolean);
   const [index, setIndex] = useState(0);
@@ -83,7 +79,6 @@ export function ImageGalleryModal({ item, isSelected, isLocked, onClose, onSelec
               <PackageLevelBadge level={item.packageLevel} />
             </div>
             <p className="text-xs text-gold-100/80 max-w-lg">{item.description}</p>
-            <p className="text-sm font-bold text-gold-200">{formatCurrency(item.price)} <span className="text-[11px] font-normal text-gold-300/70">/ {item.unit}</span></p>
           </div>
 
           <GoldButton

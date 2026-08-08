@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { EventBuilderState, CartLine } from '@/lib/types/event-builder';
-import { useCartSummary, formatCurrency } from './useCartSummary';
+import { useCartSummary } from './useCartSummary';
 import { CartLineItemRow } from './CartLineItemRow';
 import { GlassCard } from '../ui/glass-card';
 import { GoldButton } from '../ui/gold-button';
@@ -28,7 +28,7 @@ export function CartSidebar({
   onContinue,
   continueLabel = 'Continue',
 }: CartSidebarProps) {
-  const { lines, itemCount, estimatedTotal } = useCartSummary(state);
+  const { lines, itemCount } = useCartSummary(state);
 
   return (
     <div className="hidden lg:block lg:col-span-4 sticky top-32 space-y-6">
@@ -55,9 +55,8 @@ export function CartSidebar({
         <div className="border-t border-gold-400/40 pt-4 space-y-1">
           <div className="flex justify-between text-xs text-gold-200/80">
             <span>{itemCount} item{itemCount === 1 ? '' : 's'} selected</span>
-            <span className="font-bold text-gold-300 text-sm">{formatCurrency(estimatedTotal)}</span>
           </div>
-          <p className="text-[10px] text-gold-200/60">Estimate only - final pricing confirmed after enquiry.</p>
+          <p className="text-[10px] text-gold-200/60">Final pricing confirmed after enquiry.</p>
         </div>
 
         <GoldButton fullWidth variant="copper" size="md" onClick={onContinue}>

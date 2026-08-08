@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Download, Share2, CheckCircle, Edit3, AlertCircle } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { CatalogCategoryKey } from '@/lib/types/catalog';
-import { getCartLines, getEstimatedTotal, getRequestedExtraLines } from '@/lib/builder/selectors';
+import { getCartLines, getRequestedExtraLines } from '@/lib/builder/selectors';
 import { getMissingRequiredFieldsForSubmit } from '@/lib/builder/validation';
 import { GlassCard } from '@/components/ui/glass-card';
 import { GoldButton } from '@/components/ui/gold-button';
@@ -34,10 +34,6 @@ const CATERING_TIMING_LABELS: Record<string, string> = {
   evening: 'Evening (Dinner menu)',
 };
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 function formatDate(dateStr: string): string {
   if (!dateStr) return 'Not set';
   try {
@@ -56,7 +52,6 @@ interface ReviewCartStepProps {
 export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepProps) {
   const cartLines = getCartLines(state);
   const requestedExtras = getRequestedExtraLines(state);
-  const estimatedTotal = getEstimatedTotal(state);
   const missingRequired = getMissingRequiredFieldsForSubmit(state);
   const { eventDetails } = state;
 
@@ -130,9 +125,8 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
                 </button>
               </div>
               {lines.map((line) => (
-                <div key={line.id} className="flex justify-between text-xs text-maroon-900">
+                <div key={line.id} className="text-xs text-maroon-900">
                   <span>{line.name}{line.quantity > 1 ? ` x${line.quantity}` : ''}</span>
-                  <span className="font-bold">{formatCurrency(line.unitPrice * line.quantity)}</span>
                 </div>
               ))}
             </div>
@@ -192,19 +186,14 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
 
         <div className="space-y-3 text-xs text-maroon-900">
           {requestedExtras.map((line) => (
-            <div key={line.id} className="flex justify-between border-b border-gold-200/60 pb-2 text-amber-800">
+            <div key={line.id} className="border-b border-gold-200/60 pb-2 text-amber-800">
               <span>{line.name} (pending vendor approval)</span>
-              <span className="font-bold">&mdash;</span>
             </div>
           ))}
-          <div className="flex justify-between pt-2 text-sm">
-            <span className="font-bold">Estimated Total</span>
-            <span className="font-bold text-maroon-950">{formatCurrency(estimatedTotal)}</span>
-          </div>
         </div>
 
         <div className="bg-maroon-900 text-ivory p-6 rounded-2xl border-2 border-gold-400 text-center space-y-1">
-          <p className="text-sm font-bold text-gold-300">This Is An Estimate</p>
+          <p className="text-sm font-bold text-gold-300">Ready To Send</p>
           <p className="text-xs text-gold-100/80">
             Send us this package and our team will confirm final pricing and availability.
           </p>

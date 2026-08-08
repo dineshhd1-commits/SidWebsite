@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X, Trash2 } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { CartLine } from '@/lib/types/event-builder';
-import { useCartSummary, formatCurrency } from './useCartSummary';
+import { useCartSummary } from './useCartSummary';
 import { CartLineItemRow } from './CartLineItemRow';
 import { GoldButton } from '../ui/gold-button';
 
@@ -20,7 +20,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ state, open, onClose, onRemove, onClearCart, onContinue, onViewDetails }: CartDrawerProps) {
-  const { lines, requestedExtras, itemCount, estimatedTotal } = useCartSummary(state);
+  const { lines, requestedExtras, itemCount } = useCartSummary(state);
 
   return (
     <AnimatePresence>
@@ -62,12 +62,8 @@ export function CartDrawer({ state, open, onClose, onRemove, onClearCart, onCont
             </div>
 
             <div className="border-t border-gold-400/30 p-5 space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gold-200/80">Estimated Total</span>
-                <span className="font-bold text-gold-300 text-lg">{formatCurrency(estimatedTotal)}</span>
-              </div>
               <p className="text-[10px] text-gold-200/60">
-                This is an estimate. Final pricing is confirmed by our team after your enquiry.
+                Final pricing is confirmed by our team after your enquiry.
               </p>
               <div className="flex gap-2 pt-1">
                 <button

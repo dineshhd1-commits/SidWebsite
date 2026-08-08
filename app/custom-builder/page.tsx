@@ -23,7 +23,7 @@ import { VenueStep } from './steps/VenueStep';
 import { AdditionalServicesStep } from './steps/AdditionalServicesStep';
 import { ReviewCartStep } from './steps/ReviewCartStep';
 import { GoldButton } from '@/components/ui/gold-button';
-import { getCartItemCount, getEstimatedTotal } from '@/lib/builder/selectors';
+import { getCartItemCount } from '@/lib/builder/selectors';
 import { getEventDetailsFieldChecks, getStepStatus } from '@/lib/builder/validation';
 
 const STEP_DEFS: BuilderStepDef[] = [
@@ -289,7 +289,6 @@ function CustomBuilderPageInner() {
         currentStepIndex={currentStepIndex}
         onStepClick={goToStep}
         cartCount={cartItemCount}
-        estimatedTotal={getEstimatedTotal(state)}
         stepStatuses={stepStatuses}
       />
 

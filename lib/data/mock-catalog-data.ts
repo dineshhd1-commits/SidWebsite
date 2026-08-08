@@ -74,8 +74,8 @@ function group(
   return { id, supportedEventTypes, categoryKey, name, defaultMaxSelections, freeIncludedCount, requiresApprovalAfterLimit, approvalMessage, displayOrder, active: true, meals };
 }
 
-/** Event types with a dedicated Breakfast menu - all other event types only see Lunch & Dinner. */
-export const BREAKFAST_EVENT_TYPES = ['wedding', 'engagement', 'reception', 'housewarming', 'traditional_home_function'];
+/** Event types with a dedicated Breakfast menu - now offered for every event type. */
+export const BREAKFAST_EVENT_TYPES = ALL_EVENT_TYPES;
 
 export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   group('dec-stage', ['wedding'], 'decoration', 'Stage Decoration', 2, 1, false, null, 1),

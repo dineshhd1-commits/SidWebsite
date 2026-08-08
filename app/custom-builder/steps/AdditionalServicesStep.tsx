@@ -10,10 +10,6 @@ import { PackageLevelBadge } from '@/components/builder/PackageLevelBadge';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 import { GlassCard } from '@/components/ui/glass-card';
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 interface AdditionalServicesStepProps {
   state: EventBuilderState;
   onAddToCart: (item: CatalogItem) => void;
@@ -64,9 +60,6 @@ export function AdditionalServicesStep({ state, onAddToCart, onRemoveFromCart, o
                     <PackageLevelBadge level={item.packageLevel} />
                   </div>
                   <p className="text-xs text-maroon-700/80 mb-2 line-clamp-2">{item.description}</p>
-                  <p className="text-sm font-bold text-maroon-900">
-                    {formatCurrency(item.price)} <span className="text-[11px] font-normal text-maroon-700/70">/ {item.unit}</span>
-                  </p>
                 </div>
                 <div className="pt-2 flex items-center justify-between border-t border-gold-200">
                   <QuantityStepper

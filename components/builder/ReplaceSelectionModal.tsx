@@ -13,10 +13,6 @@ interface ReplaceSelectionModalProps {
   onCancel: () => void;
 }
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 export function ReplaceSelectionModal({ groupName, pendingItemName, selectedLines, onReplace, onCancel }: ReplaceSelectionModalProps) {
   return (
     <div onClick={onCancel} className="fixed inset-0 z-[80] bg-maroon-950/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -42,7 +38,6 @@ export function ReplaceSelectionModal({ groupName, pendingItemName, selectedLine
             <div key={line.id} className="flex items-center justify-between gap-3 bg-gold-50/70 border border-gold-200 rounded-xl px-4 py-2.5">
               <div className="min-w-0">
                 <p className="text-xs font-bold text-maroon-900 truncate">{line.name}</p>
-                <p className="text-[11px] text-maroon-700/70">{formatCurrency(line.unitPrice)}</p>
               </div>
               <button
                 onClick={() => onReplace(line.id)}

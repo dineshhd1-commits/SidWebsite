@@ -14,12 +14,7 @@ interface ProgressStepperProps {
   currentStepIndex: number;
   onStepClick: (index: number) => void;
   cartCount: number;
-  estimatedTotal: number;
   stepStatuses: StepStatus[];
-}
-
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
 }
 
 const STATUS_DOT_CLASSES: Record<StepStatus, string> = {
@@ -36,7 +31,7 @@ const STATUS_LABELS: Record<StepStatus, string> = {
   pending: 'Pending',
 };
 
-export function ProgressStepper({ steps, currentStepIndex, onStepClick, cartCount, estimatedTotal, stepStatuses }: ProgressStepperProps) {
+export function ProgressStepper({ steps, currentStepIndex, onStepClick, cartCount, stepStatuses }: ProgressStepperProps) {
   return (
     <div className="space-y-3">
       <div className="overflow-x-auto pb-2 scrollbar-thin">
@@ -92,7 +87,6 @@ export function ProgressStepper({ steps, currentStepIndex, onStepClick, cartCoun
           <span className="flex items-center gap-1.5 font-bold">
             <ShoppingBag className="w-3.5 h-3.5" /> {cartCount} item{cartCount === 1 ? '' : 's'}
           </span>
-          <span className="font-bold text-maroon-900">{formatCurrency(estimatedTotal)}</span>
         </span>
       </div>
     </div>

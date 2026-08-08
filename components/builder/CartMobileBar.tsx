@@ -3,7 +3,7 @@
 import React from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
-import { useCartSummary, formatCurrency } from './useCartSummary';
+import { useCartSummary } from './useCartSummary';
 
 interface CartMobileBarProps {
   state: EventBuilderState;
@@ -11,7 +11,7 @@ interface CartMobileBarProps {
 }
 
 export function CartMobileBar({ state, onOpen }: CartMobileBarProps) {
-  const { itemCount, estimatedTotal } = useCartSummary(state);
+  const { itemCount } = useCartSummary(state);
 
   return (
     <button
@@ -23,7 +23,6 @@ export function CartMobileBar({ state, onOpen }: CartMobileBarProps) {
         <ShoppingBag className="w-4 h-4" /> {itemCount} item{itemCount === 1 ? '' : 's'}
       </span>
       <span className="flex items-center gap-2 text-xs font-bold">
-        {formatCurrency(estimatedTotal)}
         <span className="uppercase tracking-wider text-gold-400 underline">View Cart</span>
       </span>
     </button>

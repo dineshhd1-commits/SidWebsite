@@ -16,10 +16,6 @@ import { GoldButton } from '@/components/ui/gold-button';
 import { getLinesByGroup } from '@/lib/builder/selectors';
 import { SITE } from '@/lib/site-config';
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 interface VenueStepProps {
   state: EventBuilderState;
   onAddToCart: (item: CatalogItem) => void;
@@ -141,7 +137,6 @@ export function VenueStep({ state, onAddToCart, onRemoveFromCart, onReplace, onS
                     ))}
                   </div>
                 )}
-                <p className="text-sm font-bold text-maroon-900">{formatCurrency(item.price)} <span className="text-[11px] font-normal text-maroon-700/70">/ {item.unit}</span></p>
               </div>
               <GoldButton
                 size="sm"

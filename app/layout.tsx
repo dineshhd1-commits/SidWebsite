@@ -106,6 +106,19 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
         />
+        {/* Some antivirus/ad-block browser extensions (e.g. Bitdefender's
+            TrafficLight) inject a bis_skin_checked attribute into every
+            element right after the page loads, before React hydrates. React
+            then sees it as a server/client mismatch and logs a hydration
+            warning even though nothing is actually broken. This can't be
+            fixed from app code (it's third-party DOM tampering, not our
+            markup), so this strips the attribute as early as possible and
+            keeps stripping it if the extension re-adds it. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){function c(){document.querySelectorAll('[bis_skin_checked]').forEach(function(el){el.removeAttribute('bis_skin_checked')})}c();new MutationObserver(c).observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['bis_skin_checked']})})();`,
+          }}
+        />
         <EventBuilderProvider>
           <IntroSplash />
           <Navbar />

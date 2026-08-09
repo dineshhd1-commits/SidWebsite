@@ -13,10 +13,19 @@ function mapRow(row: any): GalleryItem {
   };
 }
 
+// Session-lived cache - avoids re-fetching every time the gallery page is
+// revisited in the same session.
+let galleryCache: Promise<GalleryItem[]> | null = null;
+
 /** Reads gallery items from Supabase; falls back to the bundled mock gallery
  * only when Supabase is unconfigured or genuinely returns no rows, so the
  * portfolio page never renders empty while admin content is still being added. */
-export async function getGalleryItems(): Promise<GalleryItem[]> {
+export function getGalleryItems(): Promise<GalleryItem[]> {
+  if (!galleryCache) galleryCache = getGalleryItemsUncached();
+  return galleryCache;
+}
+
+async function getGalleryItemsUncached(): Promise<GalleryItem[]> {
   if (!isSupabaseConfigured()) return MOCK_GALLERY;
   try {
     const { data, error } = await supabase

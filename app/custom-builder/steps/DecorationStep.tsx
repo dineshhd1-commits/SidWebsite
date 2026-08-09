@@ -1,15 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { CatalogGroup, CatalogItem, PackageGroupLimit } from '@/lib/types/catalog';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { getCatalogGroups, getCatalogItems, getPackageGroupLimits } from '@/lib/data/catalog';
 import { canAddToGroup, isGroupLocked } from '@/lib/builder/limits';
 import { getEffectiveGroupLimit, getGroupSelectionCount, getLinesByGroup } from '@/lib/builder/selectors';
 import { CatalogItemCard } from '@/components/builder/CatalogItemCard';
-import { ImageGalleryModal } from '@/components/builder/ImageGalleryModal';
-import { ReplaceSelectionModal } from '@/components/builder/ReplaceSelectionModal';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
+
+// Only rendered once a photo is opened / a selection limit is hit - deferred
+// out of the initial route bundle.
+const ImageGalleryModal = dynamic(() => import('@/components/builder/ImageGalleryModal').then((m) => m.ImageGalleryModal));
+const ReplaceSelectionModal = dynamic(() => import('@/components/builder/ReplaceSelectionModal').then((m) => m.ReplaceSelectionModal));
 
 interface DecorationStepProps {
   state: EventBuilderState;

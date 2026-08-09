@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { CatalogItem } from '../types/catalog';
 import {
   CartLine,
@@ -97,14 +97,14 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [state, isLoaded]);
 
-  const setEventType = (eventTypeId: string) => {
+  const setEventType = useCallback((eventTypeId: string) => {
     setState((prev) => ({ ...DEFAULT_EVENT_BUILDER_STATE, eventDetails: prev.eventDetails, eventTypeId, currentStepIndex: 0 }));
-  };
+  }, []);
 
   /** Switches event type while keeping event details and any cart lines that are
    * still valid for the new event (e.g. a shared Photography item) - removes only
    * the incompatible ones, never a silent full reset. */
-  const changeEventType = async (eventTypeId: string) => {
+  const changeEventType = useCallback(async (eventTypeId: string) => {
     const compatibleIds = await getAllCatalogItemIds(eventTypeId);
     setState((prev) => {
       const cart: Record<string, CartLine> = {};
@@ -124,13 +124,13 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       return { ...prev, eventTypeId, selectedPackageId: null, cart, cateringSelections };
     });
-  };
+  }, []);
 
   /** Applies a package's included items on top of the current cart - never wipes
    * paid_extra/requested_extra lines the customer already picked in other steps.
    * Only lines with origin 'included' are replaced (dropped if no longer part of
    * the new package, replaced/added if they are). */
-  const selectPackage = async (packageId: string) => {
+  const selectPackage = useCallback(async (packageId: string) => {
     const [includedItems, groupLimits] = await Promise.all([
       getPackageIncludedItems(packageId),
       getPackageGroupLimits(packageId),
@@ -143,9 +143,8 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }));
       return;
     }
-    const eventTypeId = state.eventTypeId;
-    if (!eventTypeId) return;
-    const allItems = await getCatalogItems(eventTypeId);
+    if (!state.eventTypeId) return;
+    const allItems = await getCatalogItems(state.eventTypeId);
     const itemsById = new Map(allItems.map((i) => [i.id, i]));
 
     setState((prev) => {
@@ -160,32 +159,32 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return { ...prev, selectedPackageId: packageId, cart };
     });
     void groupLimits; // consumed by step components via getPackageGroupLimits(packageId) directly
-  };
+  }, [state.eventTypeId]);
 
-  const goToStep = (index: number) => {
+  const goToStep = useCallback((index: number) => {
     setState((prev) => ({ ...prev, currentStepIndex: Math.max(0, index) }));
-  };
+  }, []);
 
-  const nextStep = (lastIndex: number) => {
+  const nextStep = useCallback((lastIndex: number) => {
     setState((prev) => ({ ...prev, currentStepIndex: Math.min(prev.currentStepIndex + 1, lastIndex) }));
-  };
+  }, []);
 
-  const prevStep = () => {
+  const prevStep = useCallback(() => {
     setState((prev) => ({ ...prev, currentStepIndex: Math.max(prev.currentStepIndex - 1, 0) }));
-  };
+  }, []);
 
-  const updateEventDetails = (partial: Partial<EventDetails>) => {
+  const updateEventDetails = useCallback((partial: Partial<EventDetails>) => {
     setState((prev) => ({ ...prev, eventDetails: { ...prev.eventDetails, ...partial } }));
-  };
+  }, []);
 
   /** Timing determines which meal (Breakfast/Lunch/Dinner) the menu shows - switching
    * it away from the meal a selection belongs to would leave orphaned selections the
    * user can no longer see or edit, so we drop those instead of hiding them silently. */
-  const setCateringTiming = (timing: CateringTiming) => {
+  const setCateringTiming = useCallback((timing: CateringTiming) => {
     setState((prev) => ({ ...prev, cateringTiming: timing, cateringSelections: {} }));
-  };
+  }, []);
 
-  const toggleCateringMenuItem = (categoryId: string, categoryName: string, itemId: string, itemName: string) => {
+  const toggleCateringMenuItem = useCallback((categoryId: string, categoryName: string, itemId: string, itemName: string) => {
     setState((prev) => {
       const cateringSelections = { ...prev.cateringSelections };
       if (cateringSelections[itemId]) {
@@ -195,9 +194,9 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
       return { ...prev, cateringSelections };
     });
-  };
+  }, []);
 
-  const updateCateringMenuItemQuantity = (itemId: string, quantity: number) => {
+  const updateCateringMenuItemQuantity = useCallback((itemId: string, quantity: number) => {
     setState((prev) => {
       const existing = prev.cateringSelections[itemId];
       if (!existing) return prev;
@@ -208,24 +207,24 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
       return { ...prev, cateringSelections: { ...prev.cateringSelections, [itemId]: { ...existing, quantity } } };
     });
-  };
+  }, []);
 
-  const addToCart = (item: CatalogItem, quantity: number = 1, origin: CartLineOrigin = 'paid_extra') => {
+  const addToCart = useCallback((item: CatalogItem, quantity: number = 1, origin: CartLineOrigin = 'paid_extra') => {
     setState((prev) => ({
       ...prev,
       cart: { ...prev.cart, [item.id]: cartLineFromItem(item, quantity, origin) },
     }));
-  };
+  }, []);
 
-  const removeFromCart = (catalogItemId: string) => {
+  const removeFromCart = useCallback((catalogItemId: string) => {
     setState((prev) => {
       const cart = { ...prev.cart };
       delete cart[catalogItemId];
       return { ...prev, cart };
     });
-  };
+  }, []);
 
-  const updateQuantity = (catalogItemId: string, quantity: number) => {
+  const updateQuantity = useCallback((catalogItemId: string, quantity: number) => {
     setState((prev) => {
       const existing = prev.cart[catalogItemId];
       if (!existing) return prev;
@@ -236,60 +235,79 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
       return { ...prev, cart: { ...prev.cart, [catalogItemId]: { ...existing, quantity } } };
     });
-  };
+  }, []);
 
-  const replaceInCart = (oldCatalogItemId: string, item: CatalogItem, quantity: number = 1, origin: CartLineOrigin = 'paid_extra') => {
+  const replaceInCart = useCallback((oldCatalogItemId: string, item: CatalogItem, quantity: number = 1, origin: CartLineOrigin = 'paid_extra') => {
     setState((prev) => {
       const cart = { ...prev.cart };
       delete cart[oldCatalogItemId];
       cart[item.id] = cartLineFromItem(item, quantity, origin);
       return { ...prev, cart };
     });
-  };
+  }, []);
 
-  const requestExtraApproval = (item: CatalogItem, quantity: number = 1) => {
+  const requestExtraApproval = useCallback((item: CatalogItem, quantity: number = 1) => {
     addToCart(item, quantity, 'requested_extra');
-  };
+  }, [addToCart]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setState((prev) => ({ ...prev, cart: {} }));
-  };
+  }, []);
 
-  const resetBuilder = () => {
+  const resetBuilder = useCallback(() => {
     setState(DEFAULT_EVENT_BUILDER_STATE);
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem(SESSION_STORAGE_KEY);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
-  };
+  }, []);
 
-  return (
-    <EventBuilderContext.Provider
-      value={{
-        state,
-        isLoaded,
-        setEventType,
-        changeEventType,
-        selectPackage,
-        goToStep,
-        nextStep,
-        prevStep,
-        updateEventDetails,
-        setCateringTiming,
-        toggleCateringMenuItem,
-        updateCateringMenuItemQuantity,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        replaceInCart,
-        requestExtraApproval,
-        clearCart,
-        resetBuilder,
-      }}
-    >
-      {children}
-    </EventBuilderContext.Provider>
+  const value = useMemo<EventBuilderContextType>(
+    () => ({
+      state,
+      isLoaded,
+      setEventType,
+      changeEventType,
+      selectPackage,
+      goToStep,
+      nextStep,
+      prevStep,
+      updateEventDetails,
+      setCateringTiming,
+      toggleCateringMenuItem,
+      updateCateringMenuItemQuantity,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      replaceInCart,
+      requestExtraApproval,
+      clearCart,
+      resetBuilder,
+    }),
+    [
+      state,
+      isLoaded,
+      setEventType,
+      changeEventType,
+      selectPackage,
+      goToStep,
+      nextStep,
+      prevStep,
+      updateEventDetails,
+      setCateringTiming,
+      toggleCateringMenuItem,
+      updateCateringMenuItemQuantity,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      replaceInCart,
+      requestExtraApproval,
+      clearCart,
+      resetBuilder,
+    ]
   );
+
+  return <EventBuilderContext.Provider value={value}>{children}</EventBuilderContext.Provider>;
 };
 
 export const useEventBuilder = () => {

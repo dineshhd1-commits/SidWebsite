@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Suspense, useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Palette, Camera, Utensils, Sparkles, CheckCircle, ClipboardList, RefreshCw } from 'lucide-react';
@@ -12,9 +13,13 @@ import { CartSidebar } from '@/components/builder/CartSidebar';
 import { CartMobileBar } from '@/components/builder/CartMobileBar';
 import { CartDrawer } from '@/components/builder/CartDrawer';
 import { EmptyState, LoadingState } from '@/components/builder/EmptyState';
-import { ChangeEventTypeModal } from '@/components/builder/ChangeEventTypeModal';
-import { StepConfirmationModal } from '@/components/builder/StepConfirmationModal';
 import { EventDetailsSummaryCard } from '@/components/builder/EventDetailsSummaryCard';
+
+// These only render after a user action (changing event type / advancing past
+// step 0 with fields missing) - loading them on demand keeps them out of the
+// route's initial JS bundle.
+const ChangeEventTypeModal = dynamic(() => import('@/components/builder/ChangeEventTypeModal').then((m) => m.ChangeEventTypeModal));
+const StepConfirmationModal = dynamic(() => import('@/components/builder/StepConfirmationModal').then((m) => m.StepConfirmationModal));
 import { EventDetailsStep } from './steps/EventDetailsStep';
 import { DecorationStep } from './steps/DecorationStep';
 import { PhotographyStep } from './steps/PhotographyStep';

@@ -14,10 +14,19 @@ function mapRow(row: any): EventType {
   };
 }
 
+// Session-lived cache, same pattern as lib/data/catalog.ts - avoids a repeat
+// network round-trip if the user navigates back to the builder later.
+let eventTypesCache: Promise<EventType[]> | null = null;
+
 /** Reads from Supabase; falls back to local mock event types (matching
  * supabase/seed_event_builder.sql) when the table doesn't exist yet or is
  * genuinely empty, so the builder is reviewable before migrations are run. */
-export async function getEventTypes(): Promise<EventType[]> {
+export function getEventTypes(): Promise<EventType[]> {
+  if (!eventTypesCache) eventTypesCache = getEventTypesUncached();
+  return eventTypesCache;
+}
+
+async function getEventTypesUncached(): Promise<EventType[]> {
   if (!isSupabaseConfigured()) return MOCK_EVENT_TYPES;
   try {
     const { data, error } = await supabase

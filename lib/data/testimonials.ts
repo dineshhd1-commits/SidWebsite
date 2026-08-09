@@ -19,7 +19,16 @@ function mapRow(row: any): TestimonialWithVerification {
   };
 }
 
-export async function getTestimonials(): Promise<TestimonialWithVerification[]> {
+// Session-lived cache - the homepage and /testimonials both call this, so
+// this avoids fetching the same rows twice in one visit.
+let testimonialsCache: Promise<TestimonialWithVerification[]> | null = null;
+
+export function getTestimonials(): Promise<TestimonialWithVerification[]> {
+  if (!testimonialsCache) testimonialsCache = getTestimonialsUncached();
+  return testimonialsCache;
+}
+
+async function getTestimonialsUncached(): Promise<TestimonialWithVerification[]> {
   if (!isSupabaseConfigured()) {
     return MOCK_TESTIMONIALS.map((t) => ({ ...t, isGoogleVerified: true }));
   }

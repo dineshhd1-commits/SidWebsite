@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { ChevronRight, Search, UtensilsCrossed, X } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { CateringMenuCategory, CateringTiming } from '@/lib/types/catering-menu';
 import { getCategoriesForTiming, isBreakfastAvailableForEventType } from '@/lib/data/catering-menu';
 import { GlassCard } from '@/components/ui/glass-card';
 import { EmptyState } from '@/components/builder/EmptyState';
-import { CateringCategoryModal } from '@/components/builder/CateringCategoryModal';
+
+// Only rendered once a category is opened - deferred out of the initial route bundle.
+const CateringCategoryModal = dynamic(() => import('@/components/builder/CateringCategoryModal').then((m) => m.CateringCategoryModal));
 
 interface CateringStepProps {
   state: EventBuilderState;

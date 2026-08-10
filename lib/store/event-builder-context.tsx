@@ -100,19 +100,14 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => ({ ...DEFAULT_EVENT_BUILDER_STATE, eventDetails: prev.eventDetails, eventTypeId, currentStepIndex: 0 }));
   }, []);
 
-  /** Switches event type and starts the build over from scratch: every cart
-   * line, catering selection, catering timing and package choice is cleared and
-   * the wizard returns to step 1, so nothing carries over from the previous
-   * event. The customer's own details (name, phone, email, date, guests,
-   * location) are deliberately kept - those describe the customer, not the
-   * event type, and making them retype it on every switch would be needless. */
+  /** Switches event type and starts the build completely over: every cart line,
+   * catering selection, catering timing, package choice AND all the entered
+   * event details (name, phone, email, date, guest count, location, special
+   * requirements) are wiped, and the wizard returns to step 1. Nothing at all
+   * carries over from the previous event - the only thing kept is the newly
+   * chosen event type itself. */
   const changeEventType = useCallback((eventTypeId: string) => {
-    setState((prev) => ({
-      ...DEFAULT_EVENT_BUILDER_STATE,
-      eventDetails: prev.eventDetails,
-      eventTypeId,
-      currentStepIndex: 0,
-    }));
+    setState({ ...DEFAULT_EVENT_BUILDER_STATE, eventTypeId });
   }, []);
 
   /** Applies a package's included items on top of the current cart - never wipes

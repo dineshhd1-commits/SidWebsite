@@ -26,8 +26,9 @@ export function ChangeEventTypeModal({ newEventTypeName, onContinueAndReset, onK
         <div className="text-center space-y-2">
           <h3 className="font-playfair text-lg font-bold text-maroon-900">Change Event Type?</h3>
           <p className="text-xs text-maroon-700/80">
-            Changing to <strong>{newEventTypeName}</strong> will clear all the services and menu items you have
-            selected so far and start you fresh. Your event details stay saved. Do you want to continue?
+            Changing to <strong>{newEventTypeName}</strong> will start you completely fresh - all the services and
+            menu items you have selected, and the event details you have filled in, will be cleared.
+            Do you want to continue?
           </p>
         </div>
 

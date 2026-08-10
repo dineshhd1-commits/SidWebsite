@@ -139,12 +139,21 @@ function CustomBuilderPageInner() {
   const cartItemCount = getCartItemCount(state);
   const pendingEventType = pendingEventTypeId ? eventTypes.find((et) => et.id === pendingEventTypeId) || null : null;
 
+  // Switching event type wipes the entered event details as well as the cart,
+  // so the confirmation prompt has to cover both - otherwise someone who had
+  // filled in their name/phone/date but not yet picked any service would lose
+  // all of it with no warning.
+  const { date, location, customerName, customerPhone, customerEmail, specialRequirements } = state.eventDetails;
+  const hasEnteredEventDetails = !!(
+    date || location.trim() || customerName.trim() || customerPhone.trim() || customerEmail.trim() || specialRequirements.trim()
+  );
+
   const handleEventTypeChange = (newEventTypeId: string) => {
     if (newEventTypeId === state.eventTypeId) return;
-    if (cartItemCount > 0) {
-      setPendingEventTypeId(newEventTypeId);
-    } else if (!state.eventTypeId) {
+    if (!state.eventTypeId) {
       setEventType(newEventTypeId);
+    } else if (cartItemCount > 0 || hasEnteredEventDetails) {
+      setPendingEventTypeId(newEventTypeId);
     } else {
       changeEventType(newEventTypeId);
     }

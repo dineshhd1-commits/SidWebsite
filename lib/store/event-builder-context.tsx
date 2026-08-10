@@ -10,14 +10,13 @@ import {
   EventDetails,
 } from '../types/event-builder';
 import { CateringTiming } from '../types/catering-menu';
-import { getPackageGroupLimits, getPackageIncludedItems, getCatalogItems, getAllCatalogItemIds } from '../data/catalog';
-import { getCategoriesForTiming } from '../data/catering-menu';
+import { getPackageGroupLimits, getPackageIncludedItems, getCatalogItems } from '../data/catalog';
 
 interface EventBuilderContextType {
   state: EventBuilderState;
   isLoaded: boolean;
   setEventType: (eventTypeId: string) => void;
-  changeEventType: (eventTypeId: string) => Promise<void>;
+  changeEventType: (eventTypeId: string) => void;
   selectPackage: (packageId: string) => Promise<void>;
   goToStep: (index: number) => void;
   nextStep: (lastIndex: number) => void;
@@ -101,29 +100,19 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => ({ ...DEFAULT_EVENT_BUILDER_STATE, eventDetails: prev.eventDetails, eventTypeId, currentStepIndex: 0 }));
   }, []);
 
-  /** Switches event type while keeping event details and any cart lines that are
-   * still valid for the new event (e.g. a shared Photography item) - removes only
-   * the incompatible ones, never a silent full reset. */
-  const changeEventType = useCallback(async (eventTypeId: string) => {
-    const compatibleIds = await getAllCatalogItemIds(eventTypeId);
-    setState((prev) => {
-      const cart: Record<string, CartLine> = {};
-      for (const [id, line] of Object.entries(prev.cart)) {
-        if (compatibleIds.has(id)) cart[id] = line;
-      }
-
-      let cateringSelections = prev.cateringSelections;
-      if (prev.cateringTiming) {
-        const validItemIds = new Set(
-          getCategoriesForTiming(prev.cateringTiming, eventTypeId).flatMap((c) => c.items.map((i) => i.id))
-        );
-        cateringSelections = Object.fromEntries(
-          Object.entries(prev.cateringSelections).filter(([itemId]) => validItemIds.has(itemId))
-        );
-      }
-
-      return { ...prev, eventTypeId, selectedPackageId: null, cart, cateringSelections };
-    });
+  /** Switches event type and starts the build over from scratch: every cart
+   * line, catering selection, catering timing and package choice is cleared and
+   * the wizard returns to step 1, so nothing carries over from the previous
+   * event. The customer's own details (name, phone, email, date, guests,
+   * location) are deliberately kept - those describe the customer, not the
+   * event type, and making them retype it on every switch would be needless. */
+  const changeEventType = useCallback((eventTypeId: string) => {
+    setState((prev) => ({
+      ...DEFAULT_EVENT_BUILDER_STATE,
+      eventDetails: prev.eventDetails,
+      eventTypeId,
+      currentStepIndex: 0,
+    }));
   }, []);
 
   /** Applies a package's included items on top of the current cart - never wipes

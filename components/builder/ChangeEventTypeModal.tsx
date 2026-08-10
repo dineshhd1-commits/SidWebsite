@@ -26,14 +26,14 @@ export function ChangeEventTypeModal({ newEventTypeName, onContinueAndReset, onK
         <div className="text-center space-y-2">
           <h3 className="font-playfair text-lg font-bold text-maroon-900">Change Event Type?</h3>
           <p className="text-xs text-maroon-700/80">
-            Changing to <strong>{newEventTypeName}</strong> may remove services that are not available for the new event.
-            Do you want to continue?
+            Changing to <strong>{newEventTypeName}</strong> will clear all the services and menu items you have
+            selected so far and start you fresh. Your event details stay saved. Do you want to continue?
           </p>
         </div>
 
         <div className="space-y-2">
           <GoldButton variant="gold" size="sm" fullWidth onClick={onContinueAndReset}>
-            Continue and Reset Incompatible Items
+            Continue and Start Fresh
           </GoldButton>
           <GoldButton variant="outline" size="sm" fullWidth onClick={onKeepCurrentEvent}>
             Keep Current Event

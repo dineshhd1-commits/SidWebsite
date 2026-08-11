@@ -10,6 +10,17 @@ interface FieldCheck {
   filled: boolean;
 }
 
+/** Accepted email shape for the event-details form: letters and/or digits only
+ * before the @, and the gmail.com domain - e.g. aditya100@gmail.com. */
+const CUSTOMER_EMAIL_PATTERN = /^[a-zA-Z0-9]+@gmail\.com$/;
+
+/** The email field is optional, so an empty value is fine; anything actually
+ * typed has to match the accepted shape. */
+export function isValidCustomerEmail(email: string): boolean {
+  const trimmed = email.trim();
+  return trimmed.length === 0 || CUSTOMER_EMAIL_PATTERN.test(trimmed);
+}
+
 /** Event Details field completion, split into required vs optional - drives both
  * the step-confirmation modal and the step-status dot for step 0. */
 export function getEventDetailsFieldChecks(state: EventBuilderState): { required: FieldCheck[]; optional: FieldCheck[] } {

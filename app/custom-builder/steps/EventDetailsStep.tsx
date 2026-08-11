@@ -5,6 +5,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { EventDetails } from '@/lib/types/event-builder';
 import { EventType } from '@/lib/types/catalog';
 import { EventTypeSelectField } from '@/components/builder/EventTypeSelectField';
+import { isValidCustomerEmail } from '@/lib/builder/validation';
 
 interface EventDetailsStepProps {
   eventTypes: EventType[];
@@ -21,6 +22,9 @@ function todayISODate(): string {
 }
 
 export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeChange, eventDetails, onChange, autoOpenEventTypeToken }: EventDetailsStepProps) {
+  // Email is optional, so only complain about what has actually been typed.
+  const showEmailError = !isValidCustomerEmail(eventDetails.customerEmail);
+
   return (
     <div className="space-y-6">
       <div className="border-b border-gold-300/40 pb-4">
@@ -113,11 +117,21 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
           <label className="block text-xs font-bold text-maroon-900 mb-1">Email Address (optional)</label>
           <input
             type="email"
-            placeholder="aditya@example.com"
+            placeholder="aditya100@gmail.com"
             value={eventDetails.customerEmail}
             onChange={(e) => onChange({ customerEmail: e.target.value })}
-            className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
+            aria-invalid={showEmailError}
+            className={`w-full bg-white border rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:ring-2 ${
+              showEmailError
+                ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-400/30'
+                : 'border-gold-300 focus:border-gold-500 focus:ring-gold-400/30'
+            }`}
           />
+          {showEmailError && (
+            <p className="text-[11px] text-rose-600 font-bold mt-1">
+              Please enter a valid email like aditya100@gmail.com - letters and numbers only, ending in @gmail.com.
+            </p>
+          )}
         </div>
 
         {/* Row 6: Special Requirements */}

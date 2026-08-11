@@ -72,7 +72,9 @@ ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_
 
 -- 5. Photography / Venue / Additional Services groups ----------------------
 INSERT INTO catalog_groups (id, supported_event_types, category_key, name, default_max_selections, free_included_count, requires_approval_after_limit, approval_message, display_order, active) VALUES
-('photo-services', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'Photography & Videography', NULL, 0, false, NULL, 1, true),
+('photo-deverakarya', ARRAY['wedding'], 'photography', 'Deverakarya', NULL, 0, false, NULL, 1, true),
+('photo-wedding-hall', ARRAY['wedding'], 'photography', 'Wedding Hall', NULL, 0, false, NULL, 2, true),
+('photo-services', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'Photography & Videography', NULL, 0, false, NULL, 3, true),
 ('venue-options', ARRAY['wedding','reception'], 'venue', 'Venue', 1, 0, false, NULL, 1, true),
 ('addon-services', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'additional_services', 'Additional Services', NULL, 0, false, NULL, 1, true)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
@@ -85,25 +87,35 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('dec-platinum', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'decoration', 'dec-package', 'Platinum Decoration', 'Our most opulent decor - imported florals, crystal and brass accents, and a fully bespoke design consultation.', '', '[]', 'platinum', 150000, 'package', 'single', 3)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
--- 9. Photography Catalog Items - not offered for Wedding events; scoped to where
--- they genuinely apply otherwise. Candid Photography/Videography, Cinematic
--- Wedding Film, Pre-Wedding Shoot, Drone Shoot, LED Wall, Wedding Album,
--- Traditional Photography/Videography and Instant Photography/Prints have all
--- been discontinued and are seeded with an empty supported_event_types so they
--- stay inactive everywhere.
+-- 9. Photography Catalog Items.
+-- Wedding: split into Deverakarya (Traditional/Candid Photography,
+-- Traditional/Candid Videography) and Wedding Hall (Drone, LED Wall, Live
+-- Streaming). Every other event type: a single shared photo-services group
+-- with exactly five options - Traditional/Candid Photography, Traditional/
+-- Candid Videography and Drone (photo-other-* ids below).
+-- Event Photography, Event Videography, the non-wedding Live Streaming,
+-- Cinematic Wedding Film, Pre-Wedding Shoot, Wedding Album and Instant
+-- Photography/Prints have all been discontinued and are seeded with an empty
+-- supported_event_types so they stay inactive everywhere.
 INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, metadata, display_order) VALUES
-('photo-event-photo', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Photography', 'Full-day event photography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 1),
-('photo-event-video', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Event Videography', 'Full-day event videography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 2),
-('photo-candid-photo', ARRAY[]::text[], 'photography', 'photo-services', 'Candid Photography', 'Storytelling candid photography coverage.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 3),
-('photo-candid-video', ARRAY[]::text[], 'photography', 'photo-services', 'Candid Videography', 'Cinematic candid videography coverage.', '', '[]', 'gold', 40000, 'per event', 'team_size', '{"teamSize": 2}', 4),
+('photo-event-photo', ARRAY[]::text[], 'photography', 'photo-services', 'Event Photography', 'Full-day event photography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 1),
+('photo-event-video', ARRAY[]::text[], 'photography', 'photo-services', 'Event Videography', 'Full-day event videography coverage.', '', '[]', 'standard', 25000, 'per event', 'team_size', '{"teamSize": 2}', 2),
+('photo-candid-photo', ARRAY['wedding'], 'photography', 'photo-deverakarya', 'Candid Photography', 'Storytelling candid photography coverage of the Deverakarya.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 2),
+('photo-candid-video', ARRAY['wedding'], 'photography', 'photo-deverakarya', 'Candid Videography', 'Cinematic candid videography coverage of the Deverakarya.', '', '[]', 'gold', 40000, 'per event', 'team_size', '{"teamSize": 2}', 4),
 ('photo-cinematic', ARRAY[]::text[], 'photography', 'photo-services', 'Cinematic Wedding Film', 'Full cinematic wedding film with same-day teaser.', '', '[]', 'premium', 60000, 'package', 'single', '{}', 5),
 ('photo-pre-wedding', ARRAY[]::text[], 'photography', 'photo-services', 'Pre-Wedding Shoot', 'Outdoor or studio pre-wedding photo and video shoot.', '', '[]', 'premium', 30000, 'package', 'single', '{}', 6),
-('photo-drone', ARRAY[]::text[], 'photography', 'photo-services', 'Drone Shoot', '4K aerial drone coverage of the venue and event.', '', '[]', 'gold', 20000, 'per event', 'single', '{}', 7),
-('photo-led-wall', ARRAY[]::text[], 'photography', 'photo-services', 'LED Wall', 'Live LED screen stage backdrop display.', '', '[]', 'premium', 30000, 'per event', 'single', '{}', 8),
-('photo-live-streaming', ARRAY['corporate_event','reception'], 'photography', 'photo-services', 'Live Streaming', 'Live stream the event for remote guests.', '', '[]', 'premium', 15000, 'per event', 'single', '{}', 9),
-('photo-traditional-photo', ARRAY[]::text[], 'photography', 'photo-services', 'Traditional Photography', 'Classic posed traditional photography for rituals and ceremonies.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 10),
-('photo-traditional-video', ARRAY[]::text[], 'photography', 'photo-services', 'Traditional Videography', 'Classic full-ceremony traditional videography.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 11),
+('photo-drone', ARRAY['wedding'], 'photography', 'photo-wedding-hall', 'Drone', '4K aerial drone coverage of the venue and celebrations.', '', '[]', 'gold', 20000, 'per event', 'single', '{}', 1),
+('photo-led-wall', ARRAY['wedding'], 'photography', 'photo-wedding-hall', 'LED Wall', 'Live LED screen stage backdrop display.', '', '[]', 'premium', 30000, 'per event', 'single', '{}', 2),
+('photo-wedding-live-streaming', ARRAY['wedding'], 'photography', 'photo-wedding-hall', 'Live Streaming', 'Live stream the wedding for guests who cannot attend.', '', '[]', 'premium', 15000, 'per event', 'single', '{}', 3),
+('photo-live-streaming', ARRAY[]::text[], 'photography', 'photo-services', 'Live Streaming', 'Live stream the event for remote guests.', '', '[]', 'premium', 15000, 'per event', 'single', '{}', 9),
+('photo-traditional-photo', ARRAY['wedding'], 'photography', 'photo-deverakarya', 'Traditional Photography', 'Classic posed traditional photography for the Deverakarya rituals.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 1),
+('photo-traditional-video', ARRAY['wedding'], 'photography', 'photo-deverakarya', 'Traditional Videography', 'Classic full-ceremony traditional videography of the Deverakarya.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 3),
 ('photo-album', ARRAY[]::text[], 'photography', 'photo-services', 'Wedding Album', 'Premium non-tearable printed photo album.', '', '[]', 'standard', 8000, 'unit', 'stepper', '{}', 12),
+('photo-other-traditional-photo', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Traditional Photography', 'Classic posed traditional photography coverage.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 14),
+('photo-other-candid-photo', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Candid Photography', 'Storytelling candid photography coverage.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 15),
+('photo-other-traditional-video', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Traditional Videography', 'Classic full-event traditional videography.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 16),
+('photo-other-candid-video', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Candid Videography', 'Cinematic candid videography coverage.', '', '[]', 'gold', 40000, 'per event', 'team_size', '{"teamSize": 2}', 17),
+('photo-other-drone', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','other_events'], 'photography', 'photo-services', 'Drone', '4K aerial drone coverage of the venue and celebrations.', '', '[]', 'gold', 20000, 'per event', 'single', '{}', 18),
 ('photo-instant', ARRAY[]::text[], 'photography', 'photo-services', 'Instant Photography / Prints', 'On-the-spot instant photo printing booth for guests.', '', '[]', 'standard', 12000, 'per event', 'single', '{}', 13)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 

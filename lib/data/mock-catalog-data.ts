@@ -78,7 +78,9 @@ function group(
 /** Event types with a dedicated Breakfast menu - now offered for every event type. */
 export const BREAKFAST_EVENT_TYPES = ALL_EVENT_TYPES;
 
-/** Photography & Videography is not offered for Wedding events. */
+/** Wedding photography is split into its own two groups (Deverakarya and
+ * Wedding Hall) below, so the shared Photography & Videography group covers
+ * every event type except Wedding. */
 export const PHOTOGRAPHY_EVENT_TYPES = ALL_EVENT_TYPES.filter((t) => t !== 'wedding');
 
 export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
@@ -101,8 +103,12 @@ export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   group('cat-breakfast', BREAKFAST_EVENT_TYPES, 'catering', 'Breakfast', null, 0, false, null, 13, ['breakfast']),
   group('cat-snacks', ALL_EVENT_TYPES, 'catering', 'Snacks', null, 0, false, null, 14, ['lunch', 'dinner']),
 
-  // Photography is not offered for Wedding events - see PHOTOGRAPHY_EVENT_TYPES below.
-  group('photo-services', PHOTOGRAPHY_EVENT_TYPES, 'photography', 'Photography & Videography', null, 0, false, null, 1),
+  // Wedding photography is organised by where the coverage happens: Deverakarya
+  // (the home/ritual ceremony) and Wedding Hall. Every other event type uses the
+  // single shared group instead - see PHOTOGRAPHY_EVENT_TYPES above.
+  group('photo-deverakarya', ['wedding'], 'photography', 'Deverakarya', null, 0, false, null, 1),
+  group('photo-wedding-hall', ['wedding'], 'photography', 'Wedding Hall', null, 0, false, null, 2),
+  group('photo-services', PHOTOGRAPHY_EVENT_TYPES, 'photography', 'Photography & Videography', null, 0, false, null, 3),
   group('addon-services', ALL_EVENT_TYPES, 'additional_services', 'Additional Services', null, 0, false, null, 1),
 ];
 
@@ -124,10 +130,25 @@ export const MOCK_CATALOG_ITEMS: CatalogItem[] = [
   item({ id: 'dec-gold', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'decoration', groupId: 'dec-package', name: 'Gold Decoration', description: 'Premium themed decor with layered floral arrangements, upgraded lighting and richer drapery.', imageUrl: '', packageLevel: 'gold', price: 85000, unit: 'package', displayOrder: 2 }),
   item({ id: 'dec-platinum', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'decoration', groupId: 'dec-package', name: 'Platinum Decoration', description: 'Our most opulent decor - imported florals, crystal and brass accents, and a fully bespoke design consultation.', imageUrl: '', packageLevel: 'platinum', price: 150000, unit: 'package', displayOrder: 3 }),
 
-  // Photography (not offered for Wedding events - see PHOTOGRAPHY_EVENT_TYPES)
-  item({ id: 'photo-event-photo', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Event Photography', description: 'Full-day event photography coverage.', imageUrl: '', packageLevel: 'standard', price: 25000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 1 }),
-  item({ id: 'photo-event-video', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Event Videography', description: 'Full-day event videography coverage.', imageUrl: '', packageLevel: 'standard', price: 25000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 2 }),
-  item({ id: 'photo-live-streaming', supportedEventTypes: ['corporate_event', 'reception'], categoryKey: 'photography', groupId: 'photo-services', name: 'Live Streaming', description: 'Live stream the event for remote guests.', imageUrl: '', packageLevel: 'premium', price: 15000, unit: 'per event', displayOrder: 3 }),
+  // Wedding photography - Deverakarya (home / ritual ceremony coverage)
+  item({ id: 'photo-traditional-photo', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-deverakarya', name: 'Traditional Photography', description: 'Classic posed traditional photography for the Deverakarya rituals.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 1 }),
+  item({ id: 'photo-candid-photo', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-deverakarya', name: 'Candid Photography', description: 'Storytelling candid photography coverage of the Deverakarya.', imageUrl: '', packageLevel: 'gold', price: 35000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 2 }),
+  item({ id: 'photo-traditional-video', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-deverakarya', name: 'Traditional Videography', description: 'Classic full-ceremony traditional videography of the Deverakarya.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 3 }),
+  item({ id: 'photo-candid-video', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-deverakarya', name: 'Candid Videography', description: 'Cinematic candid videography coverage of the Deverakarya.', imageUrl: '', packageLevel: 'gold', price: 40000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 4 }),
+
+  // Wedding photography - Wedding Hall (venue coverage and screens)
+  item({ id: 'photo-drone', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-wedding-hall', name: 'Drone', description: '4K aerial drone coverage of the venue and celebrations.', imageUrl: '', packageLevel: 'gold', price: 20000, unit: 'per event', displayOrder: 1 }),
+  item({ id: 'photo-led-wall', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-wedding-hall', name: 'LED Wall', description: 'Live LED screen stage backdrop display.', imageUrl: '', packageLevel: 'premium', price: 30000, unit: 'per event', displayOrder: 2 }),
+  item({ id: 'photo-wedding-live-streaming', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-wedding-hall', name: 'Live Streaming', description: 'Live stream the wedding for guests who cannot attend.', imageUrl: '', packageLevel: 'premium', price: 15000, unit: 'per event', displayOrder: 3 }),
+
+  // Photography for every other (non-Wedding) event type - single shared
+  // group, exactly five options: Traditional/Candid Photography, Traditional/
+  // Candid Videography and Drone.
+  item({ id: 'photo-other-traditional-photo', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Traditional Photography', description: 'Classic posed traditional photography coverage.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 1 }),
+  item({ id: 'photo-other-candid-photo', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Candid Photography', description: 'Storytelling candid photography coverage.', imageUrl: '', packageLevel: 'gold', price: 35000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 2 }),
+  item({ id: 'photo-other-traditional-video', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Traditional Videography', description: 'Classic full-event traditional videography.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 3 }),
+  item({ id: 'photo-other-candid-video', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Candid Videography', description: 'Cinematic candid videography coverage.', imageUrl: '', packageLevel: 'gold', price: 40000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 4 }),
+  item({ id: 'photo-other-drone', supportedEventTypes: PHOTOGRAPHY_EVENT_TYPES, categoryKey: 'photography', groupId: 'photo-services', name: 'Drone', description: '4K aerial drone coverage of the venue and celebrations.', imageUrl: '', packageLevel: 'gold', price: 20000, unit: 'per event', displayOrder: 5 }),
 
   // Catering - Wedding menu (unchanged, wedding-only)
   item({ id: 'cater-wd-01', supportedEventTypes: ['wedding'], categoryKey: 'catering', groupId: 'cat-welcome-drinks', name: 'Tender Coconut Water', description: 'Fresh tender coconut water welcome drink.', imageUrl: '', packageLevel: 'normal', price: 40, unit: 'per guest', displayOrder: 1 }),

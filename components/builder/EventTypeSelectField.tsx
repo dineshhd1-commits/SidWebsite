@@ -8,9 +8,12 @@ interface EventTypeSelectFieldProps {
   eventTypes: EventType[];
   value: string | null;
   onChange: (eventTypeId: string) => void;
+  /** Incremented by the parent to pop this dropdown open (used by the
+   * "Change Event Type" shortcut). Any change to the number opens it. */
+  autoOpenToken?: number;
 }
 
-export function EventTypeSelectField({ eventTypes, value, onChange }: EventTypeSelectFieldProps) {
+export function EventTypeSelectField({ eventTypes, value, onChange, autoOpenToken = 0 }: EventTypeSelectFieldProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -23,6 +26,14 @@ export function EventTypeSelectField({ eventTypes, value, onChange }: EventTypeS
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Open (and scroll to) the picker when the parent asks. Skipped on the
+  // initial render so the dropdown isn't open when the page first loads.
+  useEffect(() => {
+    if (!autoOpenToken) return;
+    setOpen(true);
+    containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [autoOpenToken]);
 
   const selected = eventTypes.find((et) => et.id === value) || null;
 

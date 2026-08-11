@@ -92,6 +92,9 @@ function CustomBuilderPageInner() {
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [packagePreloaded, setPackagePreloaded] = useState(false);
   const [pendingEventTypeId, setPendingEventTypeId] = useState<string | null>(null);
+  // Bumped by the "Change Event Type" shortcut so the picker on step 1 opens
+  // itself - without this the button looks dead when you are already on step 1.
+  const [eventTypePickerToken, setEventTypePickerToken] = useState(0);
   const [showStepConfirmation, setShowStepConfirmation] = useState(false);
 
   useEffect(() => {
@@ -187,6 +190,7 @@ function CustomBuilderPageInner() {
           onEventTypeChange={handleEventTypeChange}
           eventDetails={state.eventDetails}
           onChange={updateEventDetails}
+          autoOpenEventTypeToken={eventTypePickerToken}
         />
       );
     }
@@ -281,7 +285,10 @@ function CustomBuilderPageInner() {
             Selected Event: {selectedEventType.name}
           </span>
           <button
-            onClick={() => goToStep(0)}
+            onClick={() => {
+              goToStep(0);
+              setEventTypePickerToken((t) => t + 1);
+            }}
             className="inline-flex items-center gap-1.5 font-bold text-gold-700 hover:text-maroon-900 underline underline-offset-2"
           >
             <RefreshCw className="w-3.5 h-3.5" /> Change Event Type

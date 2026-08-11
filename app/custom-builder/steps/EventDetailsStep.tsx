@@ -12,13 +12,15 @@ interface EventDetailsStepProps {
   onEventTypeChange: (eventTypeId: string) => void;
   eventDetails: EventDetails;
   onChange: (partial: Partial<EventDetails>) => void;
+  /** Bumped by the page's "Change Event Type" shortcut to open the picker. */
+  autoOpenEventTypeToken?: number;
 }
 
 function todayISODate(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeChange, eventDetails, onChange }: EventDetailsStepProps) {
+export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeChange, eventDetails, onChange, autoOpenEventTypeToken }: EventDetailsStepProps) {
   return (
     <div className="space-y-6">
       <div className="border-b border-gold-300/40 pb-4">
@@ -34,7 +36,12 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
           <label className="block text-xs font-bold text-maroon-900 mb-1">
             What Type of Event Are You Planning? <span className="text-rose-600">*</span>
           </label>
-          <EventTypeSelectField eventTypes={eventTypes} value={selectedEventTypeId} onChange={onEventTypeChange} />
+          <EventTypeSelectField
+            eventTypes={eventTypes}
+            value={selectedEventTypeId}
+            onChange={onEventTypeChange}
+            autoOpenToken={autoOpenEventTypeToken}
+          />
         </div>
 
         {/* Row 2: Event Date | Number of Guests */}

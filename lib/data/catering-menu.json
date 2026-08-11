@@ -638,6 +638,11 @@
       ]
     },
     {
+      "id": "desserts",
+      "name": "Desserts",
+      "items": []
+    },
+    {
       "id": "paan",
       "name": "Paan",
       "items": [
@@ -662,8 +667,8 @@
   ],
   "mealCategoryIds": {
     "breakfast": ["breakfast"],
-    "lunch": ["welcome_drinks", "chats", "snacks", "soups", "starters", "kosumbri", "pickles", "dry_palya", "roti", "gravies", "pulao_biryani", "bajji_bonda", "chatpata_papad", "curd_raitha", "sambar", "rasam", "ice_cream", "paan"],
-    "dinner": ["welcome_drinks", "chats", "snacks", "soups", "starters", "kosumbri", "pickles", "dry_palya", "roti", "gravies", "pulao_biryani", "bajji_bonda", "chatpata_papad", "curd_raitha", "sambar", "rasam", "ice_cream", "paan"]
+    "lunch": ["welcome_drinks", "chats", "snacks", "soups", "starters", "kosumbri", "pickles", "dry_palya", "roti", "gravies", "pulao_biryani", "bajji_bonda", "chatpata_papad", "curd_raitha", "sambar", "rasam", "ice_cream", "desserts", "paan"],
+    "dinner": ["welcome_drinks", "chats", "snacks", "soups", "starters", "kosumbri", "pickles", "dry_palya", "roti", "gravies", "pulao_biryani", "bajji_bonda", "chatpata_papad", "curd_raitha", "sambar", "rasam", "ice_cream", "desserts", "paan"]
   },
   "breakfastEventTypes": ["wedding", "engagement", "reception", "birthday", "anniversary", "get_together", "bachelor_party", "housewarming", "haldi_function", "corporate_event", "traditional_home_function", "other_events"]
 }

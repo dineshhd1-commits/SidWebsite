@@ -19,9 +19,9 @@ interface CateringStepProps {
 }
 
 const TIMING_OPTIONS: { id: CateringTiming; label: string; hint: string }[] = [
+  { id: 'evening', label: 'Evening', hint: 'Dinner menu' },
   { id: 'morning', label: 'Morning', hint: 'Breakfast menu' },
   { id: 'afternoon', label: 'Afternoon', hint: 'Lunch menu' },
-  { id: 'evening', label: 'Evening', hint: 'Dinner menu' },
 ];
 
 export function CateringStep({ state, onSetTiming, onToggleItem }: CateringStepProps) {

@@ -50,11 +50,12 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-maroon-900 mb-1">Number of Guests</label>
+            <label className="block text-xs font-bold text-maroon-900 mb-1">Number of Guests <span className="text-rose-600">*</span></label>
             <input
               type="number"
               min={1}
-              value={eventDetails.guestCount}
+              placeholder="e.g. 300"
+              value={eventDetails.guestCount || ''}
               onChange={(e) => onChange({ guestCount: Math.max(0, parseInt(e.target.value) || 0) })}
               className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
             />

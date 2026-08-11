@@ -38,7 +38,10 @@ export interface EventBuilderState {
 
 export const DEFAULT_EVENT_DETAILS: EventDetails = {
   date: '',
-  guestCount: 300,
+  // 0 means "not entered yet" - the field renders empty for it, so a fresh
+  // build (and a build restarted by changing event type) starts blank rather
+  // than pre-filled with a number the customer never chose.
+  guestCount: 0,
   location: '',
   customerName: '',
   customerPhone: '',

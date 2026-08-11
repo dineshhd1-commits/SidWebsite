@@ -850,6 +850,28 @@
       "paan"
     ]
   },
+  "categoryLimits": {
+    "welcome_drinks": 3,
+    "chats": 2,
+    "breakfast": 2,
+    "hot_beverages": 2,
+    "soups": 1,
+    "starters": 3,
+    "kosumbri": 2,
+    "pickles": 1,
+    "dry_palya": 1,
+    "roti": 3,
+    "gravies": 3,
+    "pulao_biryani": 1,
+    "bajji_bonda": 1,
+    "chatpata_papad": 2,
+    "curd_raitha": 2,
+    "sambar": 2,
+    "rasam": 1,
+    "ice_cream": 2,
+    "paan": 1,
+    "desserts": 3
+  },
   "breakfastEventTypes": [
     "wedding",
     "engagement",

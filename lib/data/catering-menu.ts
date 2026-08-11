@@ -16,6 +16,8 @@ export const TIMING_TO_MEAL: Record<CateringTiming, CateringMealPeriod> = {
 
 export const BREAKFAST_EVENT_TYPES: string[] = rawMenu.breakfastEventTypes;
 
+const CATEGORY_LIMITS: Record<string, number> = rawMenu.categoryLimits || {};
+
 const ALL_CATEGORIES: CateringMenuCategory[] = rawMenu.categories.map((category) => ({
   id: category.id,
   name: category.name,
@@ -23,6 +25,7 @@ const ALL_CATEGORIES: CateringMenuCategory[] = rawMenu.categories.map((category)
     const id = `${category.id}__${slugify(name)}`;
     return { id, name, imageUrl: `/catering/${id}.jpg` };
   }),
+  maxSelections: CATEGORY_LIMITS[category.id],
 }));
 
 const CATEGORY_BY_ID = new Map(ALL_CATEGORIES.map((c) => [c.id, c]));

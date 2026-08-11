@@ -11,6 +11,7 @@ import {
 } from '../types/event-builder';
 import { CateringTiming } from '../types/catering-menu';
 import { getPackageGroupLimits, getPackageIncludedItems, getCatalogItems } from '../data/catalog';
+import { getCateringCategoryById } from '../data/catering-menu';
 
 interface EventBuilderContextType {
   state: EventBuilderState;
@@ -168,12 +169,22 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => ({ ...prev, cateringTiming: timing, cateringSelections: {} }));
   }, []);
 
+  /** Enforced here too (not just disabled in the UI) so the cap holds no
+   * matter which entry point calls this. Deselecting is always allowed;
+   * selecting a new item is blocked once the category's maxSelections is
+   * already met - a no-op rather than an error, since the UI's own disabled
+   * state is what explains why to the customer. */
   const toggleCateringMenuItem = useCallback((categoryId: string, categoryName: string, itemId: string, itemName: string) => {
     setState((prev) => {
       const cateringSelections = { ...prev.cateringSelections };
       if (cateringSelections[itemId]) {
         delete cateringSelections[itemId];
       } else {
+        const maxSelections = getCateringCategoryById(categoryId)?.maxSelections;
+        if (maxSelections !== undefined) {
+          const currentCount = Object.values(prev.cateringSelections).filter((s) => s.categoryId === categoryId).length;
+          if (currentCount >= maxSelections) return prev;
+        }
         cateringSelections[itemId] = { categoryId, categoryName, itemId, itemName, quantity: 1 };
       }
       return { ...prev, cateringSelections };

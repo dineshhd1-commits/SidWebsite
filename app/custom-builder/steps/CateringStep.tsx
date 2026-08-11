@@ -140,6 +140,9 @@ export function CateringStep({ state, onSetTiming, onToggleItem }: CateringStepP
                           <p className="font-playfair text-sm font-bold text-maroon-900 truncate">{category.name}</p>
                           <p className="text-[10px] text-maroon-700/70">
                             {category.items.length} dish{category.items.length === 1 ? '' : 'es'}
+                            {category.maxSelections !== undefined && (
+                              <span className="ml-1">(max {category.maxSelections})</span>
+                            )}
                             {selectedInCategory > 0 && (
                               <span className="ml-2 text-gold-700 font-bold uppercase tracking-wide bg-gold-100 border border-gold-300 rounded-full px-1.5 py-0.5">
                                 {selectedInCategory} selected

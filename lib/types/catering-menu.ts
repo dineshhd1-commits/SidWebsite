@@ -14,6 +14,9 @@ export interface CateringMenuCategory {
   id: string;
   name: string;
   items: CateringMenuItem[];
+  /** Cap on how many dishes can be selected from this category. Undefined
+   * means no cap (e.g. Snacks). */
+  maxSelections?: number;
 }
 
 export interface CateringSelectionLine {

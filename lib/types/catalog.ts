@@ -10,6 +10,8 @@ export type EventTypeSlug =
   | 'haldi_function'
   | 'corporate_event'
   | 'traditional_home_function'
+  | 'shrimantha_karya'
+  | 'half_saree_function'
   | 'other_events';
 
 export interface EventType {

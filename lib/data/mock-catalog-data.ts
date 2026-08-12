@@ -6,7 +6,7 @@
  * rows, the data-access functions in this folder prefer Supabase and only fall back
  * to this file when a table is missing or genuinely empty.
  *
- * All 12 event types are catalog-ready with real Indian event-planning categories
+ * All 14 event types are catalog-ready with real Indian event-planning categories
  * (Griha Pravesh, Haldi, Seemantham/Naming ceremony, Nadaswara, Purohit services,
  * etc.), researched against how Indian event planners actually structure these
  * services. Universal services (Photography, DJ/Music, Catering, Return Gifts,

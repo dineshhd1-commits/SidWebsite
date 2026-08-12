@@ -6,6 +6,14 @@ import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
 import { TraditionalBorder } from '../ui/traditional-border';
 import { BrandMark } from '../ui/brand-mark';
 import { SITE } from '@/lib/site-config';
+import { MOCK_EVENT_TYPES } from '@/lib/data/mock-catalog-data';
+
+// Derived from the canonical event-type list rather than hardcoded, so the
+// footer can't drift out of sync with the events actually offered in the
+// builder the way it had (it used to list Destination Weddings, Photography &
+// Videography and Maternity Photoshoot, none of which are event types, while
+// missing eight that are).
+const FOOTER_EVENT_TYPES = MOCK_EVENT_TYPES.filter((eventType) => eventType.active);
 
 export const Footer: React.FC = () => {
   return (
@@ -36,15 +44,13 @@ export const Footer: React.FC = () => {
               Our Services
             </h4>
             <ul className="space-y-2.5 text-xs text-silk-200/80 font-sans">
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Wedding Planning</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Destination Weddings</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Corporate Events</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Birthday Celebrations</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Engagement Ceremonies</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Naming Ceremonies</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Housewarming Events</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Photography & Videography</Link></li>
-              <li><Link href="/services" className="hover:text-gold-300 transition-colors">Maternity Photoshoot</Link></li>
+              {FOOTER_EVENT_TYPES.map((eventType) => (
+                <li key={eventType.id}>
+                  <Link href="/services" className="hover:text-gold-300 transition-colors">
+                    {eventType.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

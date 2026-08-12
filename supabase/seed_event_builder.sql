@@ -2,7 +2,7 @@
 -- Separate from the original seed.sql (kept as-is; its 4 legacy wedding_packages rows
 -- and 8 legacy services rows are placeholder demo data, not remapped into this model).
 --
--- All 12 event types are catalog-ready with real Indian event-planning categories
+-- All 14 event types are catalog-ready with real Indian event-planning categories
 -- (Griha Pravesh, Haldi, Seemantham/Naming ceremony, Nadaswara, Purohit services,
 -- etc.), researched against how Indian event planners actually structure these
 -- services. Universal services (Photography, DJ/Music, Catering, Return Gifts,

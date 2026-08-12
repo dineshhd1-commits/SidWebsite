@@ -805,7 +805,8 @@
   ],
   "mealCategoryIds": {
     "breakfast": [
-      "breakfast"
+      "breakfast",
+      "hot_beverages"
     ],
     "lunch": [
       "welcome_drinks",

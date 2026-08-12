@@ -45,7 +45,10 @@ function buildCateringMenuBlock(state: EventBuilderState): string {
     byCategory.set(line.categoryName, [...(byCategory.get(line.categoryName) || []), entry]);
   }
 
-  const timingLine = state.cateringTiming ? `*Catering Timing:* ${CATERING_TIMING_LABELS[state.cateringTiming]}\n` : '';
+  const cateringGuests = state.cateringTiming ? state.cateringGuestCounts[state.cateringTiming] : undefined;
+  const timingLine = state.cateringTiming
+    ? `*Catering Timing:* ${CATERING_TIMING_LABELS[state.cateringTiming]}${cateringGuests ? ` (${cateringGuests} guests)` : ''}\n`
+    : '';
   const menuLines = Array.from(byCategory.entries())
     .map(([label, items]) => `*${label}:* ${items.join(', ')}`)
     .join('\n');

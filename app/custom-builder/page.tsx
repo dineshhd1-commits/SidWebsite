@@ -77,6 +77,7 @@ function CustomBuilderPageInner() {
     prevStep,
     updateEventDetails,
     setCateringTiming,
+    setCateringGuestCount,
     toggleCateringMenuItem,
     updateCateringMenuItemQuantity,
     addToCart,
@@ -239,6 +240,7 @@ function CustomBuilderPageInner() {
           <CateringStep
             state={state}
             onSetTiming={setCateringTiming}
+            onSetGuestCount={setCateringGuestCount}
             onToggleItem={toggleCateringMenuItem}
           />
         );

@@ -15,6 +15,7 @@ const CateringCategoryModal = dynamic(() => import('@/components/builder/Caterin
 interface CateringStepProps {
   state: EventBuilderState;
   onSetTiming: (timing: CateringTiming) => void;
+  onSetGuestCount: (timing: CateringTiming, guestCount: number) => void;
   onToggleItem: (categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
 }
 
@@ -24,7 +25,7 @@ const TIMING_OPTIONS: { id: CateringTiming; label: string; hint: string }[] = [
   { id: 'afternoon', label: 'Afternoon', hint: 'Lunch menu' },
 ];
 
-export function CateringStep({ state, onSetTiming, onToggleItem }: CateringStepProps) {
+export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem }: CateringStepProps) {
   const [search, setSearch] = useState('');
   const [modalCategoryId, setModalCategoryId] = useState<string | null>(null);
 
@@ -95,6 +96,32 @@ export function CateringStep({ state, onSetTiming, onToggleItem }: CateringStepP
           <p className="text-[11px] text-rose-600 font-bold">Please select a catering timing to continue.</p>
         )}
       </div>
+
+      {state.cateringTiming && (
+        <div className="space-y-1.5 max-w-xs">
+          <label htmlFor="catering-guest-count" className="block text-xs font-bold text-maroon-900">
+            Guests for {TIMING_OPTIONS.find((o) => o.id === state.cateringTiming)?.label}{' '}
+            <span className="font-medium text-maroon-700/70">
+              ({TIMING_OPTIONS.find((o) => o.id === state.cateringTiming)?.hint.toLowerCase()})
+            </span>
+          </label>
+          <input
+            id="catering-guest-count"
+            type="number"
+            min={0}
+            inputMode="numeric"
+            placeholder="e.g. 300"
+            value={state.cateringGuestCounts[state.cateringTiming] || ''}
+            onChange={(e) =>
+              onSetGuestCount(state.cateringTiming!, Math.max(0, parseInt(e.target.value) || 0))
+            }
+            className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
+          />
+          <p className="text-[10px] text-maroon-700/70">
+            How many guests are expected for this meal. Each meal is counted separately.
+          </p>
+        </div>
+      )}
 
       {state.cateringTiming && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">

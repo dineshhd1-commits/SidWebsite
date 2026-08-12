@@ -148,6 +148,12 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
             <p className="text-xs text-maroon-900">
               <span className="font-semibold text-maroon-700/60">Timing: </span>
               {CATERING_TIMING_LABELS[state.cateringTiming]}
+              {!!state.cateringGuestCounts[state.cateringTiming] && (
+                <>
+                  <span className="font-semibold text-maroon-700/60"> · Guests: </span>
+                  {state.cateringGuestCounts[state.cateringTiming]}
+                </>
+              )}
             </p>
           )}
           {cateringSelections.length === 0 ? (

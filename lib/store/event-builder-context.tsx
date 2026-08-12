@@ -24,6 +24,7 @@ interface EventBuilderContextType {
   prevStep: () => void;
   updateEventDetails: (partial: Partial<EventDetails>) => void;
   setCateringTiming: (timing: CateringTiming) => void;
+  setCateringGuestCount: (timing: CateringTiming, guestCount: number) => void;
   toggleCateringMenuItem: (categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
   updateCateringMenuItemQuantity: (itemId: string, quantity: number) => void;
   addToCart: (item: CatalogItem, quantity?: number, origin?: CartLineOrigin) => void;
@@ -48,6 +49,7 @@ function mergeWithDefaultState(parsed: any): EventBuilderState {
     eventDetails: { ...DEFAULT_EVENT_BUILDER_STATE.eventDetails, ...(parsed.eventDetails || {}) },
     cart: parsed.cart || {},
     cateringSelections: parsed.cateringSelections || {},
+    cateringGuestCounts: parsed.cateringGuestCounts || {},
   };
 }
 
@@ -169,6 +171,15 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => ({ ...prev, cateringTiming: timing, cateringSelections: {} }));
   }, []);
 
+  /** Guest count is kept per meal timing, so a number entered for one meal
+   * survives switching to another and back. */
+  const setCateringGuestCount = useCallback((timing: CateringTiming, guestCount: number) => {
+    setState((prev) => ({
+      ...prev,
+      cateringGuestCounts: { ...prev.cateringGuestCounts, [timing]: Math.max(0, guestCount) },
+    }));
+  }, []);
+
   /** Enforced here too (not just disabled in the UI) so the cap holds no
    * matter which entry point calls this. Deselecting is always allowed;
    * selecting a new item is blocked once the category's maxSelections is
@@ -269,6 +280,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       prevStep,
       updateEventDetails,
       setCateringTiming,
+      setCateringGuestCount,
       toggleCateringMenuItem,
       updateCateringMenuItemQuantity,
       addToCart,
@@ -290,6 +302,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       prevStep,
       updateEventDetails,
       setCateringTiming,
+      setCateringGuestCount,
       toggleCateringMenuItem,
       updateCateringMenuItemQuantity,
       addToCart,

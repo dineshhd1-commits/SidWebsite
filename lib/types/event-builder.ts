@@ -34,6 +34,10 @@ export interface EventBuilderState {
   cart: Record<string, CartLine>;
   cateringTiming: CateringTiming | null;
   cateringSelections: Record<string, CateringSelectionLine>;
+  /** How many guests are expected for each meal, kept per timing so switching
+   * between Morning/Afternoon/Evening doesn't lose a number already entered.
+   * 0 or missing means "not entered yet". */
+  cateringGuestCounts: Partial<Record<CateringTiming, number>>;
 }
 
 export const DEFAULT_EVENT_DETAILS: EventDetails = {
@@ -57,4 +61,5 @@ export const DEFAULT_EVENT_BUILDER_STATE: EventBuilderState = {
   cart: {},
   cateringTiming: null,
   cateringSelections: {},
+  cateringGuestCounts: {},
 };

@@ -172,7 +172,7 @@ export function generateQuotationHTML(
           <strong>Date:</strong> ${dateStr}<br />
           <strong>Client:</strong> ${customerName}<br />
           <strong>Guests:</strong> ${state.eventDetails.guestCount}
-          ${state.cateringTiming ? `<br /><strong>Catering Timing:</strong> ${CATERING_TIMING_LABELS[state.cateringTiming]}` : ''}
+          ${state.cateringTiming ? `<br /><strong>Catering Timing:</strong> ${CATERING_TIMING_LABELS[state.cateringTiming]}${state.cateringGuestCounts[state.cateringTiming] ? ` (${state.cateringGuestCounts[state.cateringTiming]} guests)` : ''}` : ''}
         </div>
       </div>
 

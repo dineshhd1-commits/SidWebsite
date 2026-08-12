@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CatalogItem } from '@/lib/types/catalog';
-import { PackageLevelBadge } from './PackageLevelBadge';
 import { GoldButton } from '../ui/gold-button';
 
 interface ImageGalleryModalProps {
@@ -76,7 +75,6 @@ export function ImageGalleryModal({ item, isSelected, isLocked, onClose, onSelec
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h3 className="font-playfair text-xl font-bold text-gold-300">{item.name}</h3>
-              <PackageLevelBadge level={item.packageLevel} />
             </div>
             <p className="text-xs text-gold-100/80 max-w-lg">{item.description}</p>
           </div>

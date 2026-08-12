@@ -63,6 +63,10 @@ export function getFriendlyMissingFieldMessage(fieldKey: string): string {
   return messages[fieldKey] || 'This detail is still missing.';
 }
 
+/** Steps the customer can skip entirely without leaving the build looking
+ * incomplete. */
+const OPTIONAL_STEP_CATEGORIES = new Set<CatalogCategoryKey>(['photography', 'additional_services']);
+
 const STEP_CATEGORY_KEYS: (CatalogCategoryKey | null)[] = [
   null, // Event Details - handled separately
   'decoration',
@@ -91,5 +95,8 @@ export function getStepStatus(state: EventBuilderState, stepIndex: number, lastI
   const hasItemsInCategory = getCartLines(state).some((line) => line.categoryKey === categoryKey);
   const hasCateringSelections = categoryKey === 'catering' && Object.keys(state.cateringSelections).length > 0;
   if (hasItemsInCategory || hasCateringSelections) return 'completed';
+  // Optional steps stay neutral when skipped instead of sitting on "In Progress"
+  // forever, which reads as an unfinished requirement.
+  if (OPTIONAL_STEP_CATEGORIES.has(categoryKey)) return 'not_started';
   return state.currentStepIndex > stepIndex ? 'in_progress' : 'not_started';
 }

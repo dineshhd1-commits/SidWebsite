@@ -6,7 +6,6 @@ import { EventBuilderState } from '@/lib/types/event-builder';
 import { getCatalogGroups, getCatalogItems } from '@/lib/data/catalog';
 import { CatalogItemCard } from '@/components/builder/CatalogItemCard';
 import { QuantityStepper } from '@/components/builder/QuantityStepper';
-import { PackageLevelBadge } from '@/components/builder/PackageLevelBadge';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 import { GlassCard } from '@/components/ui/glass-card';
 
@@ -56,7 +55,6 @@ export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdate
           <div>
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-playfair text-lg font-bold text-maroon-900">{item.name}</h3>
-              <PackageLevelBadge level={item.packageLevel} />
             </div>
             <p className="text-xs text-maroon-700/80 mb-2 line-clamp-2">{item.description}</p>
           </div>
@@ -94,8 +92,13 @@ export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdate
   return (
     <div className="space-y-6">
       <div className="border-b border-gold-300/40 pb-4">
-        <h2 className="font-playfair text-2xl font-bold text-maroon-900">Step 3: Photography & Videography</h2>
-        <p className="text-xs text-maroon-700/80">Select as many compatible services as you need - no limit here.</p>
+        <h2 className="font-playfair text-2xl font-bold text-maroon-900">
+          Step 3: Photography &amp; Videography{' '}
+          <span className="text-sm font-sans font-bold text-maroon-700/60">(Optional)</span>
+        </h2>
+        <p className="text-xs text-maroon-700/80">
+          Select as many compatible services as you need - no limit here. You can skip this step if you don&apos;t need coverage.
+        </p>
       </div>
 
       {showGroupHeadings ? (

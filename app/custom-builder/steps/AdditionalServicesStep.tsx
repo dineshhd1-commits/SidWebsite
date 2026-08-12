@@ -6,7 +6,6 @@ import { EventBuilderState } from '@/lib/types/event-builder';
 import { getCatalogItems } from '@/lib/data/catalog';
 import { CatalogItemCard } from '@/components/builder/CatalogItemCard';
 import { QuantityStepper } from '@/components/builder/QuantityStepper';
-import { PackageLevelBadge } from '@/components/builder/PackageLevelBadge';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 import { GlassCard } from '@/components/ui/glass-card';
 
@@ -57,7 +56,6 @@ export function AdditionalServicesStep({ state, onAddToCart, onRemoveFromCart, o
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-playfair text-lg font-bold text-maroon-900">{item.name}</h3>
-                    <PackageLevelBadge level={item.packageLevel} />
                   </div>
                   <p className="text-xs text-maroon-700/80 mb-2 line-clamp-2">{item.description}</p>
                 </div>

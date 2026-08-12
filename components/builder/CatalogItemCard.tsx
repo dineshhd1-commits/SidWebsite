@@ -4,7 +4,6 @@ import React from 'react';
 import Image from 'next/image';
 import { Lock, Check, Images, ImageOff } from 'lucide-react';
 import { CatalogItem } from '@/lib/types/catalog';
-import { PackageLevelBadge } from './PackageLevelBadge';
 import { GlassCard } from '../ui/glass-card';
 import { GoldButton } from '../ui/gold-button';
 
@@ -58,7 +57,6 @@ export function CatalogItemCard({ item, isSelected, isLocked, onSelect, onOpenGa
       <div>
         <div className="flex items-center gap-2 mb-1">
           <h3 className="font-playfair text-lg font-bold text-maroon-900">{item.name}</h3>
-          <PackageLevelBadge level={item.packageLevel} />
         </div>
         <p className="text-xs text-maroon-700/80 mb-2 line-clamp-2">{item.description}</p>
       </div>

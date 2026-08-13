@@ -102,10 +102,20 @@ function CustomBuilderPageInner() {
     getEventTypes().then(setEventTypes);
   }, []);
 
-  // "Customize This Package" from /packages links here with ?package=<id> - preload it once.
+  // /packages links here with ?event=<id> to start a build for that event type,
+  // or ?package=<id> to preload a standard package. Applied once each.
   useEffect(() => {
+    if (packagePreloaded || !isLoaded) return;
+
+    const eventTypeId = searchParams?.get('event');
+    if (eventTypeId) {
+      if (state.eventTypeId !== eventTypeId) setEventType(eventTypeId);
+      setPackagePreloaded(true);
+      return;
+    }
+
     const packageId = searchParams?.get('package');
-    if (packageId && !packagePreloaded && isLoaded) {
+    if (packageId) {
       if (!state.eventTypeId) setEventType('wedding');
       selectPackage(packageId);
       setPackagePreloaded(true);

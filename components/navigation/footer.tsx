@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
               Explore
             </h4>
             <ul className="space-y-2.5 text-xs text-silk-200/80 font-sans">
-              <li><Link href="/packages" className="hover:text-gold-300 transition-colors">Wedding Packages</Link></li>
+              <li><Link href="/packages" className="hover:text-gold-300 transition-colors">Events We Plan</Link></li>
               <li><Link href="/custom-builder" className="hover:text-gold-300 transition-colors">Custom Package Builder</Link></li>
               <li><Link href="/gallery" className="hover:text-gold-300 transition-colors">Portfolio & Gallery</Link></li>
               <li><Link href="/testimonials" className="hover:text-gold-300 transition-colors">Client Reviews</Link></li>

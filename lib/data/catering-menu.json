@@ -791,16 +791,6 @@
         "Magai Paan",
         "Madras Paan"
       ]
-    },
-    {
-      "id": "snacks",
-      "name": "Snacks",
-      "items": [
-        "Assorted Namkeen Platter",
-        "Veg Samosa Platter",
-        "Bread Pakora Counter",
-        "Evening Tea & Biscuits"
-      ]
     }
   ],
   "mealCategoryIds": {
@@ -811,7 +801,6 @@
     "lunch": [
       "welcome_drinks",
       "chats",
-      "snacks",
       "soups",
       "starters",
       "kosumbri",
@@ -832,7 +821,6 @@
     "dinner": [
       "welcome_drinks",
       "chats",
-      "snacks",
       "soups",
       "starters",
       "kosumbri",

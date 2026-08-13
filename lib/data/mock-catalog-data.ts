@@ -103,7 +103,6 @@ export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   group('cat-special-items', ['wedding'], 'catering', 'Special Items', null, 0, false, null, 11, ['lunch', 'dinner']),
   group('cat-general', ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'], 'catering', 'Catering', 1, 1, false, null, 12, ['lunch', 'dinner']),
   group('cat-breakfast', BREAKFAST_EVENT_TYPES, 'catering', 'Breakfast', null, 0, false, null, 13, ['breakfast']),
-  group('cat-snacks', ALL_EVENT_TYPES, 'catering', 'Snacks', null, 0, false, null, 14, ['lunch', 'dinner']),
 
   // Wedding photography is organised by where the coverage happens: Deverakarya
   // (the home/ritual ceremony) and Wedding Hall. Every other event type uses the
@@ -191,10 +190,6 @@ export const MOCK_CATALOG_ITEMS: CatalogItem[] = [
   item({ id: 'cater-bfast-05', supportedEventTypes: BREAKFAST_EVENT_TYPES, categoryKey: 'catering', groupId: 'cat-breakfast', name: 'Breakfast Filter Coffee & Tea', description: 'Freshly brewed South Indian filter coffee and tea service.', imageUrl: '', packageLevel: 'normal', price: 25, unit: 'per guest', displayOrder: 5 }),
 
   // Catering - Snacks (available under both Lunch and Dinner, for every event type)
-  item({ id: 'cater-snack-01', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'catering', groupId: 'cat-snacks', name: 'Assorted Namkeen Platter', description: 'Mixed savoury namkeen platter served between meal courses.', imageUrl: '', packageLevel: 'normal', price: 35, unit: 'per guest', displayOrder: 1 }),
-  item({ id: 'cater-snack-02', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'catering', groupId: 'cat-snacks', name: 'Veg Samosa Platter', description: 'Crisp vegetable samosas served with mint and tamarind chutney.', imageUrl: '', packageLevel: 'normal', price: 40, unit: 'per guest', displayOrder: 2 }),
-  item({ id: 'cater-snack-03', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'catering', groupId: 'cat-snacks', name: 'Bread Pakora Counter', description: 'Live-fried bread pakora snack counter.', imageUrl: '', packageLevel: 'standard', price: 50, unit: 'per guest', displayOrder: 3 }),
-  item({ id: 'cater-snack-04', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'catering', groupId: 'cat-snacks', name: 'Evening Tea & Biscuits', description: 'Tea, coffee and assorted biscuits service.', imageUrl: '', packageLevel: 'normal', price: 20, unit: 'per guest', displayOrder: 4 }),
 
 
   // Additional Services - Wedding

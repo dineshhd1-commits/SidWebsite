@@ -350,80 +350,51 @@ export interface BusinessOffering {
   id: string;
   title: string;
   description: string;
-  iconKey: 'heart' | 'plane' | 'briefcase' | 'cake' | 'gem' | 'baby' | 'home' | 'palette' | 'camera';
-  imageUrl: string;
+  iconKey: 'camera' | 'palette' | 'utensils' | 'makeup' | 'purohit' | 'music';
+  /** Optional - services without a verified photo render an icon card instead
+   * of borrowing a stock image that doesn't actually depict the service. */
+  imageUrl?: string;
 }
 
 export const BUSINESS_OFFERINGS: BusinessOffering[] = [
   {
-    id: 'wedding-planning',
-    title: 'Wedding Planning',
-    description: 'End-to-end planning that helps us craft weddings reflecting your unique love story.',
-    iconKey: 'heart',
-    imageUrl: '/sid-party29.jpeg',
-  },
-  {
-    id: 'destination-weddings',
-    title: 'Destination Weddings',
-    description: 'Full logistics and decor for destination celebrations in Goa, Coorg and Mysore.',
-    iconKey: 'plane',
-    imageUrl: '/wedding_destination_1_20251028.jpg',
-  },
-  {
-    id: 'corporate-events',
-    title: 'Corporate Events',
-    description: 'Conferences, product launches and award ceremonies, planned and run on schedule.',
-    iconKey: 'briefcase',
-    imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'birthday-celebrations',
-    title: 'Birthday Celebrations',
-    description: 'Themed parties with custom décor for every age and milestone.',
-    iconKey: 'cake',
-    imageUrl: '/WhatsApp Image 2026-07-26 at 4.47.07 PM.jpeg',
-  },
-  {
-    id: 'engagement-ceremonies',
-    title: 'Engagement Ceremonies',
-    description: 'Floral arrangements, stage design and lighting for the ring ceremony.',
-    iconKey: 'gem',
-    imageUrl: '/indian-traditional-engagement-ceremony-exchanging-wedding-rings-bride-s-hands-henna-bangles-placing-ring-groom-s-450303546.webp',
-  },
-  {
-    id: 'naming-ceremonies',
-    title: 'Naming Ceremonies',
-    description: 'Traditional Namakarana rituals set up with a modern, elegant touch.',
-    iconKey: 'baby',
-    imageUrl: '/WhatsApp Image 2026-07-26 at 4.45.52 PM.jpeg',
-  },
-  {
-    id: 'housewarming-events',
-    title: 'Housewarming Events',
-    description: 'Griha Pravesh ceremonies handled from rituals to guest hospitality.',
-    iconKey: 'home',
-    imageUrl: '/WhatsApp Image 2026-07-26 at 4.47.13 PM.jpeg',
-  },
-  {
-    id: 'event-decoration',
-    title: 'Event Decoration',
-    description: 'Home decoration, mandap and wedding hall highlights - entrance, stage, floral and lighting design.',
-    iconKey: 'palette',
-    imageUrl: '/WhatsApp Image 2026-07-26 at 4.47.06 PM (1).jpeg',
-  },
-  {
-    id: 'photography-videography',
-    title: 'Photography & Videography',
-    description: 'Pre-wedding shoots and full wedding day coverage - candid photography, drone footage, teasers and cinematic films.',
+    id: 'photography',
+    title: 'Photography',
+    description: 'Traditional and candid photography and videography, drone coverage, LED wall and live streaming.',
     iconKey: 'camera',
     imageUrl: '/photography-videography-collage.jpg',
   },
   {
-    id: 'maternity-photoshoot',
-    title: 'Maternity Photoshoot',
-    description: 'One-day indoor or outdoor maternity photoshoot with professional photography, a premium album and complimentary refreshments.',
-    iconKey: 'baby',
-    imageUrl: '/sid-party1.jpeg',
+    id: 'decoration',
+    title: 'Decoration',
+    description: 'Stage, mandap, entrance and home decor in Silver, Gold and Platinum tiers with floral and lighting design.',
+    iconKey: 'palette',
+    imageUrl: '/sid-party29.jpeg',
+  },
+  {
+    id: 'catering',
+    title: 'Catering',
+    description: 'Full South Indian menus for breakfast, lunch and dinner - from welcome drinks and starters to desserts and paan.',
+    iconKey: 'utensils',
+    imageUrl: '/onam-sadhya-lunch-menu-1.webp',
+  },
+  {
+    id: 'makeup',
+    title: 'Makeup',
+    description: 'Bridal and groom makeup, HD and airbrush styling, hair and saree draping by professional artists.',
+    iconKey: 'makeup',
+  },
+  {
+    id: 'purohit',
+    title: 'Purohit',
+    description: 'Experienced purohit for all rituals, complete samagri arrangement and muhurtham guidance.',
+    iconKey: 'purohit',
+  },
+  {
+    id: 'sound-and-music',
+    title: 'Sound & Music',
+    description: 'DJ, live music, PA and sound systems, and traditional Nadaswaram ensembles for every function.',
+    iconKey: 'music',
   },
 ];
 

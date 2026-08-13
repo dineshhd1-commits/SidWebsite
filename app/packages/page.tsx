@@ -20,10 +20,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   additional_services: 'Additional Services',
 };
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 interface PackageWithBreakdown extends PackageDefinition {
   breakdown: Record<string, string[]>;
 }
@@ -64,7 +60,6 @@ export default function PackagesPage() {
 
   const comparisonMatrix = [
     { feature: 'Guest Capacity', values: (packages || []).map((p) => `${p.guestCapacity} guests`) },
-    { feature: 'Starting Price', values: (packages || []).map((p) => formatCurrency(p.basePrice)) },
   ];
 
   return (
@@ -163,9 +158,9 @@ export default function PackagesPage() {
                 <p className="text-xs text-maroon-700/80 mb-4">{pkg.description}</p>
 
                 <div className="bg-maroon-900 text-ivory p-4 rounded-xl mb-6 border border-gold-400/40">
-                  <span className="text-[11px] text-gold-300 uppercase block font-semibold">Starting Price</span>
-                  <span className="text-2xl font-bold font-heading text-gold-400">{formatCurrency(pkg.basePrice)}</span>
-                  <span className="text-[11px] text-gold-200/70 block mt-0.5">Up to {pkg.guestCapacity} guests &middot; final quote confirmed after enquiry</span>
+                  <span className="text-[11px] text-gold-300 uppercase block font-semibold">Guest Capacity</span>
+                  <span className="text-2xl font-bold font-heading text-gold-400">Up to {pkg.guestCapacity}</span>
+                  <span className="text-[11px] text-gold-200/70 block mt-0.5">Pricing confirmed after enquiry</span>
                 </div>
 
                 {Object.keys(pkg.breakdown).length > 0 && (

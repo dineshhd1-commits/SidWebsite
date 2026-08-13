@@ -37,7 +37,6 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { CountdownTimer } from '@/components/ui/countdown-timer';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
-import { BUSINESS_OFFERINGS, BusinessOffering } from '@/lib/mock-data';
 import { SITE, SITE_STATS, getWhatsAppUrl } from '@/lib/site-config';
 import { getTestimonials, TestimonialWithVerification } from '@/lib/data/testimonials';
 
@@ -76,17 +75,6 @@ export default function HomePage() {
   ];
   const stats = SITE_STATS.map((s, i) => ({ ...s, icon: statIcons[i] }));
 
-  const offeringIcons: Record<BusinessOffering['iconKey'], React.ReactNode> = {
-    heart: <Heart className="w-5 h-5" />,
-    plane: <Plane className="w-5 h-5" />,
-    briefcase: <Briefcase className="w-5 h-5" />,
-    cake: <Cake className="w-5 h-5" />,
-    gem: <Gem className="w-5 h-5" />,
-    baby: <Baby className="w-5 h-5" />,
-    home: <HomeIcon className="w-5 h-5" />,
-    palette: <Palette className="w-5 h-5" />,
-    camera: <Camera className="w-5 h-5" />,
-  };
 
   const whyChooseUs = [
     { title: 'End-to-End Planning', desc: 'From the first consultation to cleanup, one team manages the whole event.' },

@@ -2,14 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Download, Share2, CheckCircle, Edit3, AlertCircle } from 'lucide-react';
+import { Share2, CheckCircle, Edit3, AlertCircle } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { CatalogCategoryKey } from '@/lib/types/catalog';
 import { getCartLines, getRequestedExtraLines } from '@/lib/builder/selectors';
 import { getMissingRequiredFieldsForSubmit } from '@/lib/builder/validation';
 import { GlassCard } from '@/components/ui/glass-card';
 import { GoldButton } from '@/components/ui/gold-button';
-import { downloadQuotationPDF } from '@/lib/pdf-generator';
 import { getWhatsAppShareUrl } from '@/lib/whatsapp';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -213,16 +212,7 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
           </div>
         )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-          <GoldButton
-            variant="copper"
-            size="sm"
-            onClick={() => downloadQuotationPDF(quoteId, state)}
-            icon={<Download className="w-4 h-4" />}
-          >
-            Download PDF
-          </GoldButton>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <a href={getWhatsAppShareUrl(quoteId, state)} target="_blank" rel="noopener noreferrer" className="w-full">
             <GoldButton variant="dark" size="sm" fullWidth icon={<Share2 className="w-4 h-4" />}>
               WhatsApp Inquiry

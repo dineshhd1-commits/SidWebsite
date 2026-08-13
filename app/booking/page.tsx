@@ -20,10 +20,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   additional_services: 'Additional Services',
 };
 
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 export default function BookingPage() {
   const router = useRouter();
   const { state } = useEventBuilder();
@@ -243,10 +239,6 @@ export default function BookingPage() {
                   </div>
                 ))
               )}
-              <div className="flex justify-between border-t border-gold-400/30 pt-2 mt-2">
-                <span className="font-bold">Estimated Total:</span>
-                <span className="font-bold text-gold-300">{formatCurrency(estimatedTotal)}</span>
-              </div>
             </div>
 
             <div className="bg-maroon-950 p-4 rounded-xl border border-gold-400/30 space-y-2 text-[11px] text-gold-200">

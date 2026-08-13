@@ -1,5 +1,5 @@
 import { EventBuilderState } from './types/event-builder';
-import { getCartLines, getEstimatedTotal, getRequestedExtraLines } from './builder/selectors';
+import { getCartLines, getRequestedExtraLines } from './builder/selectors';
 
 const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
@@ -14,10 +14,6 @@ const CATERING_TIMING_LABELS: Record<string, string> = {
   afternoon: 'Afternoon (Lunch menu)',
   evening: 'Evening (Dinner menu)',
 };
-
-function formatCurrency(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
 
 function buildSelectionsBlock(state: EventBuilderState): string {
   const lines = getCartLines(state).filter((l) => l.origin !== 'requested_extra');
@@ -66,8 +62,6 @@ Namaste! I built a Custom Event Package on *SID Events*.
 ${buildSelectionsBlock(state)}
 ${buildCateringMenuBlock(state)}${requestedExtras.length > 0 ? `\n*Pending Approval Requests:* ${requestedExtras.map((l) => l.name).join(', ')}` : ''}
 
-*Estimated Total:* ${formatCurrency(getEstimatedTotal(state))}
-
 I would like to receive a detailed quote for this package and check date availability. Please guide me with the next steps!
   `.trim();
 
@@ -104,8 +98,6 @@ ${formData.notes ? `*Special Notes:* ${formData.notes}\n` : ''}
 *Guest Capacity:* ${state.eventDetails.guestCount} Guests
 ${buildSelectionsBlock(state)}
 ${buildCateringMenuBlock(state)}${requestedExtras.length > 0 ? `\n*Pending Approval Requests:* ${requestedExtras.map((l) => l.name).join(', ')}` : ''}
-
-*Estimated Total:* ${formatCurrency(getEstimatedTotal(state))}
 
 Please send me the customized price quotation and confirm date availability!
   `.trim();

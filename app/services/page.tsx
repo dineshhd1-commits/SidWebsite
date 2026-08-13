@@ -3,22 +3,19 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, Plane, Briefcase, Cake, Gem, Baby, Home, Palette, Camera, ArrowRight } from 'lucide-react';
+import { Palette, Camera, UtensilsCrossed, Sparkles, Flame, Music, ArrowRight } from 'lucide-react';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { GoldButton } from '@/components/ui/gold-button';
 import { BUSINESS_OFFERINGS, BusinessOffering } from '@/lib/mock-data';
 import { getWhatsAppUrl } from '@/lib/site-config';
 
 const ICONS: Record<BusinessOffering['iconKey'], React.ReactNode> = {
-  heart: <Heart className="w-6 h-6" />,
-  plane: <Plane className="w-6 h-6" />,
-  briefcase: <Briefcase className="w-6 h-6" />,
-  cake: <Cake className="w-6 h-6" />,
-  gem: <Gem className="w-6 h-6" />,
-  baby: <Baby className="w-6 h-6" />,
-  home: <Home className="w-6 h-6" />,
-  palette: <Palette className="w-6 h-6" />,
-  camera: <Camera className="w-6 h-6" />,
+  camera: <Camera className="w-10 h-10" />,
+  palette: <Palette className="w-10 h-10" />,
+  utensils: <UtensilsCrossed className="w-10 h-10" />,
+  makeup: <Sparkles className="w-10 h-10" />,
+  purohit: <Flame className="w-10 h-10" />,
+  music: <Music className="w-10 h-10" />,
 };
 
 export default function ServicesPage() {
@@ -61,8 +58,16 @@ export default function ServicesPage() {
               className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative h-48 w-full">
-                <Image src={offering.imageUrl} alt={offering.title} fill sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/20 via-transparent to-transparent" />
+                {offering.imageUrl ? (
+                  <>
+                    <Image src={offering.imageUrl} alt={offering.title} fill sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/20 via-transparent to-transparent" />
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gold-100 border-b border-gold-200 text-gold-700/70">
+                    {ICONS[offering.iconKey]}
+                  </div>
+                )}
               </div>
               <div className="p-6 space-y-2 flex-1 flex flex-col justify-between">
                 <div>

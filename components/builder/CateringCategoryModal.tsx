@@ -15,7 +15,7 @@ function DishCardImage({ src, alt }: { src: string; alt: string }) {
 
   if (failed) {
     return (
-      <div className="w-full h-28 sm:h-32 rounded-t-xl bg-gold-100 border-b border-gold-200 flex flex-col items-center justify-center gap-1.5 text-gold-600/70">
+      <div className="w-full h-[7.5rem] sm:h-[8.5rem] rounded-t-xl bg-gold-100 border-b border-gold-200 flex flex-col items-center justify-center gap-1.5 text-gold-600/70">
         <UtensilsCrossed className="w-6 h-6" />
         <span className="text-[9px] font-bold uppercase tracking-wider">Photo coming soon</span>
       </div>
@@ -23,13 +23,13 @@ function DishCardImage({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-    <div className="relative w-full h-28 sm:h-32 rounded-t-xl overflow-hidden bg-gold-50">
+    <div className="relative w-full h-[7.5rem] sm:h-[8.5rem] rounded-t-xl overflow-hidden bg-gold-50">
       <Image
         src={src}
         alt={alt}
         fill
-        sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-        className="object-cover transition-transform duration-300 group-hover:scale-105"
+        sizes="(min-width: 640px) 25vw, 50vw"
+        className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
         onError={() => setFailed(true)}
       />
     </div>
@@ -162,7 +162,7 @@ export function CateringCategoryModal({
           {visibleItems.length === 0 ? (
             <p className="text-sm text-maroon-700/70 text-center py-10">No dishes match your search.</p>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {visibleItems.map((item) => {
                 const isSelected = selectedItemIds.has(item.id);
                 const isLocked = limitReached && !isSelected;
@@ -180,7 +180,7 @@ export function CateringCategoryModal({
                         onToggleItem(category.id, category.name, item.id, item.name);
                       }
                     }}
-                    className={`group text-left rounded-xl border overflow-hidden transition-all ${
+                    className={`group text-left w-[calc(100%+2px)] rounded-xl border overflow-hidden transition-all ${
                       isLocked
                         ? 'border-gold-200 bg-gold-50/50 opacity-50 cursor-not-allowed'
                         : 'cursor-pointer hover:shadow-lg hover:-translate-y-0.5'

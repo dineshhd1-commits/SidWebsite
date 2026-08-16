@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X } from 'lucide-react';
+import { ChevronDown, Sparkles, X } from 'lucide-react';
 import {
   DECORATION_CATEGORIES,
   getDecorationPhotoById,
@@ -12,6 +12,7 @@ import {
 } from '@/lib/data/decoration-inspiration';
 
 const RECOMMENDATION_COUNT = 8;
+const INITIAL_VISIBLE_COUNT = 12;
 
 /** Pinterest/Amazon-style "browse and discover" gallery for the client's real
  * decoration photos. Purely an inspiration/browsing aid - it doesn't touch
@@ -19,9 +20,19 @@ const RECOMMENDATION_COUNT = 8;
 export function DecorationDiscovery() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
   const selectedPanelRef = useRef<HTMLDivElement>(null);
 
-  const browseItems = useMemo(() => getDecorationPhotosByCategory(activeCategory), [activeCategory]);
+  const allBrowseItems = useMemo(() => getDecorationPhotosByCategory(activeCategory), [activeCategory]);
+  const browseItems = allBrowseItems.slice(0, visibleCount);
+  const hasMore = allBrowseItems.length > browseItems.length;
+
+  // Reset how many photos are shown whenever the category filter changes,
+  // so switching categories doesn't leave a huge grid expanded.
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
+  }, [activeCategory]);
+
   const selected = selectedId ? getDecorationPhotoById(selectedId) : null;
   const similar = useMemo(
     () => (selectedId ? getSimilarDecorationPhotos(selectedId, RECOMMENDATION_COUNT) : []),
@@ -103,6 +114,19 @@ export function DecorationDiscovery() {
           </motion.button>
         ))}
       </div>
+
+      {hasMore && (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((c) => c + INITIAL_VISIBLE_COUNT)}
+            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest border-2 border-gold-400 text-maroon-800 hover:bg-gold-100/60 transition-colors"
+          >
+            Show More Photos ({allBrowseItems.length - browseItems.length} left)
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Selected decoration + Similar Decorations */}
       <AnimatePresence mode="wait">

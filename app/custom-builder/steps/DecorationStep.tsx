@@ -8,6 +8,7 @@ import { getCatalogGroups, getCatalogItems, getPackageGroupLimits } from '@/lib/
 import { canAddToGroup, isGroupLocked } from '@/lib/builder/limits';
 import { getEffectiveGroupLimit, getGroupSelectionCount, getLinesByGroup } from '@/lib/builder/selectors';
 import { CatalogItemCard } from '@/components/builder/CatalogItemCard';
+import { DecorationDiscovery } from '@/components/builder/DecorationDiscovery';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 
 // Only rendered once a photo is opened / a selection limit is hit - deferred
@@ -125,6 +126,10 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
           })}
         </div>
       )}
+
+      <div className="border-t border-gold-300/40 pt-6">
+        <DecorationDiscovery />
+      </div>
 
       {galleryItem && (
         <ImageGalleryModal

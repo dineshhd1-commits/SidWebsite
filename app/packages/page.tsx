@@ -63,18 +63,15 @@ export default function PackagesPage() {
               <div>
                 {/* Events without a verified photo show a branded icon panel rather
                     than a stock image that doesn't depict them. */}
-                <div className="relative h-40 w-full">
+                <div className="relative h-40 w-full bg-gold-50">
                   {eventType.imageUrl ? (
-                    <>
-                      <Image
-                        src={eventType.imageUrl}
-                        alt={eventType.name}
-                        fill
-                        sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/30 via-transparent to-transparent" />
-                    </>
+                    <Image
+                      src={eventType.imageUrl}
+                      alt={eventType.name}
+                      fill
+                      sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-contain object-center"
+                    />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center bg-gold-100 border-b border-gold-200 text-gold-700/70">
                       <CalendarHeart className="w-10 h-10" />

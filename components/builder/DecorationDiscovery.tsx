@@ -3,23 +3,35 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Sparkles, X } from 'lucide-react';
+import { Check, ChevronDown, Sparkles, X } from 'lucide-react';
 import {
   DECORATION_CATEGORIES,
   getDecorationPhotoById,
   getDecorationPhotosByCategory,
   getSimilarDecorationPhotos,
 } from '@/lib/data/decoration-inspiration';
+import { DecorationPhoto } from '@/lib/types/decoration-inspiration';
 
 const RECOMMENDATION_COUNT = 8;
 const INITIAL_VISIBLE_COUNT = 12;
 
+interface DecorationDiscoveryProps {
+  /** The photo id currently added to the customer's cart, if any (restored
+   * from state.cart when this step is revisited). */
+  selectedPhotoId: string | null;
+  /** Called whenever a photo is clicked - this IS the "add to cart" action,
+   * there's no separate select/confirm button. */
+  onSelectPhoto: (photo: DecorationPhoto) => void;
+  /** Called when the customer closes/clears their current pick. */
+  onRemoveSelection: () => void;
+}
+
 /** Pinterest/Amazon-style "browse and discover" gallery for the client's real
- * decoration photos. Purely an inspiration/browsing aid - it doesn't touch
- * the cart, pricing, or the Silver/Gold/Platinum tier selection above it. */
-export function DecorationDiscovery() {
+ * decoration photos. Clicking a photo sets it as the customer's decoration
+ * pick for their quote. */
+export function DecorationDiscovery({ selectedPhotoId, onSelectPhoto, onRemoveSelection }: DecorationDiscoveryProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(selectedPhotoId);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
   const selectedPanelRef = useRef<HTMLDivElement>(null);
 
@@ -40,10 +52,18 @@ export function DecorationDiscovery() {
   );
 
   const handleSelect = (id: string) => {
+    const photo = getDecorationPhotoById(id);
+    if (!photo) return;
     setSelectedId(id);
+    onSelectPhoto(photo);
     requestAnimationFrame(() => {
       selectedPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+  };
+
+  const handleClose = () => {
+    setSelectedId(null);
+    onRemoveSelection();
   };
 
   return (
@@ -54,7 +74,7 @@ export function DecorationDiscovery() {
         </span>
         <h3 className="font-playfair text-xl font-bold text-maroon-900 mt-2">Explore Decoration Styles</h3>
         <p className="text-xs text-maroon-700/80 mt-1 max-w-xl">
-          Real decorations from our past events. Tap any photo to see more like it.
+          Real decorations from our past events. Tap a photo to make it your pick.
         </p>
       </div>
 
@@ -111,6 +131,11 @@ export function DecorationDiscovery() {
             <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold uppercase tracking-wide text-gold-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
               {photo.categoryLabel}
             </span>
+            {selectedId === photo.id && (
+              <span className="absolute top-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                <Check className="w-3 h-3" /> Picked
+              </span>
+            )}
           </motion.button>
         ))}
       </div>
@@ -142,13 +167,18 @@ export function DecorationDiscovery() {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gold-700">{selected.categoryLabel}</span>
-                <h4 className="font-playfair text-lg font-bold text-maroon-900">Selected Decoration</h4>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gold-700">{selected.categoryLabel}</span>
+                  <span className="bg-emerald-700 text-white text-[9px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <Check className="w-2.5 h-2.5" /> Added to Your Event
+                  </span>
+                </div>
+                <h4 className="font-playfair text-lg font-bold text-maroon-900">Your Decoration Pick</h4>
               </div>
               <button
                 type="button"
-                onClick={() => setSelectedId(null)}
-                aria-label="Close selected decoration"
+                onClick={handleClose}
+                aria-label="Remove this decoration pick"
                 className="text-maroon-700 hover:text-maroon-900 p-2 rounded-full hover:bg-gold-100 transition-colors shrink-0"
               >
                 <X className="w-5 h-5" />

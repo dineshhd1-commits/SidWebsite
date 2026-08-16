@@ -1,7 +1,49 @@
 import raw from './decoration-inspiration.json';
+import { CatalogItem } from '../types/catalog';
 import { DecorationPhoto } from '../types/decoration-inspiration';
 
 const ALL_PHOTOS: DecorationPhoto[] = raw.photos;
+
+/** Cart item ids for a decoration photo are namespaced with this prefix so a
+ * cart line can be traced back to the photo it came from. */
+export const DECORATION_CART_ID_PREFIX = 'decoration-photo-';
+
+export function decorationCartItemId(photoId: string): string {
+  return `${DECORATION_CART_ID_PREFIX}${photoId}`;
+}
+
+export function decorationPhotoIdFromCartItemId(cartItemId: string): string | null {
+  return cartItemId.startsWith(DECORATION_CART_ID_PREFIX)
+    ? cartItemId.slice(DECORATION_CART_ID_PREFIX.length)
+    : null;
+}
+
+/** Turns a selected inspiration photo into a cart-compatible CatalogItem.
+ * There's no real catalog group/pricing behind these - decoration selection
+ * here is purely "this is the look I want", so price is 0 (pricing isn't
+ * shown anywhere on the site) and groupId is a fixed local id rather than a
+ * real Supabase catalog_groups row. */
+export function decorationPhotoToCartItem(photo: DecorationPhoto): CatalogItem {
+  return {
+    id: decorationCartItemId(photo.id),
+    supportedEventTypes: [],
+    categoryKey: 'decoration',
+    groupId: 'decoration-inspiration',
+    name: photo.categoryLabel,
+    description: 'Selected from our decoration photo gallery.',
+    imageUrl: photo.src,
+    images: [photo.src],
+    packageLevel: 'normal',
+    price: 0,
+    unit: 'event',
+    quantityMode: 'single',
+    maxQuantity: 1,
+    maxSelectionsOverride: null,
+    metadata: { photoId: photo.id },
+    active: true,
+    displayOrder: 0,
+  };
+}
 
 /** Display order + labels for the category filter chips. */
 export const DECORATION_CATEGORIES: { slug: string; label: string }[] = [

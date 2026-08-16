@@ -19,22 +19,23 @@
 -- 1. Event Types (all catalog-ready) ----------------------------------------
 INSERT INTO event_types (id, name, short_description, image_url, is_catalog_ready, display_order, active) VALUES
 ('wedding', 'Wedding', 'Complete traditional South Indian wedding planning, decor to catering.', '/sid-party29.jpeg', true, 1, true),
-('engagement', 'Engagement', 'Ring ceremony décor, stage design and catering for your engagement.', '', true, 2, true),
-('reception', 'Reception', 'Elegant reception stage, catering and entertainment.', '', true, 3, true),
-('birthday', 'Birthday', 'Themed birthday celebrations for every age and milestone.', '', true, 4, true),
-('anniversary', 'Anniversary', 'Elegant anniversary celebrations, big or intimate.', '', true, 5, true),
-('get_together', 'Get Together', 'Casual and semi-formal family or friends get-togethers.', '', true, 6, true),
-('bachelor_party', 'Bachelor Party', 'Fun, high-energy bachelor party planning and coordination.', '', true, 7, true),
-('housewarming', 'Housewarming', 'Griha Pravesh ceremonies handled from rituals to hospitality.', '', true, 8, true),
-('haldi_function', 'Haldi Function', 'Vibrant Haldi decor, seating and catering setup.', '', true, 9, true),
-('corporate_event', 'Corporate Event', 'Conferences, product launches and corporate celebrations.', '', true, 10, true),
-('traditional_home_function', 'Traditional Home Function', 'Naming ceremonies, seemantham and other home rituals.', '', true, 11, true),
-('shrimantha_karya', 'Shrimantha Karya', 'Traditional baby shower ceremony with decor, rituals and catering.', '', true, 12, true),
-('half_saree_function', 'Half-Saree Function', 'Langa voni coming-of-age celebration, decor to catering.', '', true, 13, true),
-('other_events', 'Other Events', 'Reunions, custom celebrations and everything in between.', '', true, 14, true)
+('engagement', 'Engagement', 'Ring ceremony décor, stage design and catering for your engagement.', '/packages/engagement.jpg', true, 2, true),
+('reception', 'Reception', 'Elegant reception stage, catering and entertainment.', '/packages/reception.jpg', true, 3, true),
+('birthday', 'Birthday', 'Themed birthday celebrations for every age and milestone.', '/packages/birthday.jpg', true, 4, true),
+('anniversary', 'Anniversary', 'Elegant anniversary celebrations, big or intimate.', '/packages/anniversary.jpg', true, 5, true),
+('get_together', 'Get Together', 'Casual and semi-formal family or friends get-togethers.', '/packages/get-together.jpg', true, 6, true),
+('bachelor_party', 'Bachelor Party', 'Fun, high-energy bachelor party planning and coordination.', '/packages/bachelor-party.jpg', true, 7, true),
+('housewarming', 'Housewarming', 'Griha Pravesh ceremonies handled from rituals to hospitality.', '/packages/housewarming.jpg', true, 8, true),
+('haldi_function', 'Haldi Function', 'Vibrant Haldi decor, seating and catering setup.', '/packages/haldi-function.jpg', true, 9, true),
+('corporate_event', 'Corporate Event', 'Conferences, product launches and corporate celebrations.', '/packages/corporate-event.jpg', true, 10, true),
+('traditional_home_function', 'Traditional Home Function', 'Naming ceremonies, seemantham and other home rituals.', '/packages/traditional-home-function.jpg', true, 11, true),
+('shrimantha_karya', 'Shrimantha Karya', 'Traditional baby shower ceremony with decor, rituals and catering.', '/packages/shrimantha-karya.jpg', true, 12, true),
+('half_saree_function', 'Half-Saree Function', 'Langa voni coming-of-age celebration, decor to catering.', '/packages/half-saree-function.jpg', true, 13, true),
+('other_events', 'Other Events', 'Reunions, custom celebrations and everything in between.', '/packages/other-events.jpg', true, 14, true)
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   short_description = EXCLUDED.short_description,
+  image_url = EXCLUDED.image_url,
   is_catalog_ready = EXCLUDED.is_catalog_ready,
   display_order = EXCLUDED.display_order;
 

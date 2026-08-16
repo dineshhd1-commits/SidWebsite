@@ -31,19 +31,19 @@ import {
 
 export const MOCK_EVENT_TYPES: EventType[] = [
   { id: 'wedding', name: 'Wedding', shortDescription: 'Complete traditional South Indian wedding planning, decor to catering.', imageUrl: '/sid-party29.jpeg', isCatalogReady: true, displayOrder: 1, active: true },
-  { id: 'engagement', name: 'Engagement', shortDescription: 'Ring ceremony décor, stage design and catering for your engagement.', imageUrl: '', isCatalogReady: true, displayOrder: 2, active: true },
-  { id: 'reception', name: 'Reception', shortDescription: 'Elegant reception stage, catering and entertainment.', imageUrl: '', isCatalogReady: true, displayOrder: 3, active: true },
-  { id: 'birthday', name: 'Birthday', shortDescription: 'Themed birthday celebrations for every age and milestone.', imageUrl: '', isCatalogReady: true, displayOrder: 4, active: true },
-  { id: 'anniversary', name: 'Anniversary', shortDescription: 'Elegant anniversary celebrations, big or intimate.', imageUrl: '', isCatalogReady: true, displayOrder: 5, active: true },
-  { id: 'get_together', name: 'Get Together', shortDescription: 'Casual and semi-formal family or friends get-togethers.', imageUrl: '', isCatalogReady: true, displayOrder: 6, active: true },
-  { id: 'bachelor_party', name: 'Bachelor Party', shortDescription: 'Fun, high-energy bachelor party planning and coordination.', imageUrl: '', isCatalogReady: true, displayOrder: 7, active: true },
-  { id: 'housewarming', name: 'Housewarming', shortDescription: 'Griha Pravesh ceremonies handled from rituals to hospitality.', imageUrl: '', isCatalogReady: true, displayOrder: 8, active: true },
-  { id: 'haldi_function', name: 'Haldi Function', shortDescription: 'Vibrant Haldi decor, seating and catering setup.', imageUrl: '', isCatalogReady: true, displayOrder: 9, active: true },
-  { id: 'corporate_event', name: 'Corporate Event', shortDescription: 'Conferences, product launches and corporate celebrations.', imageUrl: '', isCatalogReady: true, displayOrder: 10, active: true },
-  { id: 'traditional_home_function', name: 'Traditional Home Function', shortDescription: 'Naming ceremonies, seemantham and other home rituals.', imageUrl: '', isCatalogReady: true, displayOrder: 11, active: true },
-  { id: 'shrimantha_karya', name: 'Shrimantha Karya', shortDescription: 'Traditional baby shower ceremony with decor, rituals and catering.', imageUrl: '', isCatalogReady: true, displayOrder: 12, active: true },
-  { id: 'half_saree_function', name: 'Half-Saree Function', shortDescription: 'Langa voni coming-of-age celebration, decor to catering.', imageUrl: '', isCatalogReady: true, displayOrder: 13, active: true },
-  { id: 'other_events', name: 'Other Events', shortDescription: 'Reunions, custom celebrations and everything in between.', imageUrl: '', isCatalogReady: true, displayOrder: 14, active: true },
+  { id: 'engagement', name: 'Engagement', shortDescription: 'Ring ceremony décor, stage design and catering for your engagement.', imageUrl: '/packages/engagement.jpg', isCatalogReady: true, displayOrder: 2, active: true },
+  { id: 'reception', name: 'Reception', shortDescription: 'Elegant reception stage, catering and entertainment.', imageUrl: '/packages/reception.jpg', isCatalogReady: true, displayOrder: 3, active: true },
+  { id: 'birthday', name: 'Birthday', shortDescription: 'Themed birthday celebrations for every age and milestone.', imageUrl: '/packages/birthday.jpg', isCatalogReady: true, displayOrder: 4, active: true },
+  { id: 'anniversary', name: 'Anniversary', shortDescription: 'Elegant anniversary celebrations, big or intimate.', imageUrl: '/packages/anniversary.jpg', isCatalogReady: true, displayOrder: 5, active: true },
+  { id: 'get_together', name: 'Get Together', shortDescription: 'Casual and semi-formal family or friends get-togethers.', imageUrl: '/packages/get-together.jpg', isCatalogReady: true, displayOrder: 6, active: true },
+  { id: 'bachelor_party', name: 'Bachelor Party', shortDescription: 'Fun, high-energy bachelor party planning and coordination.', imageUrl: '/packages/bachelor-party.jpg', isCatalogReady: true, displayOrder: 7, active: true },
+  { id: 'housewarming', name: 'Housewarming', shortDescription: 'Griha Pravesh ceremonies handled from rituals to hospitality.', imageUrl: '/packages/housewarming.jpg', isCatalogReady: true, displayOrder: 8, active: true },
+  { id: 'haldi_function', name: 'Haldi Function', shortDescription: 'Vibrant Haldi decor, seating and catering setup.', imageUrl: '/packages/haldi-function.jpg', isCatalogReady: true, displayOrder: 9, active: true },
+  { id: 'corporate_event', name: 'Corporate Event', shortDescription: 'Conferences, product launches and corporate celebrations.', imageUrl: '/packages/corporate-event.jpg', isCatalogReady: true, displayOrder: 10, active: true },
+  { id: 'traditional_home_function', name: 'Traditional Home Function', shortDescription: 'Naming ceremonies, seemantham and other home rituals.', imageUrl: '/packages/traditional-home-function.jpg', isCatalogReady: true, displayOrder: 11, active: true },
+  { id: 'shrimantha_karya', name: 'Shrimantha Karya', shortDescription: 'Traditional baby shower ceremony with decor, rituals and catering.', imageUrl: '/packages/shrimantha-karya.jpg', isCatalogReady: true, displayOrder: 12, active: true },
+  { id: 'half_saree_function', name: 'Half-Saree Function', shortDescription: 'Langa voni coming-of-age celebration, decor to catering.', imageUrl: '/packages/half-saree-function.jpg', isCatalogReady: true, displayOrder: 13, active: true },
+  { id: 'other_events', name: 'Other Events', shortDescription: 'Reunions, custom celebrations and everything in between.', imageUrl: '/packages/other-events.jpg', isCatalogReady: true, displayOrder: 14, active: true },
 ];
 
 export const MOCK_PACKAGE_LEVELS: PackageLevel[] = [

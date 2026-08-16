@@ -383,18 +383,21 @@ export const BUSINESS_OFFERINGS: BusinessOffering[] = [
     title: 'Makeup',
     description: 'Bridal and groom makeup, HD and airbrush styling, hair and saree draping by professional artists.',
     iconKey: 'makeup',
+    imageUrl: '/services/makeup.jpg',
   },
   {
     id: 'purohit',
     title: 'Purohit',
     description: 'Experienced purohit for all rituals, complete samagri arrangement and muhurtham guidance.',
     iconKey: 'purohit',
+    imageUrl: '/services/purohit.jpg',
   },
   {
     id: 'sound-and-music',
     title: 'Sound & Music',
     description: 'DJ, live music, PA and sound systems, and traditional Nadaswaram ensembles for every function.',
     iconKey: 'music',
+    imageUrl: '/services/sound-and-music.jpg',
   },
 ];
 

@@ -57,12 +57,9 @@ export default function ServicesPage() {
               key={offering.id}
               className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="relative h-48 w-full">
+              <div className="relative h-48 w-full bg-gold-50">
                 {offering.imageUrl ? (
-                  <>
-                    <Image src={offering.imageUrl} alt={offering.title} fill sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/20 via-transparent to-transparent" />
-                  </>
+                  <Image src={offering.imageUrl} alt={offering.title} fill sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-contain object-center" />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-gold-100 border-b border-gold-200 text-gold-700/70">
                     {ICONS[offering.iconKey]}

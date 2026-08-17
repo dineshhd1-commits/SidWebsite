@@ -90,6 +90,14 @@ export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   // offered the same way across every event type.
   group('dec-package', ALL_EVENT_TYPES, 'decoration', 'Decoration Package', 1, 1, false, null, 1),
 
+  // Wedding-only decoration add-on services, organised by where they apply:
+  // the home ceremony setup, the venue itself, and the couple's entry moment.
+  // Each is a free-pick checklist (no cap) alongside the photo-based decoration
+  // style picker above.
+  group('dec-home', ['wedding'], 'decoration', 'Home Decoration', null, 0, false, null, 2),
+  group('dec-venue', ['wedding'], 'decoration', 'Venue Decoration', null, 0, false, null, 3),
+  group('dec-couple-entry', ['wedding'], 'decoration', 'Couple Entry', null, 0, false, null, 4),
+
   group('cat-welcome-drinks', ['wedding'], 'catering', 'Welcome Drinks', 1, 1, true, 'Additional Welcome Drinks require vendor approval.', 1, ['lunch', 'dinner']),
   group('cat-starters', ['wedding'], 'catering', 'Starters', 2, 2, true, 'You have reached the allowed number of starters for your package.', 2, ['lunch', 'dinner']),
   group('cat-main-course', ['wedding'], 'catering', 'Main Course', null, 0, false, null, 3, ['lunch', 'dinner']),
@@ -109,7 +117,13 @@ export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   // single shared group instead - see PHOTOGRAPHY_EVENT_TYPES above.
   group('photo-deverakarya', ['wedding'], 'photography', 'Deverakarya', null, 0, false, null, 1),
   group('photo-wedding-hall', ['wedding'], 'photography', 'Wedding Hall', null, 0, false, null, 2),
-  group('photo-services', PHOTOGRAPHY_EVENT_TYPES, 'photography', 'Photography & Videography', null, 0, false, null, 3),
+  // Pre-Wedding Shoot is its own section, split into a duration pick (1 Day /
+  // 2 Days - max 1) and the service checklist that unlocks once a duration is
+  // chosen. Two groups so the duration cap is enforced the same generic way
+  // every other "choose one" group in this catalog already is.
+  group('photo-prewedding-duration', ['wedding'], 'photography', 'Pre-Wedding Shoot Duration', 1, 0, false, null, 3),
+  group('photo-prewedding-services', ['wedding'], 'photography', 'Pre-Wedding Shoot', null, 0, false, null, 4),
+  group('photo-services', PHOTOGRAPHY_EVENT_TYPES, 'photography', 'Photography & Videography', null, 0, false, null, 5),
   group('addon-services', ALL_EVENT_TYPES, 'additional_services', 'Additional Services', null, 0, false, null, 1),
 ];
 
@@ -131,6 +145,37 @@ export const MOCK_CATALOG_ITEMS: CatalogItem[] = [
   item({ id: 'dec-gold', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'decoration', groupId: 'dec-package', name: 'Gold Decoration', description: 'Premium themed decor with layered floral arrangements, upgraded lighting and richer drapery.', imageUrl: '', packageLevel: 'gold', price: 85000, unit: 'package', displayOrder: 2 }),
   item({ id: 'dec-platinum', supportedEventTypes: ALL_EVENT_TYPES, categoryKey: 'decoration', groupId: 'dec-package', name: 'Platinum Decoration', description: 'Our most opulent decor - imported florals, crystal and brass accents, and a fully bespoke design consultation.', imageUrl: '', packageLevel: 'platinum', price: 150000, unit: 'package', displayOrder: 3 }),
 
+  // Wedding decoration - Home Decoration (setup at the couple's home for the ceremony)
+  item({ id: 'dec-home-house-lighting', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-home', name: 'House Lighting', description: 'Decorative lighting across the home for the wedding occasion.', imageUrl: '', packageLevel: 'normal', price: 8000, unit: 'per event', displayOrder: 1 }),
+  item({ id: 'dec-home-chapra', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-home', name: 'Chapra Decoration', description: 'Traditional chapra (canopy) decoration with flowers and drapery.', imageUrl: '', packageLevel: 'gold', price: 12000, unit: 'per event', displayOrder: 2 }),
+  item({ id: 'dec-home-front-door', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-home', name: 'Front Door Decoration', description: 'Floral and festive decoration for the main entrance of the house.', imageUrl: '', packageLevel: 'normal', price: 6000, unit: 'per event', displayOrder: 3 }),
+  item({ id: 'dec-home-pooja-door', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-home', name: 'Pooja Door Decoration', description: 'Decoration for the pooja room door with flowers and toran.', imageUrl: '', packageLevel: 'normal', price: 4000, unit: 'per event', displayOrder: 4 }),
+  item({ id: 'dec-home-yellow', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-home', name: 'Yellow Decoration', description: 'Traditional yellow-themed decor for the pre-wedding rituals.', imageUrl: '', packageLevel: 'normal', price: 5000, unit: 'per event', displayOrder: 5 }),
+  item({ id: 'dec-home-mehendi', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-home', name: 'Mehendi', description: 'Decor setup for the Mehendi ceremony seating and backdrop.', imageUrl: '', packageLevel: 'normal', price: 6000, unit: 'per event', displayOrder: 6 }),
+  item({ id: 'dec-home-led-par-light', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-home', name: 'LED Par Light', description: 'LED par light setup for ambient event lighting.', imageUrl: '', packageLevel: 'normal', price: 5000, unit: 'per event', displayOrder: 7 }),
+
+  // Wedding decoration - Venue Decoration (the wedding hall / mantapa itself)
+  item({ id: 'dec-venue-entrance-name-board', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Entrance Name Board', description: 'Personalised name board decoration at the venue entrance.', imageUrl: '', packageLevel: 'normal', price: 4000, unit: 'per event', displayOrder: 1 }),
+  item({ id: 'dec-venue-pathway', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Pathway', description: 'Decorated walkway leading up to the venue.', imageUrl: '', packageLevel: 'normal', price: 8000, unit: 'per event', displayOrder: 2 }),
+  item({ id: 'dec-venue-stage-decor', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Stage Decor', description: 'Complete stage decoration with florals, drapery and lighting.', imageUrl: '', packageLevel: 'gold', price: 30000, unit: 'per event', displayOrder: 3 }),
+  item({ id: 'dec-venue-muhuratha-mantapa', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Muhuratha Mantapa', description: 'Traditional decoration of the muhuratha mantapa for the ceremony.', imageUrl: '', packageLevel: 'gold', price: 25000, unit: 'per event', displayOrder: 4 }),
+  item({ id: 'dec-venue-sapthapadi', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Sapthapadi', description: 'Decorated setup for the Sapthapadi (seven steps) ritual.', imageUrl: '', packageLevel: 'normal', price: 6000, unit: 'per event', displayOrder: 5 }),
+  item({ id: 'dec-venue-phonebooth', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Phonebooth', description: 'Decorated photo/phone booth setup for guests.', imageUrl: '', packageLevel: 'normal', price: 5000, unit: 'per event', displayOrder: 6 }),
+  item({ id: 'dec-venue-garlands', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Garlands', description: 'Fresh flower garlands for the ceremony.', imageUrl: '', packageLevel: 'normal', price: 4000, unit: 'per event', displayOrder: 7 }),
+  item({ id: 'dec-venue-music-system', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Music System with Mic', description: 'Sound system and microphone setup for the venue.', imageUrl: '', packageLevel: 'normal', price: 8000, unit: 'per event', displayOrder: 8 }),
+  item({ id: 'dec-venue-mogina-jade', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Mogina Jade', description: 'Traditional mogina jade (floral string) decoration.', imageUrl: '', packageLevel: 'normal', price: 3000, unit: 'per event', displayOrder: 9 }),
+  item({ id: 'dec-venue-harani-bashige', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Harani Bashige', description: 'Traditional harani bashige setup for the ceremony.', imageUrl: '', packageLevel: 'normal', price: 3000, unit: 'per event', displayOrder: 10 }),
+  item({ id: 'dec-venue-nadaswara', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-venue', name: 'Nadaswara', description: 'Live Nadaswara musicians for the ceremony.', imageUrl: '', packageLevel: 'gold', price: 10000, unit: 'per event', displayOrder: 11 }),
+
+  // Wedding decoration - Couple Entry (effects and setup for the couple's grand entry)
+  item({ id: 'dec-couple-cold-fair', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Cold Fair', description: 'Cold pyro entry effect for the couple.', imageUrl: '', packageLevel: 'gold', price: 5000, unit: 'per event', displayOrder: 1 }),
+  item({ id: 'dec-couple-fog-machine', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Fog Machine', description: 'Fog effect for a dramatic couple entry.', imageUrl: '', packageLevel: 'normal', price: 6000, unit: 'per event', displayOrder: 2 }),
+  item({ id: 'dec-couple-welcome-bouquet', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Welcome Bouquet', description: 'Fresh flower bouquet to welcome the couple.', imageUrl: '', packageLevel: 'normal', price: 3000, unit: 'per event', displayOrder: 3 }),
+  item({ id: 'dec-couple-crackers', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Crackers', description: 'Celebratory crackers for the couple entry.', imageUrl: '', packageLevel: 'normal', price: 4000, unit: 'per event', displayOrder: 4 }),
+  item({ id: 'dec-couple-fireworks', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Fire Works', description: 'Fireworks display for a grand couple entry.', imageUrl: '', packageLevel: 'gold', price: 8000, unit: 'per event', displayOrder: 5 }),
+  item({ id: 'dec-couple-dole', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Dole', description: 'Traditional dole (palanquin) entry for the couple.', imageUrl: '', packageLevel: 'gold', price: 6000, unit: 'per event', displayOrder: 6 }),
+  item({ id: 'dec-couple-dancer', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Dancer', description: 'Professional dancers to lead the couple entry.', imageUrl: '', packageLevel: 'gold', price: 10000, unit: 'per event', displayOrder: 7 }),
+
   // Wedding photography - Deverakarya (home / ritual ceremony coverage)
   item({ id: 'photo-traditional-photo', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-deverakarya', name: 'Traditional Photography', description: 'Classic posed traditional photography for the Deverakarya rituals.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 1 }),
   item({ id: 'photo-candid-photo', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-deverakarya', name: 'Candid Photography', description: 'Storytelling candid photography coverage of the Deverakarya.', imageUrl: '', packageLevel: 'gold', price: 35000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 2 }),
@@ -146,6 +191,15 @@ export const MOCK_CATALOG_ITEMS: CatalogItem[] = [
   item({ id: 'photo-hall-traditional-video', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-wedding-hall', name: 'Traditional Videography', description: 'Classic full-event traditional videography of the wedding hall reception.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 6 }),
   item({ id: 'photo-hall-candid-video', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-wedding-hall', name: 'Candid Videography', description: 'Cinematic candid videography coverage of the wedding hall reception.', imageUrl: '', packageLevel: 'gold', price: 40000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 2 }, displayOrder: 7 }),
   item({ id: 'photo-wedding-live-streaming', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-wedding-hall', name: 'Live Streaming', description: 'Live stream the wedding for guests who cannot attend.', imageUrl: '', packageLevel: 'premium', price: 15000, unit: 'per event', displayOrder: 3 }),
+
+  // Pre-Wedding Shoot - duration is picked first (max 1 of these two), which
+  // unlocks the service checklist below it.
+  item({ id: 'photo-prewedding-1-day', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-prewedding-duration', name: '1 Day', description: 'Pre-wedding shoot scheduled across a single day.', imageUrl: '', packageLevel: 'normal', price: 0, unit: 'shoot', metadata: { days: 1 }, displayOrder: 1 }),
+  item({ id: 'photo-prewedding-2-day', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-prewedding-duration', name: '2 Days', description: 'Pre-wedding shoot scheduled across two days.', imageUrl: '', packageLevel: 'gold', price: 0, unit: 'shoot', metadata: { days: 2 }, displayOrder: 2 }),
+
+  item({ id: 'photo-prewedding-photographer', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-prewedding-services', name: 'Photographer', description: 'Dedicated photographer for the pre-wedding shoot.', imageUrl: '', packageLevel: 'normal', price: 20000, unit: 'per event', displayOrder: 1 }),
+  item({ id: 'photo-prewedding-cinematic-video', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-prewedding-services', name: 'Cinematic Video', description: 'Cinematic video coverage of the pre-wedding shoot.', imageUrl: '', packageLevel: 'gold', price: 30000, unit: 'per event', displayOrder: 2 }),
+  item({ id: 'photo-prewedding-drone', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-prewedding-services', name: 'Drone', description: '4K aerial drone coverage for the pre-wedding shoot.', imageUrl: '', packageLevel: 'gold', price: 15000, unit: 'per event', displayOrder: 3 }),
 
   // Photography for every other (non-Wedding) event type - single shared
   // group, exactly five options: Traditional/Candid Photography, Traditional/

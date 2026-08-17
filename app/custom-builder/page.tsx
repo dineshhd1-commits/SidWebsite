@@ -235,6 +235,7 @@ function CustomBuilderPageInner() {
             onAddToCart={(item) => addToCart(item, 1, 'paid_extra')}
             onRemoveFromCart={removeFromCart}
             onReplace={(oldId, item) => replaceInCart(oldId, item, 1, 'paid_extra')}
+            onUpdateQuantity={updateQuantity}
           />
         );
       case 2:
@@ -244,6 +245,7 @@ function CustomBuilderPageInner() {
             onAddToCart={(item) => addToCart(item, 1, 'paid_extra')}
             onRemoveFromCart={removeFromCart}
             onUpdateQuantity={updateQuantity}
+            onReplace={(oldId, item) => replaceInCart(oldId, item, 1, 'paid_extra')}
           />
         );
       case 3:

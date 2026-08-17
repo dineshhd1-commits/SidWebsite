@@ -56,6 +56,14 @@ INSERT INTO catalog_groups (id, supported_event_types, category_key, name, defau
 ('dec-package', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','shrimantha_karya','half_saree_function','other_events'], 'decoration', 'Decoration Package', 1, 1, false, NULL, 1, true)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
+-- Wedding-only decoration add-on checklists (Home Decoration / Venue Decoration
+-- / Couple Entry), additive to the photo-based decoration style picker.
+INSERT INTO catalog_groups (id, supported_event_types, category_key, name, default_max_selections, free_included_count, requires_approval_after_limit, approval_message, display_order, active) VALUES
+('dec-home', ARRAY['wedding'], 'decoration', 'Home Decoration', NULL, 0, false, NULL, 2, true),
+('dec-venue', ARRAY['wedding'], 'decoration', 'Venue Decoration', NULL, 0, false, NULL, 3, true),
+('dec-couple-entry', ARRAY['wedding'], 'decoration', 'Couple Entry', NULL, 0, false, NULL, 4, true)
+ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
+
 -- 4. Catering Groups (Wedding keeps its detailed menu structure; other event types
 -- share one simpler general-catering group).
 INSERT INTO catalog_groups (id, supported_event_types, category_key, name, default_max_selections, free_included_count, requires_approval_after_limit, approval_message, display_order, active) VALUES
@@ -77,7 +85,9 @@ ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_
 INSERT INTO catalog_groups (id, supported_event_types, category_key, name, default_max_selections, free_included_count, requires_approval_after_limit, approval_message, display_order, active) VALUES
 ('photo-deverakarya', ARRAY['wedding'], 'photography', 'Deverakarya', NULL, 0, false, NULL, 1, true),
 ('photo-wedding-hall', ARRAY['wedding'], 'photography', 'Wedding Hall', NULL, 0, false, NULL, 2, true),
-('photo-services', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','shrimantha_karya','half_saree_function','other_events'], 'photography', 'Photography & Videography', NULL, 0, false, NULL, 3, true),
+('photo-prewedding-duration', ARRAY['wedding'], 'photography', 'Pre-Wedding Shoot Duration', 1, 0, false, NULL, 3, true),
+('photo-prewedding-services', ARRAY['wedding'], 'photography', 'Pre-Wedding Shoot', NULL, 0, false, NULL, 4, true),
+('photo-services', ARRAY['engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','shrimantha_karya','half_saree_function','other_events'], 'photography', 'Photography & Videography', NULL, 0, false, NULL, 5, true),
 ('venue-options', ARRAY['wedding','reception'], 'venue', 'Venue', 1, 0, false, NULL, 1, true),
 ('addon-services', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','shrimantha_karya','half_saree_function','other_events'], 'additional_services', 'Additional Services', NULL, 0, false, NULL, 1, true)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
@@ -88,6 +98,35 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('dec-silver', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','shrimantha_karya','half_saree_function','other_events'], 'decoration', 'dec-package', 'Silver Decoration', 'Elegant stage, entrance and seating decor with fresh florals and classic drapery.', '', '[]', 'silver', 45000, 'package', 'single', 1),
 ('dec-gold', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','shrimantha_karya','half_saree_function','other_events'], 'decoration', 'dec-package', 'Gold Decoration', 'Premium themed decor with layered floral arrangements, upgraded lighting and richer drapery.', '', '[]', 'gold', 85000, 'package', 'single', 2),
 ('dec-platinum', ARRAY['wedding','engagement','reception','birthday','anniversary','get_together','bachelor_party','housewarming','haldi_function','corporate_event','traditional_home_function','shrimantha_karya','half_saree_function','other_events'], 'decoration', 'dec-package', 'Platinum Decoration', 'Our most opulent decor - imported florals, crystal and brass accents, and a fully bespoke design consultation.', '', '[]', 'platinum', 150000, 'package', 'single', 3)
+ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
+
+-- 6b. Wedding decoration add-on services (Home Decoration / Venue Decoration / Couple Entry)
+INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, display_order) VALUES
+('dec-home-house-lighting', ARRAY['wedding'], 'decoration', 'dec-home', 'House Lighting', 'Decorative lighting across the home for the wedding occasion.', '', '[]', 'normal', 8000, 'per event', 'single', 1),
+('dec-home-chapra', ARRAY['wedding'], 'decoration', 'dec-home', 'Chapra Decoration', 'Traditional chapra (canopy) decoration with flowers and drapery.', '', '[]', 'gold', 12000, 'per event', 'single', 2),
+('dec-home-front-door', ARRAY['wedding'], 'decoration', 'dec-home', 'Front Door Decoration', 'Floral and festive decoration for the main entrance of the house.', '', '[]', 'normal', 6000, 'per event', 'single', 3),
+('dec-home-pooja-door', ARRAY['wedding'], 'decoration', 'dec-home', 'Pooja Door Decoration', 'Decoration for the pooja room door with flowers and toran.', '', '[]', 'normal', 4000, 'per event', 'single', 4),
+('dec-home-yellow', ARRAY['wedding'], 'decoration', 'dec-home', 'Yellow Decoration', 'Traditional yellow-themed decor for the pre-wedding rituals.', '', '[]', 'normal', 5000, 'per event', 'single', 5),
+('dec-home-mehendi', ARRAY['wedding'], 'decoration', 'dec-home', 'Mehendi', 'Decor setup for the Mehendi ceremony seating and backdrop.', '', '[]', 'normal', 6000, 'per event', 'single', 6),
+('dec-home-led-par-light', ARRAY['wedding'], 'decoration', 'dec-home', 'LED Par Light', 'LED par light setup for ambient event lighting.', '', '[]', 'normal', 5000, 'per event', 'single', 7),
+('dec-venue-entrance-name-board', ARRAY['wedding'], 'decoration', 'dec-venue', 'Entrance Name Board', 'Personalised name board decoration at the venue entrance.', '', '[]', 'normal', 4000, 'per event', 'single', 1),
+('dec-venue-pathway', ARRAY['wedding'], 'decoration', 'dec-venue', 'Pathway', 'Decorated walkway leading up to the venue.', '', '[]', 'normal', 8000, 'per event', 'single', 2),
+('dec-venue-stage-decor', ARRAY['wedding'], 'decoration', 'dec-venue', 'Stage Decor', 'Complete stage decoration with florals, drapery and lighting.', '', '[]', 'gold', 30000, 'per event', 'single', 3),
+('dec-venue-muhuratha-mantapa', ARRAY['wedding'], 'decoration', 'dec-venue', 'Muhuratha Mantapa', 'Traditional decoration of the muhuratha mantapa for the ceremony.', '', '[]', 'gold', 25000, 'per event', 'single', 4),
+('dec-venue-sapthapadi', ARRAY['wedding'], 'decoration', 'dec-venue', 'Sapthapadi', 'Decorated setup for the Sapthapadi (seven steps) ritual.', '', '[]', 'normal', 6000, 'per event', 'single', 5),
+('dec-venue-phonebooth', ARRAY['wedding'], 'decoration', 'dec-venue', 'Phonebooth', 'Decorated photo/phone booth setup for guests.', '', '[]', 'normal', 5000, 'per event', 'single', 6),
+('dec-venue-garlands', ARRAY['wedding'], 'decoration', 'dec-venue', 'Garlands', 'Fresh flower garlands for the ceremony.', '', '[]', 'normal', 4000, 'per event', 'single', 7),
+('dec-venue-music-system', ARRAY['wedding'], 'decoration', 'dec-venue', 'Music System with Mic', 'Sound system and microphone setup for the venue.', '', '[]', 'normal', 8000, 'per event', 'single', 8),
+('dec-venue-mogina-jade', ARRAY['wedding'], 'decoration', 'dec-venue', 'Mogina Jade', 'Traditional mogina jade (floral string) decoration.', '', '[]', 'normal', 3000, 'per event', 'single', 9),
+('dec-venue-harani-bashige', ARRAY['wedding'], 'decoration', 'dec-venue', 'Harani Bashige', 'Traditional harani bashige setup for the ceremony.', '', '[]', 'normal', 3000, 'per event', 'single', 10),
+('dec-venue-nadaswara', ARRAY['wedding'], 'decoration', 'dec-venue', 'Nadaswara', 'Live Nadaswara musicians for the ceremony.', '', '[]', 'gold', 10000, 'per event', 'single', 11),
+('dec-couple-cold-fair', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Cold Fair', 'Cold pyro entry effect for the couple.', '', '[]', 'gold', 5000, 'per event', 'single', 1),
+('dec-couple-fog-machine', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Fog Machine', 'Fog effect for a dramatic couple entry.', '', '[]', 'normal', 6000, 'per event', 'single', 2),
+('dec-couple-welcome-bouquet', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Welcome Bouquet', 'Fresh flower bouquet to welcome the couple.', '', '[]', 'normal', 3000, 'per event', 'single', 3),
+('dec-couple-crackers', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Crackers', 'Celebratory crackers for the couple entry.', '', '[]', 'normal', 4000, 'per event', 'single', 4),
+('dec-couple-fireworks', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Fire Works', 'Fireworks display for a grand couple entry.', '', '[]', 'gold', 8000, 'per event', 'single', 5),
+('dec-couple-dole', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Dole', 'Traditional dole (palanquin) entry for the couple.', '', '[]', 'gold', 6000, 'per event', 'single', 6),
+('dec-couple-dancer', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Dancer', 'Professional dancers to lead the couple entry.', '', '[]', 'gold', 10000, 'per event', 'single', 7)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 9. Photography Catalog Items.
@@ -125,6 +164,16 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('photo-hall-candid-photo', ARRAY['wedding'], 'photography', 'photo-wedding-hall', 'Candid Photography', 'Storytelling candid photography coverage of the wedding hall reception.', '', '[]', 'gold', 35000, 'per event', 'team_size', '{"teamSize": 2}', 5),
 ('photo-hall-traditional-video', ARRAY['wedding'], 'photography', 'photo-wedding-hall', 'Traditional Videography', 'Classic full-event traditional videography of the wedding hall reception.', '', '[]', 'normal', 15000, 'per event', 'team_size', '{"teamSize": 1}', 6),
 ('photo-hall-candid-video', ARRAY['wedding'], 'photography', 'photo-wedding-hall', 'Candid Videography', 'Cinematic candid videography coverage of the wedding hall reception.', '', '[]', 'gold', 40000, 'per event', 'team_size', '{"teamSize": 2}', 7)
+ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
+
+-- 9b. Pre-Wedding Shoot - duration pick (max 1 of the two) plus the service
+-- checklist that unlocks once a duration is chosen.
+INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, metadata, display_order) VALUES
+('photo-prewedding-1-day', ARRAY['wedding'], 'photography', 'photo-prewedding-duration', '1 Day', 'Pre-wedding shoot scheduled across a single day.', '', '[]', 'normal', 0, 'shoot', 'single', '{"days": 1}', 1),
+('photo-prewedding-2-day', ARRAY['wedding'], 'photography', 'photo-prewedding-duration', '2 Days', 'Pre-wedding shoot scheduled across two days.', '', '[]', 'gold', 0, 'shoot', 'single', '{"days": 2}', 2),
+('photo-prewedding-photographer', ARRAY['wedding'], 'photography', 'photo-prewedding-services', 'Photographer', 'Dedicated photographer for the pre-wedding shoot.', '', '[]', 'normal', 20000, 'per event', 'single', '{}', 1),
+('photo-prewedding-cinematic-video', ARRAY['wedding'], 'photography', 'photo-prewedding-services', 'Cinematic Video', 'Cinematic video coverage of the pre-wedding shoot.', '', '[]', 'gold', 30000, 'per event', 'single', '{}', 2),
+('photo-prewedding-drone', ARRAY['wedding'], 'photography', 'photo-prewedding-services', 'Drone', '4K aerial drone coverage for the pre-wedding shoot.', '', '[]', 'gold', 15000, 'per event', 'single', '{}', 3)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 10. Catering Catalog Items (Wedding menu) -----------------------------------

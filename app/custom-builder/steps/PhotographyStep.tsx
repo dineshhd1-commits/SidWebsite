@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Check } from 'lucide-react';
 import { CatalogGroup, CatalogItem } from '@/lib/types/catalog';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { getCatalogGroups, getCatalogItems } from '@/lib/data/catalog';
-import { QuantityStepper } from '@/components/builder/QuantityStepper';
+import { CatalogChecklist } from '@/components/builder/CatalogChecklist';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 
 interface PhotographyStepProps {
@@ -13,100 +12,94 @@ interface PhotographyStepProps {
   onAddToCart: (item: CatalogItem) => void;
   onRemoveFromCart: (id: string) => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
+  onReplace: (oldId: string, item: CatalogItem) => void;
 }
 
-/** Single row in the photography selection list - a checkbox-style toggle
- * for single-select items, or an inline quantity stepper for team-size/
- * stepper items that are already selected. Deliberately not a big image
- * card: a clean list is what this step asks for. */
-function PhotoListRow({
-  item,
-  isSelected,
-  quantity,
-  onSelect,
-  onRemove,
+const PREWEDDING_DURATION_GROUP_ID = 'photo-prewedding-duration';
+const PREWEDDING_SERVICES_GROUP_ID = 'photo-prewedding-services';
+
+/** Pre-Wedding Shoot is its own section: pick a duration (1 Day / 2 Days,
+ * single choice) first, which unlocks the service checklist below it. Kept
+ * separate from the generic group loop below because the duration picker is
+ * a pill-choice, not a checklist row. */
+function PreWeddingShootSection({
+  durationItems,
+  serviceItems,
+  state,
+  onAddToCart,
+  onRemoveFromCart,
   onUpdateQuantity,
+  onReplace,
 }: {
-  item: CatalogItem;
-  isSelected: boolean;
-  quantity: number;
-  onSelect: () => void;
-  onRemove: () => void;
-  onUpdateQuantity: (qty: number) => void;
+  durationItems: CatalogItem[];
+  serviceItems: CatalogItem[];
+  state: EventBuilderState;
+  onAddToCart: (item: CatalogItem) => void;
+  onRemoveFromCart: (id: string) => void;
+  onUpdateQuantity: (id: string, quantity: number) => void;
+  onReplace: (oldId: string, item: CatalogItem) => void;
 }) {
-  const isStepper = item.quantityMode === 'stepper';
+  const selectedDuration = durationItems.find((d) => state.cart[d.id]) || null;
+
+  const handleSelectDuration = (durationItem: CatalogItem) => {
+    if (selectedDuration?.id === durationItem.id) {
+      onRemoveFromCart(durationItem.id);
+    } else if (selectedDuration) {
+      onReplace(selectedDuration.id, durationItem);
+    } else {
+      onAddToCart(durationItem);
+    }
+  };
+
+  const selectedServiceIds = new Set(serviceItems.filter((i) => state.cart[i.id]).map((i) => i.id));
+  const serviceQuantities = Object.fromEntries(serviceItems.map((i) => [i.id, state.cart[i.id]?.quantity ?? 1]));
 
   return (
-    <div
-      className={`flex items-center gap-4 px-4 py-3.5 transition-colors border-b border-gold-200/60 last:border-b-0 ${
-        isSelected ? 'bg-gold-50' : 'hover:bg-gold-50/50'
-      }`}
-    >
-      <button
-        type="button"
-        onClick={isStepper && isSelected ? undefined : onSelect}
-        className="flex-1 min-w-0 flex items-center gap-4 text-left"
-      >
-        <span
-          className={`shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${
-            isSelected ? 'bg-maroon-800 border-maroon-800' : 'border-gold-400 bg-white'
-          }`}
-        >
-          {isSelected && <Check className="w-3.5 h-3.5 text-gold-200" />}
-        </span>
-        <span className="flex-1 min-w-0">
-          <span className="block text-sm font-bold text-maroon-900">{item.name}</span>
-          <span className="block text-xs text-maroon-700/70 line-clamp-1">{item.description}</span>
-        </span>
-      </button>
+    <div className="space-y-3">
+      <h3 className="font-playfair text-lg font-bold text-maroon-900">Pre-Wedding Shoot</h3>
 
-      {isStepper && isSelected && (
-        <QuantityStepper
-          value={quantity}
-          onChange={(qty) => (qty <= 0 ? onRemove() : onUpdateQuantity(qty))}
-          min={0}
-          max={item.maxQuantity ?? undefined}
+      <div className="space-y-1.5">
+        <p className="text-xs font-bold text-maroon-900">
+          Number of Days <span className="text-rose-600">*</span>
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {durationItems.map((durationItem) => {
+            const isSelected = selectedDuration?.id === durationItem.id;
+            return (
+              <button
+                key={durationItem.id}
+                type="button"
+                onClick={() => handleSelectDuration(durationItem)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                  isSelected
+                    ? 'bg-maroon-800 text-gold-300 border-gold-400 shadow-sm'
+                    : 'bg-white text-maroon-900 border-gold-300 hover:bg-gold-50'
+                }`}
+              >
+                {durationItem.name}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {selectedDuration ? (
+        <CatalogChecklist
+          items={serviceItems}
+          selectedIds={selectedServiceIds}
+          quantities={serviceQuantities}
+          onAddToCart={onAddToCart}
+          onRemoveFromCart={onRemoveFromCart}
+          onUpdateQuantity={onUpdateQuantity}
         />
+      ) : (
+        <p className="text-xs text-maroon-700/70 italic px-1">Select the number of days to see photography options.</p>
       )}
     </div>
   );
 }
 
-function PhotoList({
-  items,
-  state,
-  onAddToCart,
-  onRemoveFromCart,
-  onUpdateQuantity,
-}: {
-  items: CatalogItem[];
-  state: EventBuilderState;
-  onAddToCart: (item: CatalogItem) => void;
-  onRemoveFromCart: (id: string) => void;
-  onUpdateQuantity: (id: string, quantity: number) => void;
-}) {
-  return (
-    <div className="rounded-2xl border border-gold-300 bg-white overflow-hidden shadow-sm">
-      {items.map((item) => {
-        const cartLine = state.cart[item.id];
-        const isSelected = !!cartLine;
-        return (
-          <PhotoListRow
-            key={item.id}
-            item={item}
-            isSelected={isSelected}
-            quantity={cartLine?.quantity ?? 1}
-            onSelect={() => (isSelected ? onRemoveFromCart(item.id) : onAddToCart(item))}
-            onRemove={() => onRemoveFromCart(item.id)}
-            onUpdateQuantity={(qty) => onUpdateQuantity(item.id, qty)}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdateQuantity }: PhotographyStepProps) {
+export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdateQuantity, onReplace }: PhotographyStepProps) {
   const [items, setItems] = useState<CatalogItem[] | null>(null);
   const [groups, setGroups] = useState<CatalogGroup[]>([]);
 
@@ -134,13 +127,38 @@ export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdate
     );
   }
 
+  // Pre-Wedding Shoot gets its own bespoke section below - pulled out of the
+  // generic group loop so its duration groups never render as plain checklists.
+  const preweddingDurationItems = items.filter((i) => i.groupId === PREWEDDING_DURATION_GROUP_ID);
+  const preweddingServiceItems = items.filter((i) => i.groupId === PREWEDDING_SERVICES_GROUP_ID);
+  const hasPreweddingShoot = preweddingDurationItems.length > 0;
+
+  const remainingGroups = groups.filter(
+    (g) => g.id !== PREWEDDING_DURATION_GROUP_ID && g.id !== PREWEDDING_SERVICES_GROUP_ID
+  );
+
   // Wedding splits its coverage across two groups (Deverakarya / Wedding Hall),
   // so those get a heading each. Event types with a single group keep the plain
   // ungrouped list they already had.
-  const groupsWithItems = groups
+  const groupsWithItems = remainingGroups
     .map((g) => ({ group: g, groupItems: items.filter((i) => i.groupId === g.id) }))
     .filter((entry) => entry.groupItems.length > 0);
-  const showGroupHeadings = groupsWithItems.length > 1;
+  const showGroupHeadings = groupsWithItems.length > 1 || hasPreweddingShoot;
+
+  const renderGroupChecklist = (groupItems: CatalogItem[]) => {
+    const selectedIds = new Set(groupItems.filter((i) => state.cart[i.id]).map((i) => i.id));
+    const quantities = Object.fromEntries(groupItems.map((i) => [i.id, state.cart[i.id]?.quantity ?? 1]));
+    return (
+      <CatalogChecklist
+        items={groupItems}
+        selectedIds={selectedIds}
+        quantities={quantities}
+        onAddToCart={onAddToCart}
+        onRemoveFromCart={onRemoveFromCart}
+        onUpdateQuantity={onUpdateQuantity}
+      />
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -159,24 +177,24 @@ export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdate
           {groupsWithItems.map(({ group, groupItems }) => (
             <div key={group.id} className="space-y-3">
               <h3 className="font-playfair text-lg font-bold text-maroon-900">{group.name}</h3>
-              <PhotoList
-                items={groupItems}
-                state={state}
-                onAddToCart={onAddToCart}
-                onRemoveFromCart={onRemoveFromCart}
-                onUpdateQuantity={onUpdateQuantity}
-              />
+              {renderGroupChecklist(groupItems)}
             </div>
           ))}
+
+          {hasPreweddingShoot && (
+            <PreWeddingShootSection
+              durationItems={preweddingDurationItems}
+              serviceItems={preweddingServiceItems}
+              state={state}
+              onAddToCart={onAddToCart}
+              onRemoveFromCart={onRemoveFromCart}
+              onUpdateQuantity={onUpdateQuantity}
+              onReplace={onReplace}
+            />
+          )}
         </div>
       ) : (
-        <PhotoList
-          items={items}
-          state={state}
-          onAddToCart={onAddToCart}
-          onRemoveFromCart={onRemoveFromCart}
-          onUpdateQuantity={onUpdateQuantity}
-        />
+        renderGroupChecklist(items)
       )}
     </div>
   );

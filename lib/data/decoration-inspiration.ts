@@ -58,6 +58,31 @@ export const DECORATION_CATEGORIES: { slug: string; label: string }[] = [
   { slug: 'cold-fire-entry', label: 'Cold Fire Entry' },
 ];
 
+/** Which event types each decoration category is relevant to. Wedding itself
+ * doesn't use this photo gallery any more (it has its own checklist), so this
+ * only matters for every other event type - and deliberately keeps
+ * ritual/bride-specific categories (Mantap, Chapra With Flowers, Bridal Entry,
+ * Saptapadi) off event types they don't belong to, e.g. Reception's Bridal
+ * Entry photos never show up under Birthday. */
+const CATEGORY_EVENT_TYPES: Record<string, string[]> = {
+  'stage-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'corporate_event', 'traditional_home_function', 'haldi_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'mantap-decoration': ['engagement', 'reception', 'haldi_function', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function'],
+  'chapra-with-flowers': ['engagement', 'haldi_function', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function'],
+  garlands: ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'passage-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'door-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'bridal-entry': ['engagement', 'reception'],
+  saptapadi: [], // strictly a wedding ritual - not relevant to any other event type
+  'cold-fire-entry': ['engagement', 'reception', 'birthday', 'anniversary'],
+};
+
+/** Category filter chips scoped to a given (non-wedding) event type, in the
+ * same order as DECORATION_CATEGORIES. Wedding isn't looked up here - it uses
+ * its own decoration checklist instead of this photo gallery. */
+export function getDecorationCategoriesForEventType(eventTypeId: string): { slug: string; label: string }[] {
+  return DECORATION_CATEGORIES.filter((c) => (CATEGORY_EVENT_TYPES[c.slug] || []).includes(eventTypeId));
+}
+
 /** Simple local "looks similar to" graph between categories, ordered by
  * closeness - stands in for real tagging/AI without needing either. Used
  * only to widen the recommendation pool once same-category photos run out. */

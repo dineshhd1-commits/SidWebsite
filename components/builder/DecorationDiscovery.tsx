@@ -24,18 +24,41 @@ interface DecorationDiscoveryProps {
   onSelectPhoto: (photo: DecorationPhoto) => void;
   /** Called when the customer closes/clears their current pick. */
   onRemoveSelection: () => void;
+  /** Restricts both the category filter chips and the photos shown to just
+   * these category slugs - e.g. Birthday never sees Bridal Entry or Mantap
+   * Decoration photos, which are wedding/reception-only. Omit to show
+   * everything (kept for flexibility, though every caller currently passes
+   * a scoped list). */
+  allowedCategories?: string[];
 }
 
 /** Pinterest/Amazon-style "browse and discover" gallery for the client's real
  * decoration photos. Clicking a photo sets it as the customer's decoration
  * pick for their quote. */
-export function DecorationDiscovery({ selectedPhotoId, onSelectPhoto, onRemoveSelection }: DecorationDiscoveryProps) {
+export function DecorationDiscovery({ selectedPhotoId, onSelectPhoto, onRemoveSelection, allowedCategories }: DecorationDiscoveryProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedId, setSelectedId] = useState<string | null>(selectedPhotoId);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
   const selectedPanelRef = useRef<HTMLDivElement>(null);
 
-  const allBrowseItems = useMemo(() => getDecorationPhotosByCategory(activeCategory), [activeCategory]);
+  const visibleCategoryChips = useMemo(
+    () => (allowedCategories ? DECORATION_CATEGORIES.filter((c) => allowedCategories.includes(c.slug)) : DECORATION_CATEGORIES),
+    [allowedCategories]
+  );
+
+  // If the active category filter isn't relevant to this event type (e.g. the
+  // event type changed), fall back to "All Styles" instead of showing an
+  // empty grid stuck on a filtered-out category.
+  useEffect(() => {
+    if (activeCategory !== 'all' && !visibleCategoryChips.some((c) => c.slug === activeCategory)) {
+      setActiveCategory('all');
+    }
+  }, [activeCategory, visibleCategoryChips]);
+
+  const allBrowseItems = useMemo(() => {
+    const items = getDecorationPhotosByCategory(activeCategory);
+    return allowedCategories ? items.filter((p) => allowedCategories.includes(p.category)) : items;
+  }, [activeCategory, allowedCategories]);
   const browseItems = allBrowseItems.slice(0, visibleCount);
   const hasMore = allBrowseItems.length > browseItems.length;
 
@@ -46,10 +69,15 @@ export function DecorationDiscovery({ selectedPhotoId, onSelectPhoto, onRemoveSe
   }, [activeCategory]);
 
   const selected = selectedId ? getDecorationPhotoById(selectedId) : null;
-  const similar = useMemo(
-    () => (selectedId ? getSimilarDecorationPhotos(selectedId, RECOMMENDATION_COUNT) : []),
-    [selectedId]
-  );
+  const similar = useMemo(() => {
+    if (!selectedId) return [];
+    // The full photo library is small (~180 photos), so pulling a generous
+    // pool before filtering to allowed categories comfortably still fills
+    // the recommendation strip.
+    const pool = getSimilarDecorationPhotos(selectedId, allowedCategories ? 60 : RECOMMENDATION_COUNT);
+    const filtered = allowedCategories ? pool.filter((p) => allowedCategories.includes(p.category)) : pool;
+    return filtered.slice(0, RECOMMENDATION_COUNT);
+  }, [selectedId, allowedCategories]);
 
   const handleSelect = (id: string) => {
     const photo = getDecorationPhotoById(id);
@@ -91,7 +119,7 @@ export function DecorationDiscovery({ selectedPhotoId, onSelectPhoto, onRemoveSe
         >
           All Styles
         </button>
-        {DECORATION_CATEGORIES.map((c) => (
+        {visibleCategoryChips.map((c) => (
           <button
             key={c.slug}
             type="button"

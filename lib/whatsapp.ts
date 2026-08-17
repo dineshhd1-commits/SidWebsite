@@ -1,6 +1,7 @@
 import { EventBuilderState } from './types/event-builder';
 import { getCartLines, getRequestedExtraLines } from './builder/selectors';
 import { BookingFormOverrides, buildEnquiryDetails, formatEnquiryMessage, mergeBookingFormIntoState } from './builder/enquiry';
+import { CorporateDecorationEnquiryDetails, formatCorporateDecorationEnquiryMessage } from './builder/corporate-decoration-enquiry';
 
 const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
@@ -88,5 +89,18 @@ export function getWhatsAppBookingRequestUrl(
   const details = buildEnquiryDetails(mergedState);
   const message = formatEnquiryMessage(details, refCode, new Date().toISOString());
 
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
+/** Same delivery mechanism as getWhatsAppBookingRequestUrl - a pre-filled
+ * wa.me deep link to the configured owner number, opened by the customer's
+ * own WhatsApp app - just carrying the Corporate Decoration enquiry payload
+ * instead of the full cart-based one. */
+export function getCorporateDecorationEnquiryWhatsAppUrl(
+  details: CorporateDecorationEnquiryDetails,
+  refCode: string,
+  phone: string = '918095408404'
+): string {
+  const message = formatCorporateDecorationEnquiryMessage(details, refCode, new Date().toISOString());
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }

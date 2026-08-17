@@ -2,6 +2,7 @@ import { supabase, isSupabaseConfigured } from '../supabase';
 import { MOCK_SERVICES, MOCK_STANDARD_PACKAGES } from '../mock-data';
 import { Service, StandardPackage } from '../types/wedding';
 import { EnquiryDetails } from '../builder/enquiry';
+import { CorporateDecorationEnquiryDetails } from '../builder/corporate-decoration-enquiry';
 
 export type AdminQuoteStatus = 'New' | 'Contacted' | 'Quoted' | 'Confirmed' | 'Cancelled';
 
@@ -215,6 +216,75 @@ export async function saveAdminQuote(
   }
 
   return { record: newRecord, savedToBackend };
+}
+
+/** Corporate Decoration enquiries are enquiry-only (never touch state.cart),
+ * so they don't go through buildEnquiryDetails/mergeBookingFormIntoState -
+ * this builds an equivalent EnquiryDetails shape directly from the form so
+ * the same admin CRM record structure (and "view full details" in the admin
+ * dashboard) still works, and stores the company/corporate-event-type fields
+ * (which EnquiryDetails has no dedicated slot for) in `notes` so nothing is
+ * lost. Reuses saveAdminQuote - same Supabase `quotations` table, same
+ * localStorage fallback, same everything. */
+export async function saveCorporateDecorationEnquiry(
+  details: CorporateDecorationEnquiryDetails,
+  refCode: string
+): Promise<{ savedToBackend: boolean }> {
+  const fullDetails: EnquiryDetails = {
+    eventTypeId: 'corporate_event',
+    eventTypeLabel: 'Corporate Event',
+    customerName: details.customerName,
+    customerPhone: details.phone,
+    customerEmail: details.email,
+    eventDate: details.eventDate,
+    location: details.location,
+    guestCount: Number(details.guestCount) || 0,
+    specialRequirements: details.message,
+    sections: [
+      {
+        categoryKey: 'decoration',
+        label: 'Decoration (Enquiry Only - Not Added to Cart)',
+        icon: '\u{1F380}',
+        lines: details.selectedOptions.map((name) => ({ name, quantity: 1 })),
+      },
+    ],
+    cateringTiming: null,
+    cateringGuestCount: null,
+    cateringSections: [],
+    requestedExtras: [],
+    estimatedTotal: 0,
+    totalSelectionsCount: details.selectedOptions.length,
+  };
+
+  const notes = [
+    '[CORPORATE DECORATION ENQUIRY]',
+    `Company: ${details.companyName || 'Not provided'}`,
+    `Corporate Event Type: ${details.corporateEventType || 'Not specified'}`,
+    `Selected Decoration Options: ${details.selectedOptions.join(', ') || 'None'}`,
+    details.message ? `\nAdditional Requirements: ${details.message}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  const { savedToBackend } = await saveAdminQuote({
+    refCode,
+    customerName: details.customerName,
+    customerPhone: details.phone,
+    customerEmail: details.email,
+    weddingDate: details.eventDate,
+    venueCity: details.location,
+    venueAddress: '',
+    guestCount: Number(details.guestCount) || 0,
+    cateringTier: 'custom',
+    photographyTier: 'Corporate Event',
+    purohitTier: 'corporate-decoration-enquiry',
+    selectedServicesCount: details.selectedOptions.length,
+    estimatedCost: 0,
+    notes,
+    fullDetails,
+  });
+
+  return { savedToBackend };
 }
 
 export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteRequest[] {

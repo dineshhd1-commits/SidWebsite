@@ -13,6 +13,7 @@ import {
 import { getCatalogItems } from '@/lib/data/catalog';
 import { DecorationDiscovery } from '@/components/builder/DecorationDiscovery';
 import { CatalogChecklist } from '@/components/builder/CatalogChecklist';
+import { CorporateDecorationSection } from '@/components/builder/CorporateDecorationSection';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 
 interface DecorationStepProps {
@@ -36,6 +37,7 @@ const ADDON_GROUP_LABELS: Record<string, string> = {
 
 export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace, onUpdateQuantity }: DecorationStepProps) {
   const isWedding = state.eventTypeId === 'wedding';
+  const isCorporate = state.eventTypeId === 'corporate_event';
 
   // Wedding: fetch the three add-on checklists. Every other event type
   // browses the real decoration photo gallery instead, scoped to only the
@@ -53,7 +55,8 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
     (line) => line.categoryKey === 'decoration' && line.groupId === 'decoration-inspiration'
   );
   const selectedPhotoId = decorationLine ? decorationPhotoIdFromCartItemId(decorationLine.id) : null;
-  const allowedCategories = !isWedding && state.eventTypeId ? getDecorationCategoriesForEventType(state.eventTypeId).map((c) => c.slug) : undefined;
+  const allowedCategories =
+    !isWedding && !isCorporate && state.eventTypeId ? getDecorationCategoriesForEventType(state.eventTypeId).map((c) => c.slug) : undefined;
 
   const handleSelectPhoto = (photo: DecorationPhoto) => {
     const newItem = decorationPhotoToCartItem(photo);
@@ -75,6 +78,8 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
         <p className="text-xs text-maroon-700/80">
           {isWedding
             ? 'Choose your decoration add-on services below.'
+            : isCorporate
+            ? 'Select the decoration services you need and enquire - corporate decor is fully customised, so our team will follow up with pricing.'
             : 'Browse real decorations from our past events and pick the style you love.'}
         </p>
       </div>
@@ -110,6 +115,8 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
             })}
           </div>
         )
+      ) : isCorporate ? (
+        <CorporateDecorationSection state={state} />
       ) : (
         <DecorationDiscovery
           selectedPhotoId={selectedPhotoId}

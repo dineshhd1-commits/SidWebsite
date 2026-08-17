@@ -1,271 +1,146 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronDown, Sparkles, X } from 'lucide-react';
-import {
-  DECORATION_CATEGORIES,
-  getDecorationPhotoById,
-  getDecorationPhotosByCategory,
-  getSimilarDecorationPhotos,
-} from '@/lib/data/decoration-inspiration';
+import { motion } from 'framer-motion';
+import { Check, Images } from 'lucide-react';
+import { getDecorationPhotosByCategory } from '@/lib/data/decoration-inspiration';
 import { DecorationPhoto } from '@/lib/types/decoration-inspiration';
 
-const RECOMMENDATION_COUNT = 8;
-const INITIAL_VISIBLE_COUNT = 12;
+/** Single photo tile in the gallery grid - clicking it is the entire
+ * interaction: toggles this exact photo in/out of Your Selections right
+ * where the customer is browsing. No detail view, no "similar photos". */
+function DecorationPhotoTile({
+  photo,
+  isSelected,
+  onToggle,
+}: {
+  photo: DecorationPhoto;
+  isSelected: boolean;
+  onToggle: (photo: DecorationPhoto) => void;
+}) {
+  const [failed, setFailed] = useState(false);
 
-interface DecorationDiscoveryProps {
-  /** The photo id currently added to the customer's cart, if any (restored
-   * from state.cart when this step is revisited). */
-  selectedPhotoId: string | null;
-  /** Called whenever a photo is clicked - this IS the "add to cart" action,
-   * there's no separate select/confirm button. */
-  onSelectPhoto: (photo: DecorationPhoto) => void;
-  /** Called when the customer closes/clears their current pick. */
-  onRemoveSelection: () => void;
-  /** Restricts both the category filter chips and the photos shown to just
-   * these category slugs - e.g. Birthday never sees Bridal Entry or Mantap
-   * Decoration photos, which are wedding/reception-only. Omit to show
-   * everything (kept for flexibility, though every caller currently passes
-   * a scoped list). */
-  allowedCategories?: string[];
+  return (
+    <motion.button
+      type="button"
+      onClick={() => onToggle(photo)}
+      whileTap={{ scale: 0.96 }}
+      aria-pressed={isSelected}
+      className={`group relative aspect-square rounded-xl overflow-hidden border-2 transition-colors ${
+        isSelected ? 'border-gold-500 ring-2 ring-gold-400' : 'border-gold-200 hover:border-gold-400'
+      }`}
+    >
+      {failed ? (
+        <div className="w-full h-full bg-gold-100 flex items-center justify-center text-gold-600/70">
+          <Images className="w-6 h-6" />
+        </div>
+      ) : (
+        <Image
+          src={photo.src}
+          alt={photo.categoryLabel}
+          fill
+          sizes="(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 33vw"
+          loading="lazy"
+          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${isSelected ? 'brightness-90' : ''}`}
+          onError={() => setFailed(true)}
+        />
+      )}
+
+      {isSelected && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="absolute inset-0 bg-maroon-950/25 flex items-center justify-center"
+        >
+          <span className="w-9 h-9 rounded-full bg-emerald-600 border-2 border-white flex items-center justify-center shadow-lg">
+            <Check className="w-5 h-5 text-white" />
+          </span>
+        </motion.div>
+      )}
+    </motion.button>
+  );
 }
 
-/** Pinterest/Amazon-style "browse and discover" gallery for the client's real
- * decoration photos. Clicking a photo sets it as the customer's decoration
- * pick for their quote. */
-export function DecorationDiscovery({ selectedPhotoId, onSelectPhoto, onRemoveSelection, allowedCategories }: DecorationDiscoveryProps) {
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedId, setSelectedId] = useState<string | null>(selectedPhotoId);
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
-  const selectedPanelRef = useRef<HTMLDivElement>(null);
+interface DecorationCategorySectionProps {
+  slug: string;
+  label: string;
+  selectedPhotoIds: Set<string>;
+  onTogglePhoto: (photo: DecorationPhoto) => void;
+}
 
-  const visibleCategoryChips = useMemo(
-    () => (allowedCategories ? DECORATION_CATEGORIES.filter((c) => allowedCategories.includes(c.slug)) : DECORATION_CATEGORIES),
-    [allowedCategories]
+/** One category's full gallery - every photo the client has for this
+ * category, always, never paginated or capped. */
+function DecorationCategorySection({ slug, label, selectedPhotoIds, onTogglePhoto }: DecorationCategorySectionProps) {
+  const photos = getDecorationPhotosByCategory(slug);
+  const selectedCount = photos.filter((p) => selectedPhotoIds.has(p.id)).length;
+
+  if (photos.length === 0) return null;
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="font-playfair text-lg font-bold text-maroon-900">{label}</h3>
+        <span className="text-[10px] font-bold text-maroon-700/60 uppercase tracking-wide shrink-0">
+          {photos.length} photo{photos.length === 1 ? '' : 's'}
+          {selectedCount > 0 && (
+            <span className="ml-2 text-gold-700 bg-gold-100 border border-gold-300 rounded-full px-2 py-0.5">
+              {selectedCount} selected
+            </span>
+          )}
+        </span>
+      </div>
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-3">
+        {photos.map((photo) => (
+          <DecorationPhotoTile key={photo.id} photo={photo} isSelected={selectedPhotoIds.has(photo.id)} onToggle={onTogglePhoto} />
+        ))}
+      </div>
+    </div>
   );
+}
 
-  // If the active category filter isn't relevant to this event type (e.g. the
-  // event type changed), fall back to "All Styles" instead of showing an
-  // empty grid stuck on a filtered-out category.
-  useEffect(() => {
-    if (activeCategory !== 'all' && !visibleCategoryChips.some((c) => c.slug === activeCategory)) {
-      setActiveCategory('all');
-    }
-  }, [activeCategory, visibleCategoryChips]);
+interface DecorationDiscoveryProps {
+  /** Every category relevant to the customer's chosen event type, in display order. */
+  categories: { slug: string; label: string }[];
+  /** Photo ids (DecorationPhoto.id, not cart item id) currently in the cart. */
+  selectedPhotoIds: Set<string>;
+  /** Toggles one exact photo in/out of Your Selections. */
+  onTogglePhoto: (photo: DecorationPhoto) => void;
+}
 
-  const allBrowseItems = useMemo(() => {
-    const items = getDecorationPhotosByCategory(activeCategory);
-    return allowedCategories ? items.filter((p) => allowedCategories.includes(p.category)) : items;
-  }, [activeCategory, allowedCategories]);
-  const browseItems = allBrowseItems.slice(0, visibleCount);
-  const hasMore = allBrowseItems.length > browseItems.length;
+/** Premium decor-catalog style gallery: every relevant category, every photo
+ * the client has for it, shown directly - no filter-then-reveal, no detail
+ * page, no recommendation carousel. A small chip row lets the customer jump
+ * to a category on a long page without hiding anything. */
+export function DecorationDiscovery({ categories, selectedPhotoIds, onTogglePhoto }: DecorationDiscoveryProps) {
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // Reset how many photos are shown whenever the category filter changes,
-  // so switching categories doesn't leave a huge grid expanded.
-  useEffect(() => {
-    setVisibleCount(INITIAL_VISIBLE_COUNT);
-  }, [activeCategory]);
-
-  const selected = selectedId ? getDecorationPhotoById(selectedId) : null;
-  const similar = useMemo(() => {
-    if (!selectedId) return [];
-    // The full photo library is small (~180 photos), so pulling a generous
-    // pool before filtering to allowed categories comfortably still fills
-    // the recommendation strip.
-    const pool = getSimilarDecorationPhotos(selectedId, allowedCategories ? 60 : RECOMMENDATION_COUNT);
-    const filtered = allowedCategories ? pool.filter((p) => allowedCategories.includes(p.category)) : pool;
-    return filtered.slice(0, RECOMMENDATION_COUNT);
-  }, [selectedId, allowedCategories]);
-
-  const handleSelect = (id: string) => {
-    const photo = getDecorationPhotoById(id);
-    if (!photo) return;
-    setSelectedId(id);
-    onSelectPhoto(photo);
-    requestAnimationFrame(() => {
-      selectedPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  };
-
-  const handleClose = () => {
-    setSelectedId(null);
-    onRemoveSelection();
+  const jumpTo = (slug: string) => {
+    sectionRefs.current[slug]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <span className="text-gold-600 font-semibold text-[10px] uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300 inline-flex items-center gap-1.5">
-          <Sparkles className="w-3 h-3" /> Get Inspired
-        </span>
-        <h3 className="font-playfair text-xl font-bold text-maroon-900 mt-2">Explore Decoration Styles</h3>
-        <p className="text-xs text-maroon-700/80 mt-1 max-w-xl">
-          Real decorations from our past events. Tap a photo to make it your pick.
-        </p>
-      </div>
-
-      {/* Category filter chips */}
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-        <button
-          type="button"
-          onClick={() => setActiveCategory('all')}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wide border transition-colors ${
-            activeCategory === 'all'
-              ? 'bg-maroon-900 text-gold-200 border-maroon-900'
-              : 'bg-white text-maroon-700 border-gold-300 hover:border-gold-500'
-          }`}
-        >
-          All Styles
-        </button>
-        {visibleCategoryChips.map((c) => (
-          <button
-            key={c.slug}
-            type="button"
-            onClick={() => setActiveCategory(c.slug)}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wide border transition-colors ${
-              activeCategory === c.slug
-                ? 'bg-maroon-900 text-gold-200 border-maroon-900'
-                : 'bg-white text-maroon-700 border-gold-300 hover:border-gold-500'
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Browse grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {browseItems.map((photo) => (
-          <motion.button
-            key={photo.id}
-            type="button"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => handleSelect(photo.id)}
-            className={`group relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-colors ${
-              selectedId === photo.id ? 'border-gold-500 ring-2 ring-gold-400/60' : 'border-gold-200'
-            }`}
-          >
-            <Image
-              src={photo.src}
-              alt={photo.categoryLabel}
-              fill
-              sizes="(min-width: 1024px) 22vw, (min-width: 640px) 30vw, 45vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/70 via-maroon-950/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold uppercase tracking-wide text-gold-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
-              {photo.categoryLabel}
-            </span>
-            {selectedId === photo.id && (
-              <span className="absolute top-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                <Check className="w-3 h-3" /> Picked
-              </span>
-            )}
-          </motion.button>
-        ))}
-      </div>
-
-      {hasMore && (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => setVisibleCount((c) => c + INITIAL_VISIBLE_COUNT)}
-            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest border-2 border-gold-400 text-maroon-800 hover:bg-gold-100/60 transition-colors"
-          >
-            Show More Photos ({allBrowseItems.length - browseItems.length} left)
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
+    <div className="space-y-8">
+      {categories.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          {categories.map((c) => (
+            <button
+              key={c.slug}
+              type="button"
+              onClick={() => jumpTo(c.slug)}
+              className="shrink-0 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wide border border-gold-300 bg-white text-maroon-700 hover:border-gold-500 hover:text-maroon-900 transition-colors"
+            >
+              {c.label}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* Selected decoration + Similar Decorations */}
-      <AnimatePresence mode="wait">
-        {selected && (
-          <motion.div
-            key={selected.id}
-            ref={selectedPanelRef}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="rounded-3xl border-2 border-gold-400/50 bg-gradient-to-br from-silk-50 via-white to-gold-50 p-4 sm:p-6 space-y-5 shadow-gold-glow scroll-mt-24"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gold-700">{selected.categoryLabel}</span>
-                  <span className="bg-emerald-700 text-white text-[9px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                    <Check className="w-2.5 h-2.5" /> Added to Your Event
-                  </span>
-                </div>
-                <h4 className="font-playfair text-lg font-bold text-maroon-900">Your Decoration Pick</h4>
-              </div>
-              <button
-                type="button"
-                onClick={handleClose}
-                aria-label="Remove this decoration pick"
-                className="text-maroon-700 hover:text-maroon-900 p-2 rounded-full hover:bg-gold-100 transition-colors shrink-0"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="relative w-full h-[260px] sm:h-[380px] lg:h-[460px] rounded-2xl overflow-hidden bg-maroon-950">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selected.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src={selected.src}
-                    alt={selected.categoryLabel}
-                    fill
-                    sizes="(min-width: 1024px) 800px, 100vw"
-                    className="object-contain"
-                    priority
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {similar.length > 0 && (
-              <div>
-                <h5 className="font-playfair text-base font-bold text-maroon-900 mb-3">Similar Decorations</h5>
-                <div className="flex sm:grid sm:grid-cols-4 gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none pb-1 -mx-1 px-1 sm:mx-0 sm:px-0">
-                  {similar.map((photo) => (
-                    <motion.button
-                      key={photo.id}
-                      type="button"
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.96 }}
-                      onClick={() => handleSelect(photo.id)}
-                      className="group relative shrink-0 w-28 sm:w-auto aspect-square rounded-xl overflow-hidden border-2 border-gold-200 hover:border-gold-500 transition-colors snap-start"
-                    >
-                      <Image
-                        src={photo.src}
-                        alt={photo.categoryLabel}
-                        fill
-                        sizes="(min-width: 640px) 20vw, 112px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <span className="absolute bottom-0 inset-x-0 bg-maroon-950/75 text-gold-200 text-[8px] font-bold uppercase tracking-wide px-1.5 py-1 truncate">
-                        {photo.categoryLabel}
-                      </span>
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {categories.map((c) => (
+        <div key={c.slug} ref={(el) => { sectionRefs.current[c.slug] = el; }}>
+          <DecorationCategorySection slug={c.slug} label={c.label} selectedPhotoIds={selectedPhotoIds} onTogglePhoto={onTogglePhoto} />
+        </div>
+      ))}
     </div>
   );
 }

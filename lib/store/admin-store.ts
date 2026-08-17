@@ -218,21 +218,25 @@ export async function saveAdminQuote(
   return { record: newRecord, savedToBackend };
 }
 
-/** Corporate Decoration enquiries are enquiry-only (never touch state.cart),
- * so they don't go through buildEnquiryDetails/mergeBookingFormIntoState -
- * this builds an equivalent EnquiryDetails shape directly from the form so
- * the same admin CRM record structure (and "view full details" in the admin
- * dashboard) still works, and stores the company/corporate-event-type fields
- * (which EnquiryDetails has no dedicated slot for) in `notes` so nothing is
- * lost. Reuses saveAdminQuote - same Supabase `quotations` table, same
+/** Decoration-as-enquiry-only submissions (Corporate Event, Get Together,
+ * Bachelor Party, Birthday, Other Events) are enquiry-only - never touch
+ * state.cart - so they don't go through buildEnquiryDetails/
+ * mergeBookingFormIntoState. This builds an equivalent EnquiryDetails shape
+ * directly from the form so the same admin CRM record structure (and "view
+ * full details" in the admin dashboard) still works, and stores the
+ * company/corporate-event-type fields (which only apply to Corporate Event,
+ * and which EnquiryDetails has no dedicated slot for) in `notes` so nothing
+ * is lost. Reuses saveAdminQuote - same Supabase `quotations` table, same
  * localStorage fallback, same everything. */
 export async function saveCorporateDecorationEnquiry(
   details: CorporateDecorationEnquiryDetails,
   refCode: string
 ): Promise<{ savedToBackend: boolean }> {
+  const isCorporate = details.eventTypeId === 'corporate_event';
+
   const fullDetails: EnquiryDetails = {
-    eventTypeId: 'corporate_event',
-    eventTypeLabel: 'Corporate Event',
+    eventTypeId: details.eventTypeId,
+    eventTypeLabel: details.eventTypeLabel,
     customerName: details.customerName,
     customerPhone: details.phone,
     customerEmail: details.email,
@@ -260,9 +264,9 @@ export async function saveCorporateDecorationEnquiry(
   };
 
   const notes = [
-    '[CORPORATE DECORATION ENQUIRY]',
-    `Company: ${details.companyName || 'Not provided'}`,
-    `Corporate Event Type: ${details.corporateEventType || 'Not specified'}`,
+    isCorporate ? '[CORPORATE DECORATION ENQUIRY]' : `[DECORATION ENQUIRY - ${details.eventTypeLabel.toUpperCase()}]`,
+    isCorporate ? `Company: ${details.companyName || 'Not provided'}` : '',
+    isCorporate ? `Corporate Event Type: ${details.corporateEventType || 'Not specified'}` : '',
     details.selectedOptions.length > 0 ? `Selected Decoration Options: ${details.selectedOptions.join(', ')}` : '',
     details.message ? `\nDecoration Requirements: ${details.message}` : '',
   ]

@@ -21,6 +21,8 @@ const CORPORATE_EVENT_TYPES = [
 ];
 
 interface CorporateDecorationEnquiryModalProps {
+  eventTypeId: string;
+  eventTypeLabel: string;
   /** Decoration option names the customer already checked before opening
    * this modal (e.g. clicking the section-level "Enquire Now"), or a single
    * option when opened from a row's own "Enquire Now" button. */
@@ -29,13 +31,15 @@ interface CorporateDecorationEnquiryModalProps {
   onClose: () => void;
 }
 
-/** Corporate Decoration is enquiry-only: this form never touches
+/** Decoration is enquiry-only for these event types: this form never touches
  * state.cart/addToCart - submitting calls the same real backend the rest of
  * the site uses (Supabase `quotations` row for the admin CRM + a WhatsApp
  * deep link to the configured owner number), then shows an in-modal
  * confirmation with a reference number. Nothing here is a fake/mock
- * notification. */
-export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onClose }: CorporateDecorationEnquiryModalProps) {
+ * notification. Company Name / Corporate Event Type only render for
+ * Corporate Event itself - every other event type gets a simpler form. */
+export function CorporateDecorationEnquiryModal({ eventTypeId, eventTypeLabel, selectedOptions, prefill, onClose }: CorporateDecorationEnquiryModalProps) {
+  const isCorporate = eventTypeId === 'corporate_event';
   const [visible, setVisible] = useState(false);
   const [form, setForm] = useState({
     customerName: prefill.name,
@@ -75,7 +79,7 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
     const errs: string[] = [];
     if (!form.customerName.trim()) errs.push('Please enter your name.');
     if (!/^\d{10}$/.test(form.phone.replace(/\D/g, ''))) errs.push('Please enter a valid 10-digit phone number.');
-    if (!form.companyName.trim()) errs.push('Please enter your company name.');
+    if (isCorporate && !form.companyName.trim()) errs.push('Please enter your company name.');
     if (!form.eventDate) errs.push('Please choose an event date.');
     if (!form.location.trim()) errs.push('Please enter the event location.');
     return errs;
@@ -96,11 +100,13 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
 
     const code = `CDE-${Math.floor(1000 + Math.random() * 9000)}`;
     const details: CorporateDecorationEnquiryDetails = {
+      eventTypeId,
+      eventTypeLabel,
       customerName: form.customerName,
       phone: form.phone,
       email: form.email,
-      companyName: form.companyName,
-      corporateEventType: form.corporateEventType,
+      companyName: isCorporate ? form.companyName : '',
+      corporateEventType: isCorporate ? form.corporateEventType : '',
       eventDate: form.eventDate,
       location: form.location,
       guestCount: form.guestCount,
@@ -114,7 +120,7 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
       // reached the owner. WhatsApp (opened below) still gets it to them
       // even if the database write failed, matching the main booking flow's
       // fallback behaviour.
-      console.warn('Corporate decoration enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
+      console.warn('Decoration enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
     }
 
     const waUrl = getCorporateDecorationEnquiryWhatsAppUrl(details, code, SITE.whatsappNumber);
@@ -147,7 +153,7 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
             <div className="space-y-2">
               <h3 className="font-playfair text-2xl font-bold text-maroon-900">Enquiry Received!</h3>
               <p className="text-sm text-maroon-700/80">
-                Your Corporate Decoration enquiry has been sent. Our concerned representative will contact you shortly to discuss your requirements and pricing.
+                Your decoration enquiry has been sent. Our concerned representative will contact you shortly to discuss your requirements and pricing.
               </p>
             </div>
             <div className="bg-gold-50 border border-gold-300 rounded-2xl px-5 py-4 flex items-center justify-between">
@@ -166,7 +172,7 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
                   <Building2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-playfair text-lg font-bold text-maroon-900">Corporate Decoration Enquiry</h3>
+                  <h3 className="font-playfair text-lg font-bold text-maroon-900">{eventTypeLabel} Decoration Enquiry</h3>
                   <p className="text-[11px] text-maroon-700/70">We&apos;ll get back to you with custom pricing.</p>
                 </div>
               </div>
@@ -237,45 +243,49 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className={`grid grid-cols-1 gap-3.5 ${isCorporate ? 'sm:grid-cols-2' : ''}`}>
                   <div>
                     <label className="block text-xs font-bold text-maroon-900 mb-1">Email Address</label>
                     <input
                       type="email"
-                      placeholder="priya@company.com"
+                      placeholder="you@example.com"
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-maroon-900 mb-1">
-                      Company Name <span className="text-rose-600">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Acme Technologies"
-                      value={form.companyName}
-                      onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-                      className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
-                    />
-                  </div>
+                  {isCorporate && (
+                    <div>
+                      <label className="block text-xs font-bold text-maroon-900 mb-1">
+                        Company Name <span className="text-rose-600">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Acme Technologies"
+                        value={form.companyName}
+                        onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                        className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-maroon-900 mb-1">Corporate Event Type</label>
-                  <select
-                    value={form.corporateEventType}
-                    onChange={(e) => setForm({ ...form, corporateEventType: e.target.value })}
-                    className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
-                  >
-                    {CORPORATE_EVENT_TYPES.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {isCorporate && (
+                  <div>
+                    <label className="block text-xs font-bold text-maroon-900 mb-1">Corporate Event Type</label>
+                    <select
+                      value={form.corporateEventType}
+                      onChange={(e) => setForm({ ...form, corporateEventType: e.target.value })}
+                      className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
+                    >
+                      {CORPORATE_EVENT_TYPES.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>

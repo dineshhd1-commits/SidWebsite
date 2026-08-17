@@ -99,7 +99,7 @@ export function mergeBookingFormIntoState(state: EventBuilderState, formData: Bo
   };
 }
 
-function getEventTypeLabel(eventTypeId: string | null): string {
+export function getEventTypeLabel(eventTypeId: string | null): string {
   if (!eventTypeId) return 'Not specified';
   const match = MOCK_EVENT_TYPES.find((t) => t.id === eventTypeId);
   return match?.name || eventTypeId;

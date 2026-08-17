@@ -234,7 +234,6 @@ function CustomBuilderPageInner() {
             state={state}
             onAddToCart={(item) => addToCart(item, 1, 'paid_extra')}
             onRemoveFromCart={removeFromCart}
-            onReplace={(oldId, item) => replaceInCart(oldId, item, 1, 'paid_extra')}
             onUpdateQuantity={updateQuantity}
           />
         );

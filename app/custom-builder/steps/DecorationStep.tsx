@@ -20,7 +20,6 @@ interface DecorationStepProps {
   state: EventBuilderState;
   onAddToCart: (item: CatalogItem) => void;
   onRemoveFromCart: (id: string) => void;
-  onReplace: (oldId: string, item: CatalogItem) => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
 }
 
@@ -35,9 +34,15 @@ const ADDON_GROUP_LABELS: Record<string, string> = {
   'dec-welcome-girls': 'Welcome Girls',
 };
 
-export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace, onUpdateQuantity }: DecorationStepProps) {
+/** Event types where decoration is enquiry-only (a single "Enquire Now",
+ * no browsable gallery, nothing added to the cart) - Corporate Event
+ * started this, now Get Together, Bachelor Party, Birthday and Other
+ * Events use the exact same flow. */
+const ENQUIRY_ONLY_EVENT_TYPES = ['corporate_event', 'get_together', 'bachelor_party', 'birthday', 'other_events'];
+
+export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onUpdateQuantity }: DecorationStepProps) {
   const isWedding = state.eventTypeId === 'wedding';
-  const isCorporate = state.eventTypeId === 'corporate_event';
+  const isEnquiryOnly = !!state.eventTypeId && ENQUIRY_ONLY_EVENT_TYPES.includes(state.eventTypeId);
 
   // Wedding: fetch the three add-on checklists. Every other event type
   // browses the real decoration photo gallery instead, scoped to only the
@@ -51,24 +56,32 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
     });
   }, [state.eventTypeId, isWedding]);
 
-  const decorationLine = Object.values(state.cart).find(
-    (line) => line.categoryKey === 'decoration' && line.groupId === 'decoration-inspiration'
+  // Every decoration photo currently in the cart, keyed by the photo's own id
+  // (not the cart item id) - the gallery is multi-select, so any number of
+  // these can be selected at once, across any number of categories.
+  const selectedPhotoIds = new Set(
+    Object.values(state.cart)
+      .filter((line) => line.categoryKey === 'decoration' && line.groupId === 'decoration-inspiration')
+      .map((line) => decorationPhotoIdFromCartItemId(line.id))
+      .filter((id): id is string => !!id)
   );
-  const selectedPhotoId = decorationLine ? decorationPhotoIdFromCartItemId(decorationLine.id) : null;
-  const allowedCategories =
-    !isWedding && !isCorporate && state.eventTypeId ? getDecorationCategoriesForEventType(state.eventTypeId).map((c) => c.slug) : undefined;
 
-  const handleSelectPhoto = (photo: DecorationPhoto) => {
-    const newItem = decorationPhotoToCartItem(photo);
-    if (decorationLine && decorationLine.id !== decorationCartItemId(photo.id)) {
-      onReplace(decorationLine.id, newItem);
+  const categories = !isWedding && !isEnquiryOnly && state.eventTypeId ? getDecorationCategoriesForEventType(state.eventTypeId) : [];
+
+  /** Clicking a photo is the entire interaction: toggles that exact photo
+   * in/out of Your Selections immediately, right where the customer is
+   * browsing - no detail view, no replace-the-old-pick logic (every photo
+   * is now its own independent cart line, so multiple photos - from the
+   * same category or different ones - can be selected at once). Clicking an
+   * already-selected photo removes it; nothing is ever duplicated since the
+   * cart is keyed by the photo's own id. */
+  const handleTogglePhoto = (photo: DecorationPhoto) => {
+    const cartId = decorationCartItemId(photo.id);
+    if (state.cart[cartId]) {
+      onRemoveFromCart(cartId);
     } else {
-      onAddToCart(newItem);
+      onAddToCart(decorationPhotoToCartItem(photo));
     }
-  };
-
-  const handleRemoveSelection = () => {
-    if (decorationLine) onRemoveFromCart(decorationLine.id);
   };
 
   return (
@@ -78,9 +91,9 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
         <p className="text-xs text-maroon-700/80">
           {isWedding
             ? 'Choose your decoration add-on services below.'
-            : isCorporate
-            ? 'Select the decoration services you need and enquire - corporate decor is fully customised, so our team will follow up with pricing.'
-            : 'Browse real decorations from our past events and pick the style you love.'}
+            : isEnquiryOnly
+            ? "Decoration for this event is fully customised, so just tell us what you need and we'll follow up with pricing."
+            : 'Browse our client photo catalog and tap any photo you like - you can pick as many as you want, across every category.'}
         </p>
       </div>
 
@@ -115,15 +128,15 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
             })}
           </div>
         )
-      ) : isCorporate ? (
+      ) : isEnquiryOnly ? (
         <CorporateDecorationSection state={state} />
-      ) : (
-        <DecorationDiscovery
-          selectedPhotoId={selectedPhotoId}
-          onSelectPhoto={handleSelectPhoto}
-          onRemoveSelection={handleRemoveSelection}
-          allowedCategories={allowedCategories}
+      ) : categories.length === 0 ? (
+        <EmptyState
+          title="Decoration catalog not available yet"
+          description="Our decoration photos for this event type are still being added."
         />
+      ) : (
+        <DecorationDiscovery categories={categories} selectedPhotoIds={selectedPhotoIds} onTogglePhoto={handleTogglePhoto} />
       )}
     </div>
   );

@@ -174,13 +174,6 @@ export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdate
 
       {showGroupHeadings ? (
         <div className="space-y-6">
-          {groupsWithItems.map(({ group, groupItems }) => (
-            <div key={group.id} className="space-y-3">
-              <h3 className="font-playfair text-lg font-bold text-maroon-900">{group.name}</h3>
-              {renderGroupChecklist(groupItems)}
-            </div>
-          ))}
-
           {hasPreweddingShoot && (
             <PreWeddingShootSection
               durationItems={preweddingDurationItems}
@@ -192,6 +185,13 @@ export function PhotographyStep({ state, onAddToCart, onRemoveFromCart, onUpdate
               onReplace={onReplace}
             />
           )}
+
+          {groupsWithItems.map(({ group, groupItems }) => (
+            <div key={group.id} className="space-y-3">
+              <h3 className="font-playfair text-lg font-bold text-maroon-900">{group.name}</h3>
+              {renderGroupChecklist(groupItems)}
+            </div>
+          ))}
         </div>
       ) : (
         renderGroupChecklist(items)

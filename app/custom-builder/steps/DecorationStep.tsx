@@ -3,23 +3,20 @@
 import React, { useEffect, useState } from 'react';
 import { CatalogItem } from '@/lib/types/catalog';
 import { EventBuilderState } from '@/lib/types/event-builder';
-import { DecorationPhoto } from '@/lib/types/decoration-inspiration';
-import { decorationCartItemId, decorationPhotoIdFromCartItemId, decorationPhotoToCartItem } from '@/lib/data/decoration-inspiration';
 import { getCatalogItems } from '@/lib/data/catalog';
-import { DecorationDiscovery } from '@/components/builder/DecorationDiscovery';
 import { CatalogChecklist } from '@/components/builder/CatalogChecklist';
+import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 
 interface DecorationStepProps {
   state: EventBuilderState;
   onAddToCart: (item: CatalogItem) => void;
   onRemoveFromCart: (id: string) => void;
-  onReplace: (oldId: string, item: CatalogItem) => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
 }
 
 /** Wedding-only decoration add-on services, organised as three ordered
- * checklists (Home Decoration, Venue Decoration, Couple Entry) - separate
- * from the photo-based "pick your style" gallery above, and additive to it. */
+ * checklists in the exact order specified: Home Decoration, Venue Decoration,
+ * Couple Entry. */
 const ADDON_GROUP_IDS = ['dec-home', 'dec-venue', 'dec-couple-entry'];
 const ADDON_GROUP_LABELS: Record<string, string> = {
   'dec-home': 'Home Decoration',
@@ -27,10 +24,7 @@ const ADDON_GROUP_LABELS: Record<string, string> = {
   'dec-couple-entry': 'Couple Entry',
 };
 
-export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace, onUpdateQuantity }: DecorationStepProps) {
-  const decorationLine = Object.values(state.cart).find((line) => line.categoryKey === 'decoration' && line.groupId === 'decoration-inspiration');
-  const selectedPhotoId = decorationLine ? decorationPhotoIdFromCartItemId(decorationLine.id) : null;
-
+export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onUpdateQuantity }: DecorationStepProps) {
   const [addonItems, setAddonItems] = useState<CatalogItem[] | null>(null);
 
   useEffect(() => {
@@ -40,36 +34,24 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace
     });
   }, [state.eventTypeId]);
 
-  const handleSelectPhoto = (photo: DecorationPhoto) => {
-    const newItem = decorationPhotoToCartItem(photo);
-    if (decorationLine && decorationLine.id !== decorationCartItemId(photo.id)) {
-      onReplace(decorationLine.id, newItem);
-    } else {
-      onAddToCart(newItem);
-    }
-  };
-
-  const handleRemoveSelection = () => {
-    if (decorationLine) onRemoveFromCart(decorationLine.id);
-  };
-
   return (
     <div className="space-y-6">
       <div className="border-b border-gold-300/40 pb-4">
         <h2 className="font-playfair text-2xl font-bold text-maroon-900">Step 2: Decoration</h2>
         <p className="text-xs text-maroon-700/80">
-          Browse real decorations from our past events and pick the style you love.
+          Choose your decoration add-on services below.
         </p>
       </div>
 
-      <DecorationDiscovery
-        selectedPhotoId={selectedPhotoId}
-        onSelectPhoto={handleSelectPhoto}
-        onRemoveSelection={handleRemoveSelection}
-      />
-
-      {addonItems && addonItems.length > 0 && (
-        <div className="space-y-6 pt-2">
+      {addonItems === null ? (
+        <LoadingState label="Loading decoration services..." />
+      ) : addonItems.length === 0 ? (
+        <EmptyState
+          title="Decoration catalog not available yet"
+          description="Our decoration services for this event type are still being added."
+        />
+      ) : (
+        <div className="space-y-6">
           {ADDON_GROUP_IDS.map((groupId) => {
             const groupItems = addonItems.filter((i) => i.groupId === groupId);
             if (groupItems.length === 0) return null;

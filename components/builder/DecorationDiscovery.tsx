@@ -4,12 +4,18 @@ import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Check, Images } from 'lucide-react';
-import { getDecorationPhotosByCategory } from '@/lib/data/decoration-inspiration';
+import { getDecorationPhotosByCategory, getWatermarkedDecorationSrc } from '@/lib/data/decoration-inspiration';
 import { DecorationPhoto } from '@/lib/types/decoration-inspiration';
 
 /** Single photo tile in the gallery grid - clicking it is the entire
  * interaction: toggles this exact photo in/out of Your Selections right
- * where the customer is browsing. No detail view, no "similar photos". */
+ * where the customer is browsing. No detail view, no "similar photos".
+ *
+ * Always renders the pre-watermarked version of the photo (client logo
+ * baked into the actual image bytes, bottom-right corner) rather than the
+ * raw source, and layers on reasonable web-level copy protection - right-
+ * click, drag, and the iOS long-press "Save to Photos" callout are all
+ * disabled. None of this touches the click-to-select interaction itself. */
 function DecorationPhotoTile({
   photo,
   isSelected,
@@ -25,9 +31,11 @@ function DecorationPhotoTile({
     <motion.button
       type="button"
       onClick={() => onToggle(photo)}
+      onContextMenu={(e) => e.preventDefault()}
       whileTap={{ scale: 0.96 }}
       aria-pressed={isSelected}
-      className={`group relative aspect-square rounded-xl overflow-hidden border-2 transition-colors ${
+      style={{ WebkitTouchCallout: 'none', WebkitUserDrag: 'none' } as React.CSSProperties}
+      className={`group relative aspect-square rounded-xl overflow-hidden border-2 select-none transition-colors ${
         isSelected ? 'border-gold-500 ring-2 ring-gold-400' : 'border-gold-200 hover:border-gold-400'
       }`}
     >
@@ -37,12 +45,14 @@ function DecorationPhotoTile({
         </div>
       ) : (
         <Image
-          src={photo.src}
+          src={getWatermarkedDecorationSrc(photo.src)}
           alt={photo.categoryLabel}
           fill
           sizes="(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 33vw"
           loading="lazy"
-          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${isSelected ? 'brightness-90' : ''}`}
+          draggable={false}
+          onDragStart={(e) => e.preventDefault()}
+          className={`object-cover pointer-events-none transition-transform duration-300 group-hover:scale-105 ${isSelected ? 'brightness-90' : ''}`}
           onError={() => setFailed(true)}
         />
       )}

@@ -112,3 +112,15 @@ export function getDecorationPhotosByCategory(category: string | 'all'): Decorat
 export function getDecorationPhotoById(id: string): DecorationPhoto | undefined {
   return ALL_PHOTOS.find((p) => p.id === id);
 }
+
+/** Every decoration photo has a pre-generated, permanently-watermarked
+ * counterpart under /decotion-watermarked (same relative path/extension,
+ * built once via a one-off sharp script - see the "Add Client Logo to Every
+ * Decoration Photo" change) with the client's logo composited into the
+ * bottom-right corner of the actual image bytes. The gallery always displays
+ * this version, never the raw /decotion/ original, so the branding survives
+ * even if someone saves/copies the displayed photo - and since it's a static
+ * pre-built file, there's no runtime image-processing cost per view. */
+export function getWatermarkedDecorationSrc(src: string): string {
+  return src.startsWith('/decotion/') ? `/decotion-watermarked/${src.slice('/decotion/'.length)}` : src;
+}

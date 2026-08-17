@@ -29,7 +29,7 @@ function DishCardImage({ src, alt }: { src: string; alt: string }) {
         alt={alt}
         fill
         sizes="(min-width: 640px) 25vw, 50vw"
-        className="object-contain object-center transition-transform duration-300 group-hover:scale-105"
+        className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
         onError={() => setFailed(true)}
       />
     </div>

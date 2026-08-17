@@ -95,32 +95,25 @@ export default function HomePage() {
 
   const pillars = [
     {
-      title: 'Saptapadi & Temple Mandapams',
-      subtitle: 'Brass Oil Lamps, Fresh Jasmine Veni & Banana Trunk Pillars',
-      desc: 'Authentic temple architecture backdrops with handcrafted brass lamps, lotus floral arches, and golden silk drapes.',
+      title: 'Photography',
+      subtitle: 'Traditional, Candid & Cinematic Coverage',
+      desc: 'Traditional and candid photography and videography, drone coverage, LED wall and live streaming.',
+      img: '/photography-videography-collage.jpg',
+      badge: 'PHOTOGRAPHY',
+    },
+    {
+      title: 'Decoration',
+      subtitle: 'Silver, Gold & Platinum Tier Décor',
+      desc: 'Stage, mandap, entrance and home decor in Silver, Gold and Platinum tiers with floral and lighting design.',
       img: '/sid-party29.jpeg',
-      badge: 'MANDAPAM DECOR',
+      badge: 'DECORATION',
     },
     {
-      title: 'Banana Leaf Royal Sadhya',
-      subtitle: '28-Item Traditional Feast & Live Dosa Counters',
-      desc: 'Authentic South Indian feast served on fresh banana leaves including Payasam, Bisi Bele Bath, Vadai, Mysuru Pak & live mocktails.',
+      title: 'Catering',
+      subtitle: 'Full South Indian Breakfast, Lunch & Dinner Menus',
+      desc: 'Full South Indian menus for breakfast, lunch and dinner - from welcome drinks and starters to desserts and paan.',
       img: '/onam-sadhya-lunch-menu-1.webp',
-      badge: 'CATERING & FEAST',
-    },
-    {
-      title: 'Vedic Rituals & Live Nadaswaram',
-      subtitle: 'Senior Vedic Scholars & Auspicious Thavil Ensemble',
-      desc: 'Experienced Vedic pundits conducting complete Muhurtham, Ganapathi Homa, Saptapadi rites alongside live Nadaswaram ragas.',
-      img: '/ChatGPT Image Jul 28, 2026, 04_57_21 PM.png',
-      badge: 'VEDIC RITES',
-    },
-    {
-      title: 'Wedding Photography Package',
-      subtitle: 'Pre-Wedding Shoot, Wedding Day Coverage & Cinematic Films',
-      desc: 'A 2-day pre-wedding photoshoot plus full wedding day coverage with drone footage, a teaser reel, a complete cinematic song and a premium photo album.',
-      img: '/Sid5.png',
-      badge: 'PHOTOGRAPHY PACKAGE',
+      badge: 'CATERING',
     },
   ];
 
@@ -264,22 +257,22 @@ export default function HomePage() {
 
 
 
-      {/* 3. THE 4 SACRED PILLARS OF SOUTH INDIAN WEDDINGS */}
+      {/* 3. LATEST SERVICES */}
       <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 space-y-16">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <span className="font-script-sm text-gold-600 block">
             Heritage Craftsmanship
           </span>
           <h2 className="font-playfair text-3xl sm:text-5xl font-bold text-maroon-950">
-            The Four Things Every <span className="font-script text-gold-500 font-normal">Muhurtham Needs</span>
+            The Three Things Every <span className="font-script text-gold-500 font-normal">Muhurtham Needs</span>
           </h2>
           <p className="text-sm text-maroon-800/80 leading-relaxed font-sans">
-            Decor, the feast, the rituals and the coverage &mdash; these are the four categories most families start with, and where our custom builder begins too.
+            The décor, the feast and the coverage &mdash; these are the three categories most families start with, and where our custom builder begins too.
           </p>
           <TraditionalBorder />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pillars.map((p, idx) => (
             <div key={idx} className="flex flex-col justify-between bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <div className="relative h-96 sm:h-[440px] lg:h-[500px] w-full">

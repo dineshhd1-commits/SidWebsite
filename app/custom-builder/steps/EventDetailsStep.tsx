@@ -5,6 +5,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { EventDetails } from '@/lib/types/event-builder';
 import { EventType } from '@/lib/types/catalog';
 import { EventTypeSelectField } from '@/components/builder/EventTypeSelectField';
+import { LocationAutocompleteField } from '@/components/builder/LocationAutocompleteField';
 import { isValidCustomerEmail } from '@/lib/builder/validation';
 
 interface EventDetailsStepProps {
@@ -76,14 +77,13 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
         {/* Row 3: Event Location */}
         <div>
           <label className="block text-xs font-bold text-maroon-900 mb-1">Event Location <span className="text-rose-600">*</span></label>
-          <input
-            type="text"
-            required
-            placeholder="e.g. Davanagere"
+          <LocationAutocompleteField
             value={eventDetails.location}
-            onChange={(e) => onChange({ location: e.target.value })}
+            onChange={(location) => onChange({ location })}
+            placeholder="e.g. Davanagere"
             className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
           />
+          <p className="text-[11px] text-maroon-700/70 mt-1">Letters only - start typing a Karnataka city, town or locality to see suggestions.</p>
         </div>
 
         {/* Row 4: Name | Phone */}

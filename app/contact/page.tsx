@@ -8,11 +8,13 @@ import { TraditionalBorder } from '@/components/ui/traditional-border';
 import Image from 'next/image';
 import { Phone, Mail, MapPin, Send, MessageCircle, Sparkles } from 'lucide-react';
 import { SITE, getWhatsAppUrl } from '@/lib/site-config';
+import { isAlphaSpaceOnly, sanitizeAlphaInput } from '@/lib/text-validation';
 
 import { saveAdminInquiry } from '@/lib/store/admin-store';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
   const [contactData, setContactData] = useState({
     fullName: '',
     phone: '',
@@ -21,6 +23,13 @@ export default function ContactPage() {
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const trimmedName = contactData.fullName.trim();
+    if (!trimmedName || !isAlphaSpaceOnly(trimmedName)) {
+      setNameError('Please enter your name using letters only.');
+      return;
+    }
+    setNameError(null);
     setSubmitted(true);
 
     saveAdminInquiry({
@@ -91,9 +100,18 @@ export default function ContactPage() {
                     required
                     placeholder="e.g. Soundarya"
                     value={contactData.fullName}
-                    onChange={(e) => setContactData({ ...contactData, fullName: e.target.value })}
-                    className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 transition-all duration-200 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
+                    onChange={(e) => {
+                      setContactData({ ...contactData, fullName: sanitizeAlphaInput(e.target.value) });
+                      if (nameError) setNameError(null);
+                    }}
+                    aria-invalid={!!nameError}
+                    className={`w-full bg-white border rounded-xl px-4 py-2.5 text-sm text-maroon-900 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                      nameError
+                        ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-400/30'
+                        : 'border-gold-300 focus:border-gold-500 focus:ring-gold-400/30'
+                    }`}
                   />
+                  {nameError && <p className="text-[11px] text-rose-600 font-bold mt-1">{nameError}</p>}
                 </div>
 
                 <div>

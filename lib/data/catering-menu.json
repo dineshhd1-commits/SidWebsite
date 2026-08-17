@@ -791,6 +791,23 @@
         "Magai Paan",
         "Madras Paan"
       ]
+    },
+    {
+      "id": "rice",
+      "name": "Rice",
+      "items": [
+        "Anna"
+      ]
+    },
+    {
+      "id": "fruits",
+      "name": "Fruits",
+      "items": [
+        "Banana",
+        "Cut Fruits",
+        "Fruits Salad",
+        "Custard Salad"
+      ]
     }
   ],
   "mealCategoryIds": {
@@ -800,7 +817,6 @@
     ],
     "lunch": [
       "welcome_drinks",
-      "chats",
       "soups",
       "starters",
       "kosumbri",
@@ -821,22 +837,23 @@
     "dinner": [
       "welcome_drinks",
       "chats",
-      "soups",
       "starters",
-      "kosumbri",
       "pickles",
+      "kosumbri",
       "dry_palya",
+      "desserts",
       "roti",
       "gravies",
       "pulao_biryani",
       "bajji_bonda",
       "chatpata_papad",
-      "curd_raitha",
+      "rice",
       "sambar",
       "rasam",
+      "curd_raitha",
       "ice_cream",
-      "desserts",
-      "paan"
+      "paan",
+      "fruits"
     ]
   },
   "categoryLimits": {
@@ -859,7 +876,8 @@
     "rasam": 1,
     "ice_cream": 2,
     "paan": 1,
-    "desserts": 3
+    "desserts": 3,
+    "fruits": 1
   },
   "breakfastEventTypes": [
     "wedding",
@@ -876,5 +894,38 @@
     "other_events",
     "shrimantha_karya",
     "half_saree_function"
-  ]
+  ],
+  "mealSections": {
+    "dinner": [
+      {
+        "name": "Snacks",
+        "categoryIds": [
+          "welcome_drinks",
+          "chats",
+          "starters"
+        ]
+      },
+      {
+        "name": "Main Course",
+        "categoryIds": [
+          "pickles",
+          "kosumbri",
+          "dry_palya",
+          "desserts",
+          "roti",
+          "gravies",
+          "pulao_biryani",
+          "bajji_bonda",
+          "chatpata_papad",
+          "rice",
+          "sambar",
+          "rasam",
+          "curd_raitha",
+          "ice_cream",
+          "paan",
+          "fruits"
+        ]
+      }
+    ]
+  }
 }

@@ -19,6 +19,14 @@ export interface CateringMenuCategory {
   maxSelections?: number;
 }
 
+/** A named grouping of categories within a meal's menu - currently only the
+ * Evening/Dinner menu is split this way (Snacks / Main Course). Meals with no
+ * entry here render their categories as a single flat list, unchanged. */
+export interface CateringMenuSection {
+  name: string;
+  categories: CateringMenuCategory[];
+}
+
 export interface CateringSelectionLine {
   categoryId: string;
   categoryName: string;

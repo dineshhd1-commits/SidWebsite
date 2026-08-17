@@ -4,8 +4,8 @@ import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ChevronRight, Search, UtensilsCrossed, X } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
-import { CateringMenuCategory, CateringTiming } from '@/lib/types/catering-menu';
-import { getCategoriesForTiming, isBreakfastAvailableForEventType } from '@/lib/data/catering-menu';
+import { CateringMenuCategory, CateringMenuSection, CateringTiming } from '@/lib/types/catering-menu';
+import { getCategoriesForTiming, getSectionsForTiming, isBreakfastAvailableForEventType } from '@/lib/data/catering-menu';
 import { GlassCard } from '@/components/ui/glass-card';
 import { EmptyState } from '@/components/builder/EmptyState';
 
@@ -17,6 +17,46 @@ interface CateringStepProps {
   onSetTiming: (timing: CateringTiming) => void;
   onSetGuestCount: (timing: CateringTiming, guestCount: number) => void;
   onToggleItem: (categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
+}
+
+/** One clickable category tile in the browse grid - opens that category's
+ * dish-picker modal. Shared between the flat list and the sectioned
+ * (Snacks / Main Course) layouts so both look identical. */
+function CategoryTile({
+  category,
+  selectedInCategory,
+  onOpen,
+}: {
+  category: CateringMenuCategory;
+  selectedInCategory: number;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl border border-gold-300 bg-white text-left shadow-sm hover:shadow-md hover:border-gold-400 hover:-translate-y-0.5 transition-all"
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="w-9 h-9 rounded-xl bg-gold-100 border border-gold-300 flex items-center justify-center shrink-0 text-gold-700">
+          <UtensilsCrossed className="w-4 h-4" />
+        </div>
+        <div className="min-w-0">
+          <p className="font-playfair text-sm font-bold text-maroon-900 truncate">{category.name}</p>
+          <p className="text-[10px] text-maroon-700/70">
+            {category.items.length} dish{category.items.length === 1 ? '' : 'es'}
+            {category.maxSelections !== undefined && <span className="ml-1">(max {category.maxSelections})</span>}
+            {selectedInCategory > 0 && (
+              <span className="ml-2 text-gold-700 font-bold uppercase tracking-wide bg-gold-100 border border-gold-300 rounded-full px-1.5 py-0.5">
+                {selectedInCategory} selected
+              </span>
+            )}
+          </p>
+        </div>
+      </div>
+      <ChevronRight className="w-4 h-4 text-maroon-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+    </button>
+  );
 }
 
 const TIMING_OPTIONS: { id: CateringTiming; label: string; hint: string }[] = [
@@ -31,16 +71,29 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
 
   const breakfastAvailable = isBreakfastAvailableForEventType(state.eventTypeId);
   const categories = state.cateringTiming ? getCategoriesForTiming(state.cateringTiming, state.eventTypeId) : [];
+  // Only the Evening/Dinner menu has a Snacks / Main Course split - other
+  // timings (Morning, Afternoon) get null here and keep their existing flat list.
+  const sections = state.cateringTiming ? getSectionsForTiming(state.cateringTiming, state.eventTypeId) : null;
 
   const normalizedSearch = search.trim().toLowerCase();
-  const visibleCategories: CateringMenuCategory[] = useMemo(() => {
-    if (!normalizedSearch) return categories;
-    return categories.filter(
-      (category) =>
-        category.name.toLowerCase().includes(normalizedSearch) ||
-        category.items.some((item) => item.name.toLowerCase().includes(normalizedSearch))
-    );
-  }, [categories, normalizedSearch]);
+  const matchesSearch = (category: CateringMenuCategory) =>
+    !normalizedSearch ||
+    category.name.toLowerCase().includes(normalizedSearch) ||
+    category.items.some((item) => item.name.toLowerCase().includes(normalizedSearch));
+
+  const visibleCategories: CateringMenuCategory[] = useMemo(
+    () => categories.filter(matchesSearch),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [categories, normalizedSearch]
+  );
+
+  const visibleSections: CateringMenuSection[] | null = useMemo(() => {
+    if (!sections) return null;
+    return sections
+      .map((section) => ({ name: section.name, categories: section.categories.filter(matchesSearch) }))
+      .filter((section) => section.categories.length > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sections, normalizedSearch]);
 
   const selectedCount = Object.keys(state.cateringSelections).length;
   const selectionsByCategory = useMemo(() => {
@@ -146,42 +199,40 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
               )}
             </div>
 
-            {visibleCategories.length === 0 ? (
+            {visibleSections ? (
+              visibleSections.length === 0 ? (
+                <EmptyState title="No categories found" description="Try a different search term." />
+              ) : (
+                <div className="space-y-5">
+                  {visibleSections.map((section) => (
+                    <div key={section.name} className="space-y-3">
+                      <h3 className="font-playfair text-base font-bold text-maroon-900">{section.name}</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {section.categories.map((category) => (
+                          <CategoryTile
+                            key={category.id}
+                            category={category}
+                            selectedInCategory={category.items.filter((item) => state.cateringSelections[item.id]).length}
+                            onOpen={() => setModalCategoryId(category.id)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : visibleCategories.length === 0 ? (
               <EmptyState title="No categories found" description="Try a different search term." />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {visibleCategories.map((category) => {
-                  const selectedInCategory = category.items.filter((item) => state.cateringSelections[item.id]).length;
-                  return (
-                    <button
-                      key={category.id}
-                      type="button"
-                      onClick={() => setModalCategoryId(category.id)}
-                      className="group flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl border border-gold-300 bg-white text-left shadow-sm hover:shadow-md hover:border-gold-400 hover:-translate-y-0.5 transition-all"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-9 h-9 rounded-xl bg-gold-100 border border-gold-300 flex items-center justify-center shrink-0 text-gold-700">
-                          <UtensilsCrossed className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-playfair text-sm font-bold text-maroon-900 truncate">{category.name}</p>
-                          <p className="text-[10px] text-maroon-700/70">
-                            {category.items.length} dish{category.items.length === 1 ? '' : 'es'}
-                            {category.maxSelections !== undefined && (
-                              <span className="ml-1">(max {category.maxSelections})</span>
-                            )}
-                            {selectedInCategory > 0 && (
-                              <span className="ml-2 text-gold-700 font-bold uppercase tracking-wide bg-gold-100 border border-gold-300 rounded-full px-1.5 py-0.5">
-                                {selectedInCategory} selected
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-maroon-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  );
-                })}
+                {visibleCategories.map((category) => (
+                  <CategoryTile
+                    key={category.id}
+                    category={category}
+                    selectedInCategory={category.items.filter((item) => state.cateringSelections[item.id]).length}
+                    onOpen={() => setModalCategoryId(category.id)}
+                  />
+                ))}
               </div>
             )}
           </div>

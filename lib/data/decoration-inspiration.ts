@@ -18,18 +18,30 @@ export function decorationPhotoIdFromCartItemId(cartItemId: string): string | nu
     : null;
 }
 
+/** The numeric suffix on a photo id (e.g. "bridal-entry-3" -> "3") - used to
+ * give the customer's pick a specific, identifiable name ("Bridal Entry
+ * Ideas - Design #3") rather than just the category, so a selection records
+ * exactly which design was chosen, not only which category it came from. */
+function photoDesignNumber(photoId: string): string {
+  const match = photoId.match(/(\d+)$/);
+  return match ? match[1] : photoId;
+}
+
 /** Turns a selected inspiration photo into a cart-compatible CatalogItem.
  * There's no real catalog group/pricing behind these - decoration selection
  * here is purely "this is the look I want", so price is 0 (pricing isn't
  * shown anywhere on the site) and groupId is a fixed local id rather than a
- * real Supabase catalog_groups row. */
+ * real Supabase catalog_groups row. The name embeds both the category and
+ * the specific design number so "Your Selections" and the final owner
+ * enquiry both show exactly which decoration/image was picked, not just
+ * which category. */
 export function decorationPhotoToCartItem(photo: DecorationPhoto): CatalogItem {
   return {
     id: decorationCartItemId(photo.id),
     supportedEventTypes: [],
     categoryKey: 'decoration',
     groupId: 'decoration-inspiration',
-    name: photo.categoryLabel,
+    name: `${photo.categoryLabel} - Design #${photoDesignNumber(photo.id)}`,
     description: 'Selected from our decoration photo gallery.',
     imageUrl: photo.src,
     images: [photo.src],
@@ -39,7 +51,7 @@ export function decorationPhotoToCartItem(photo: DecorationPhoto): CatalogItem {
     quantityMode: 'single',
     maxQuantity: 1,
     maxSelectionsOverride: null,
-    metadata: { photoId: photo.id },
+    metadata: { photoId: photo.id, decorationCategory: photo.categoryLabel },
     active: true,
     displayOrder: 0,
   };
@@ -60,20 +72,25 @@ export const DECORATION_CATEGORIES: { slug: string; label: string }[] = [
 
 /** Which event types each decoration category is relevant to. Wedding itself
  * doesn't use this photo gallery any more (it has its own checklist), so this
- * only matters for every other event type - and deliberately keeps
- * ritual/bride-specific categories (Mantap, Chapra With Flowers, Bridal Entry,
- * Saptapadi) off event types they don't belong to, e.g. Reception's Bridal
- * Entry photos never show up under Birthday. */
+ * only matters for every other event type.
+ *
+ * Engagement, Reception, Haldi Function, Traditional Home Function,
+ * Housewarming, Shrimantha Karya and Half-Saree Function follow the client's
+ * exact category list per event (see the Decoration section spec) - every
+ * other event type (Birthday, Anniversary, Get Together, Bachelor Party,
+ * Corporate Event, Other Events) keeps the broader, unspecified mapping.
+ * Saptapadi is never included for any of these - it's a strictly wedding
+ * ritual (rule: Saptapadi must not appear under any non-Wedding event). */
 const CATEGORY_EVENT_TYPES: Record<string, string[]> = {
-  'stage-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'corporate_event', 'traditional_home_function', 'haldi_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
-  'mantap-decoration': ['engagement', 'reception', 'haldi_function', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function'],
-  'chapra-with-flowers': ['engagement', 'haldi_function', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function'],
+  'stage-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'corporate_event', 'haldi_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'mantap-decoration': ['engagement', 'traditional_home_function', 'housewarming', 'shrimantha_karya'],
+  'chapra-with-flowers': ['engagement', 'reception', 'haldi_function', 'traditional_home_function', 'housewarming', 'shrimantha_karya', 'half_saree_function'],
   garlands: ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
   'passage-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
-  'door-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
-  'bridal-entry': ['engagement', 'reception'],
+  'door-decoration': ['reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'bridal-entry': ['engagement', 'reception', 'haldi_function', 'half_saree_function'],
   saptapadi: [], // strictly a wedding ritual - not relevant to any other event type
-  'cold-fire-entry': ['engagement', 'reception', 'birthday', 'anniversary'],
+  'cold-fire-entry': ['engagement', 'reception', 'birthday', 'anniversary', 'half_saree_function'],
 };
 
 /** Category filter chips scoped to a given (non-wedding) event type, in the

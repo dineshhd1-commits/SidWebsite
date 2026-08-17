@@ -13,9 +13,22 @@ import { CateringTiming } from '../types/catering-menu';
 import { getPackageGroupLimits, getPackageIncludedItems, getCatalogItems } from '../data/catalog';
 import { getCateringCategoryById } from '../data/catering-menu';
 
+/** Fired whenever something genuinely new lands in the cart/catering
+ * selections (not on removal, not on a quantity-only change) - purely
+ * transient UI feedback, so it's tracked outside the persisted `state`
+ * on purpose (nothing here should survive a reload or count as builder
+ * progress). `token` makes every firing distinct even if the same item
+ * is re-added later. */
+export interface LastAddedSelection {
+  id: string;
+  name: string;
+  token: number;
+}
+
 interface EventBuilderContextType {
   state: EventBuilderState;
   isLoaded: boolean;
+  lastAdded: LastAddedSelection | null;
   setEventType: (eventTypeId: string) => void;
   changeEventType: (eventTypeId: string) => void;
   selectPackage: (packageId: string) => Promise<void>;
@@ -70,6 +83,7 @@ function cartLineFromItem(item: CatalogItem, quantity: number, origin: CartLineO
 export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<EventBuilderState>(DEFAULT_EVENT_BUILDER_STATE);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [lastAdded, setLastAdded] = useState<LastAddedSelection | null>(null);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -197,6 +211,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
           if (currentCount >= maxSelections) return prev;
         }
         cateringSelections[itemId] = { categoryId, categoryName, itemId, itemName, quantity: 1 };
+        setLastAdded({ id: itemId, name: itemName, token: Date.now() });
       }
       return { ...prev, cateringSelections };
     });
@@ -216,10 +231,18 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const addToCart = useCallback((item: CatalogItem, quantity: number = 1, origin: CartLineOrigin = 'paid_extra') => {
-    setState((prev) => ({
-      ...prev,
-      cart: { ...prev.cart, [item.id]: cartLineFromItem(item, quantity, origin) },
-    }));
+    setState((prev) => {
+      // Only flag it as a fresh addition if it genuinely wasn't in the cart
+      // before - a quantity bump on an already-selected item shouldn't
+      // retrigger the "added" toast/highlight.
+      if (!prev.cart[item.id]) {
+        setLastAdded({ id: item.id, name: item.name, token: Date.now() });
+      }
+      return {
+        ...prev,
+        cart: { ...prev.cart, [item.id]: cartLineFromItem(item, quantity, origin) },
+      };
+    });
   }, []);
 
   const removeFromCart = useCallback((catalogItemId: string) => {
@@ -250,6 +273,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       cart[item.id] = cartLineFromItem(item, quantity, origin);
       return { ...prev, cart };
     });
+    setLastAdded({ id: item.id, name: item.name, token: Date.now() });
   }, []);
 
   const requestExtraApproval = useCallback((item: CatalogItem, quantity: number = 1) => {
@@ -272,6 +296,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     () => ({
       state,
       isLoaded,
+      lastAdded,
       setEventType,
       changeEventType,
       selectPackage,
@@ -294,6 +319,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     [
       state,
       isLoaded,
+      lastAdded,
       setEventType,
       changeEventType,
       selectPackage,

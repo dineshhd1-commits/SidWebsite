@@ -12,6 +12,7 @@ import { ProgressStepper, BuilderStepDef } from '@/components/builder/ProgressSt
 import { CartSidebar } from '@/components/builder/CartSidebar';
 import { CartMobileBar } from '@/components/builder/CartMobileBar';
 import { CartDrawer } from '@/components/builder/CartDrawer';
+import { AddedToCartToast } from '@/components/builder/AddedToCartToast';
 import { EmptyState, LoadingState } from '@/components/builder/EmptyState';
 import { EventDetailsSummaryCard } from '@/components/builder/EventDetailsSummaryCard';
 
@@ -394,6 +395,7 @@ function CustomBuilderPageInner() {
         onClearCart={clearCart}
         onContinue={() => setCartDrawerOpen(false)}
       />
+      <AddedToCartToast />
 
       {pendingEventType && (
         <ChangeEventTypeModal

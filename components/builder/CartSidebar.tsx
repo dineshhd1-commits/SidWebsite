@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { EventBuilderState, CartLine } from '@/lib/types/event-builder';
+import { useEventBuilder } from '@/lib/store/event-builder-context';
 import { useCartSummary } from './useCartSummary';
 import { CartLineItemRow } from './CartLineItemRow';
 import { GlassCard } from '../ui/glass-card';
@@ -18,6 +19,8 @@ interface CartSidebarProps {
   continueLabel?: string;
 }
 
+const HIGHLIGHT_MS = 1400;
+
 export function CartSidebar({
   state,
   currentStepLabel,
@@ -29,6 +32,21 @@ export function CartSidebar({
   continueLabel = 'Continue',
 }: CartSidebarProps) {
   const { lines, itemCount } = useCartSummary(state);
+  const { lastAdded } = useEventBuilder();
+  const listRef = useRef<HTMLDivElement>(null);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+  // When something new lands in the cart, scroll it into view within this
+  // list's own scroll container (never the page) and flash it briefly -
+  // the customer never has to hunt for what they just picked.
+  useEffect(() => {
+    if (!lastAdded) return;
+    setHighlightedId(lastAdded.id);
+    const row = listRef.current?.querySelector<HTMLElement>(`[data-line-id="${CSS.escape(lastAdded.id)}"]`);
+    row?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const timer = setTimeout(() => setHighlightedId(null), HIGHLIGHT_MS);
+    return () => clearTimeout(timer);
+  }, [lastAdded]);
 
   return (
     <div className="hidden lg:block lg:col-span-4 sticky top-32 space-y-6">
@@ -42,12 +60,19 @@ export function CartSidebar({
 
         <p className="text-[11px] text-gold-200/70 -mt-2">Currently on: {currentStepLabel}</p>
 
-        <div className="max-h-72 overflow-y-auto pr-1">
+        <div ref={listRef} className="max-h-72 overflow-y-auto pr-1">
           {lines.length === 0 ? (
             <p className="text-xs text-gold-200/70 py-6 text-center">No items selected yet.</p>
           ) : (
             lines.map((line) => (
-              <CartLineItemRow key={line.id} line={line} onRemove={onRemove} onViewDetails={onViewDetails} compact />
+              <CartLineItemRow
+                key={line.id}
+                line={line}
+                onRemove={onRemove}
+                onViewDetails={onViewDetails}
+                highlighted={highlightedId === line.id}
+                compact
+              />
             ))
           )}
         </div>

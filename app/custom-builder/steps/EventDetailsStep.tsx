@@ -83,7 +83,6 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
             placeholder="e.g. Davanagere"
             className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
           />
-          <p className="text-[11px] text-maroon-700/70 mt-1">Letters only - start typing a Karnataka city, town or locality to see suggestions.</p>
         </div>
 
         {/* Row 4: Name | Phone */}

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MapPin } from 'lucide-react';
-import { KARNATAKA_LOCATIONS } from '@/lib/data/karnataka-locations';
+import { INDIA_OTHER_LOCATIONS, KARNATAKA_LOCATIONS } from '@/lib/data/karnataka-locations';
 import { sanitizeAlphaInput } from '@/lib/text-validation';
 
 interface LocationAutocompleteFieldProps {
@@ -27,11 +27,17 @@ export function LocationAutocompleteField({ value, onChange, placeholder, classN
   const suggestions = useMemo(() => {
     const query = value.trim().toLowerCase();
     if (query.length < MIN_CHARS) return [];
-    const startsWith = KARNATAKA_LOCATIONS.filter((loc) => loc.toLowerCase().startsWith(query));
-    const contains = KARNATAKA_LOCATIONS.filter(
+    // Karnataka matches always rank above the rest of India, at both match
+    // tiers - Karnataka is the primary service area.
+    const karStarts = KARNATAKA_LOCATIONS.filter((loc) => loc.toLowerCase().startsWith(query));
+    const otherStarts = INDIA_OTHER_LOCATIONS.filter((loc) => loc.toLowerCase().startsWith(query));
+    const karContains = KARNATAKA_LOCATIONS.filter(
       (loc) => !loc.toLowerCase().startsWith(query) && loc.toLowerCase().includes(query)
     );
-    return [...startsWith, ...contains].slice(0, MAX_SUGGESTIONS);
+    const otherContains = INDIA_OTHER_LOCATIONS.filter(
+      (loc) => !loc.toLowerCase().startsWith(query) && loc.toLowerCase().includes(query)
+    );
+    return [...karStarts, ...otherStarts, ...karContains, ...otherContains].slice(0, MAX_SUGGESTIONS);
   }, [value]);
 
   useEffect(() => {

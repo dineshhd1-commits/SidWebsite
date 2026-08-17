@@ -9,11 +9,19 @@ interface CartLineItemRowProps {
   onRemove: (id: string) => void;
   onViewDetails?: (line: CartLine) => void;
   compact?: boolean;
+  /** Briefly true right after this exact line was added, so the sidebar can
+   * flash it and scroll it into view within its own list. */
+  highlighted?: boolean;
 }
 
-export function CartLineItemRow({ line, onRemove, onViewDetails, compact }: CartLineItemRowProps) {
+export function CartLineItemRow({ line, onRemove, onViewDetails, compact, highlighted }: CartLineItemRowProps) {
   return (
-    <div className={`flex items-center justify-between gap-3 ${compact ? 'py-1.5' : 'py-2.5'} border-b border-gold-400/20 last:border-b-0`}>
+    <div
+      data-line-id={line.id}
+      className={`flex items-center justify-between gap-3 ${compact ? 'py-1.5' : 'py-2.5'} px-1.5 -mx-1.5 rounded-lg border-b border-gold-400/20 last:border-b-0 transition-colors duration-700 ${
+        highlighted ? 'bg-gold-400/30' : 'bg-transparent'
+      }`}
+    >
       <button
         type="button"
         onClick={() => onViewDetails?.(line)}

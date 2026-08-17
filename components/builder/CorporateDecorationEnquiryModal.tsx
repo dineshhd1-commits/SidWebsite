@@ -180,19 +180,21 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-4">
-              <div className="mb-4">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-gold-700 mb-1.5">Enquiring About</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedOptions.map((name) => (
-                    <span
-                      key={name}
-                      className="text-xs font-bold text-maroon-900 bg-gold-100 border border-gold-300 rounded-full px-3 py-1"
-                    >
-                      {name}
-                    </span>
-                  ))}
+              {selectedOptions.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-gold-700 mb-1.5">Enquiring About</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedOptions.map((name) => (
+                      <span
+                        key={name}
+                        className="text-xs font-bold text-maroon-900 bg-gold-100 border border-gold-300 rounded-full px-3 py-1"
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {errors.length > 0 && (
                 <div className="flex items-start gap-2 text-xs bg-amber-50 border border-amber-300 text-amber-900 rounded-xl px-4 py-3 mb-4">
@@ -316,10 +318,10 @@ export function CorporateDecorationEnquiryModal({ selectedOptions, prefill, onCl
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-maroon-900 mb-1">Additional Requirements / Message</label>
+                  <label className="block text-xs font-bold text-maroon-900 mb-1">Decoration Requirements / Message</label>
                   <textarea
                     rows={3}
-                    placeholder="Theme, branding requirements, budget range, or anything else we should know..."
+                    placeholder="Tell us the decoration style, theme, branding requirements, budget range, or anything else we should know..."
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"

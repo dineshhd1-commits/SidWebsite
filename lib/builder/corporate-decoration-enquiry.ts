@@ -68,18 +68,18 @@ export function formatCorporateDecorationEnquiryMessage(
   if (details.guestCount) {
     lines.push(`Guests: ${details.guestCount}`);
   }
-  lines.push('');
-  lines.push(divider);
-  lines.push('\u{1F380} SELECTED DECORATION / SERVICES'); // 🎀
-  lines.push(divider);
-  for (const option of details.selectedOptions) {
-    lines.push(`• ${option}`);
-  }
-  if (details.message) {
+  if (details.selectedOptions.length > 0) {
     lines.push('');
-    lines.push('\u{1F4DD} ADDITIONAL REQUIREMENTS'); // 📝
-    lines.push(details.message);
+    lines.push(divider);
+    lines.push('\u{1F380} SELECTED DECORATION / SERVICES'); // 🎀
+    lines.push(divider);
+    for (const option of details.selectedOptions) {
+      lines.push(`• ${option}`);
+    }
   }
+  lines.push('');
+  lines.push('\u{1F4DD} DECORATION REQUIREMENTS'); // 📝
+  lines.push(details.message || 'Not specified - please contact the customer to discuss.');
 
   lines.push('');
   lines.push(divider);

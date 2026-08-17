@@ -240,14 +240,17 @@ export async function saveCorporateDecorationEnquiry(
     location: details.location,
     guestCount: Number(details.guestCount) || 0,
     specialRequirements: details.message,
-    sections: [
-      {
-        categoryKey: 'decoration',
-        label: 'Decoration (Enquiry Only - Not Added to Cart)',
-        icon: '\u{1F380}',
-        lines: details.selectedOptions.map((name) => ({ name, quantity: 1 })),
-      },
-    ],
+    sections:
+      details.selectedOptions.length > 0
+        ? [
+            {
+              categoryKey: 'decoration',
+              label: 'Decoration (Enquiry Only - Not Added to Cart)',
+              icon: '\u{1F380}',
+              lines: details.selectedOptions.map((name) => ({ name, quantity: 1 })),
+            },
+          ]
+        : [],
     cateringTiming: null,
     cateringGuestCount: null,
     cateringSections: [],
@@ -260,8 +263,8 @@ export async function saveCorporateDecorationEnquiry(
     '[CORPORATE DECORATION ENQUIRY]',
     `Company: ${details.companyName || 'Not provided'}`,
     `Corporate Event Type: ${details.corporateEventType || 'Not specified'}`,
-    `Selected Decoration Options: ${details.selectedOptions.join(', ') || 'None'}`,
-    details.message ? `\nAdditional Requirements: ${details.message}` : '',
+    details.selectedOptions.length > 0 ? `Selected Decoration Options: ${details.selectedOptions.join(', ')}` : '',
+    details.message ? `\nDecoration Requirements: ${details.message}` : '',
   ]
     .filter(Boolean)
     .join('\n');

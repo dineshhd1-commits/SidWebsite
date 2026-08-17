@@ -6,8 +6,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { GoldButton } from '@/components/ui/gold-button';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 import {
-  getAdminQuotes,
-  saveAdminQuote,
+  getAdminQuotesFromBackend,
   updateAdminQuote,
   updateQuoteStatus,
   deleteAdminQuote,
@@ -16,6 +15,7 @@ import {
   updateInquiryStatus,
   deleteAdminInquiry,
   AdminQuoteRequest,
+  AdminQuoteStatus,
   AdminInquiry,
 } from '@/lib/store/admin-store';
 import {
@@ -41,6 +41,9 @@ import {
   Check,
   ImagePlus,
   Loader2,
+  RefreshCw,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   adminListCatalogItems,
@@ -313,6 +316,8 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [quotes, setQuotes] = useState<AdminQuoteRequest[]>([]);
+  const [quotesLoading, setQuotesLoading] = useState(true);
+  const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([]);
 
   const [activeTab, setActiveTab] = useState<
@@ -364,9 +369,18 @@ export default function AdminDashboardPage() {
   // Real access control is enforced server-side by middleware.ts (checks the
   // httpOnly admin session cookie) - reaching this component at all means the
   // request already passed that check. This effect just loads the initial data.
+  const loadQuotes = async () => {
+    setQuotesLoading(true);
+    try {
+      setQuotes(await getAdminQuotesFromBackend());
+    } finally {
+      setQuotesLoading(false);
+    }
+  };
+
   useEffect(() => {
     setIsAuthenticated(true);
-    setQuotes(getAdminQuotes());
+    loadQuotes();
     setInquiries(getAdminInquiries());
   }, []);
 
@@ -644,23 +658,26 @@ export default function AdminDashboardPage() {
   };
 
   // --- Quote Operations ---
-  const handleUpdateQuoteStatus = (id: string, status: AdminQuoteRequest['status']) => {
-    const updated = updateQuoteStatus(id, status);
-    setQuotes(updated);
+  const handleUpdateQuoteStatus = (id: string, refCode: string, status: AdminQuoteStatus) => {
+    // Optimistic UI update first (the on-screen list is Supabase-sourced, so
+    // updateQuoteStatus's own local-cache return value isn't what's shown);
+    // it also fires the real Supabase update in the background.
+    setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
+    updateQuoteStatus(id, refCode, status);
   };
 
-  const handleDeleteQuote = (id: string) => {
+  const handleDeleteQuote = (id: string, refCode: string) => {
     if (confirm('Are you sure you want to delete this quote request?')) {
-      const updated = deleteAdminQuote(id);
-      setQuotes(updated);
+      setQuotes((prev) => prev.filter((q) => q.id !== id));
+      deleteAdminQuote(id, refCode);
     }
   };
 
   const handleSaveQuoteEdit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editQuoteModal) {
-      const updated = updateAdminQuote(editQuoteModal);
-      setQuotes(updated);
+      setQuotes((prev) => prev.map((q) => (q.id === editQuoteModal.id ? editQuoteModal : q)));
+      updateAdminQuote(editQuoteModal);
       setEditQuoteModal(null);
     }
   };
@@ -693,7 +710,7 @@ export default function AdminDashboardPage() {
   });
 
   const totalRevenuePipeline = quotes.reduce((acc, q) => acc + q.estimatedCost, 0);
-  const pendingCount = quotes.filter((q) => q.status === 'Pending').length;
+  const pendingCount = quotes.filter((q) => q.status === 'New').length;
   const confirmedCount = quotes.filter((q) => q.status === 'Confirmed').length;
 
   return (
@@ -869,14 +886,30 @@ export default function AdminDashboardPage() {
                 className="bg-white border border-gold-300 rounded-xl px-3 py-2 text-xs text-maroon-900 focus:outline-none focus:border-gold-500"
               >
                 <option value="all">All Statuses</option>
-                <option value="pending">Pending</option>
+                <option value="new">New</option>
                 <option value="contacted">Contacted</option>
+                <option value="quoted">Quoted</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="cancelled">Cancelled</option>
               </select>
+
+              <button
+                type="button"
+                onClick={loadQuotes}
+                disabled={quotesLoading}
+                className="p-2 rounded-lg bg-white border border-gold-300 text-gold-700 hover:bg-gold-50 transition-colors disabled:opacity-50"
+                title="Refresh enquiries"
+              >
+                <RefreshCw className={`w-4 h-4 ${quotesLoading ? 'animate-spin' : ''}`} />
+              </button>
             </div>
           </div>
 
+          {quotesLoading && quotes.length === 0 ? (
+            <div className="text-center py-16 text-maroon-700/70 text-sm">Loading enquiries...</div>
+          ) : filteredQuotes.length === 0 ? (
+            <div className="text-center py-16 text-maroon-700/70 text-sm">No enquiries yet.</div>
+          ) : (
           <div className="space-y-4">
             {filteredQuotes.map((q) => (
               <GlassCard key={q.id} className="p-6 space-y-4 border border-gold-300 hover:border-gold-500 transition-all">
@@ -899,10 +932,12 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center gap-3">
                     <select
                       value={q.status}
-                      onChange={(e) => handleUpdateQuoteStatus(q.id, e.target.value as any)}
+                      onChange={(e) => handleUpdateQuoteStatus(q.id, q.refCode, e.target.value as AdminQuoteStatus)}
                       className={`text-xs font-bold px-3 py-1.5 rounded-lg border focus:outline-none ${
                         q.status === 'Confirmed'
                           ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                          : q.status === 'Quoted'
+                          ? 'bg-indigo-100 text-indigo-800 border-indigo-300'
                           : q.status === 'Contacted'
                           ? 'bg-blue-100 text-blue-800 border-blue-300'
                           : q.status === 'Cancelled'
@@ -910,8 +945,9 @@ export default function AdminDashboardPage() {
                           : 'bg-amber-100 text-amber-800 border-amber-300'
                       }`}
                     >
-                      <option value="Pending">Pending</option>
+                      <option value="New">New</option>
                       <option value="Contacted">Contacted</option>
+                      <option value="Quoted">Quoted</option>
                       <option value="Confirmed">Confirmed</option>
                       <option value="Cancelled">Cancelled</option>
                     </select>
@@ -937,7 +973,7 @@ export default function AdminDashboardPage() {
                     </a>
 
                     <button
-                      onClick={() => handleDeleteQuote(q.id)}
+                      onClick={() => handleDeleteQuote(q.id, q.refCode)}
                       className="p-2 rounded-lg bg-rose-100 text-rose-700 hover:bg-rose-200 transition-colors"
                       title="Delete Quote"
                     >
@@ -952,19 +988,11 @@ export default function AdminDashboardPage() {
                     <span className="font-bold text-maroon-900">{q.guestCount} Guests</span>
                   </div>
                   <div>
-                    <span className="text-maroon-700/60 block font-semibold">Catering Feast</span>
-                    <span className="font-bold text-maroon-900 capitalize">{q.cateringTier} Sadhya</span>
+                    <span className="text-maroon-700/60 block font-semibold">Event Type</span>
+                    <span className="font-bold text-maroon-900 capitalize">{q.fullDetails?.eventTypeLabel || q.photographyTier}</span>
                   </div>
                   <div>
-                    <span className="text-maroon-700/60 block font-semibold">Photography</span>
-                    <span className="font-bold text-maroon-900 capitalize">{q.photographyTier} Tier</span>
-                  </div>
-                  <div>
-                    <span className="text-maroon-700/60 block font-semibold">Purohit Tier</span>
-                    <span className="font-bold text-maroon-900 capitalize">{q.purohitTier.replace('_', ' ')}</span>
-                  </div>
-                  <div>
-                    <span className="text-maroon-700/60 block font-semibold">Decor Items</span>
+                    <span className="text-maroon-700/60 block font-semibold">Selections</span>
                     <span className="font-bold text-maroon-900">{q.selectedServicesCount} Selected</span>
                   </div>
                   <div>
@@ -978,9 +1006,88 @@ export default function AdminDashboardPage() {
                     <span className="font-bold">Customer Notes:</span> &ldquo;{q.notes}&rdquo;
                   </div>
                 )}
+
+                <button
+                  type="button"
+                  onClick={() => setExpandedQuoteId(expandedQuoteId === q.id ? null : q.id)}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-gold-700 hover:text-maroon-900"
+                >
+                  {expandedQuoteId === q.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  {expandedQuoteId === q.id ? 'Hide Full Selections' : 'View Full Selections'}
+                </button>
+
+                {expandedQuoteId === q.id && (
+                  <div className="space-y-4 bg-maroon-950 text-silk-100 p-5 rounded-xl border border-gold-400/30">
+                    {!q.fullDetails ? (
+                      <p className="text-xs text-gold-200/70">
+                        This older enquiry was saved before the detailed breakdown existed - only the summary above is available.
+                      </p>
+                    ) : (
+                      <>
+                        {q.fullDetails.specialRequirements && (
+                          <p className="text-xs text-gold-100/90">
+                            <span className="font-bold text-gold-300">Special Requirements: </span>
+                            {q.fullDetails.specialRequirements}
+                          </p>
+                        )}
+
+                        {q.fullDetails.sections.length === 0 && q.fullDetails.cateringSections.length === 0 ? (
+                          <p className="text-xs text-gold-200/70">No services were selected for this enquiry.</p>
+                        ) : (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {q.fullDetails.sections.map((section) => (
+                              <div key={section.categoryKey} className="space-y-1.5">
+                                <span className="text-xs font-bold uppercase tracking-wider text-gold-300">
+                                  {section.icon} {section.label}
+                                </span>
+                                <ul className="text-xs text-gold-100/90 space-y-1">
+                                  {section.lines.map((line, i) => (
+                                    <li key={i} className="flex items-center gap-2">
+                                      {line.imageUrl && (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={line.imageUrl} alt={line.name} className="w-8 h-8 rounded object-cover border border-gold-400/40 shrink-0" />
+                                      )}
+                                      <span>&bull; {line.name}{line.quantity > 1 ? ` x${line.quantity}` : ''}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+
+                            {q.fullDetails.cateringSections.length > 0 && (
+                              <div className="space-y-1.5 sm:col-span-2">
+                                <span className="text-xs font-bold uppercase tracking-wider text-gold-300">
+                                  {'\u{1F37D}\u{FE0F}'} Catering Menu
+                                  {q.fullDetails.cateringTiming ? ` — ${q.fullDetails.cateringTiming}` : ''}
+                                  {q.fullDetails.cateringGuestCount ? ` (${q.fullDetails.cateringGuestCount} guests)` : ''}
+                                </span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-gold-100/90">
+                                  {q.fullDetails.cateringSections.map((section) => (
+                                    <div key={section.categoryName}>
+                                      <span className="font-semibold text-gold-200">{section.categoryName}: </span>
+                                      {section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {q.fullDetails.requestedExtras.length > 0 && (
+                          <p className="text-xs text-amber-300">
+                            <span className="font-bold">Pending Approval Requests: </span>
+                            {q.fullDetails.requestedExtras.map((l) => l.name).join(', ')}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </GlassCard>
             ))}
           </div>
+          )}
         </div>
       )}
 
@@ -1410,11 +1517,12 @@ export default function AdminDashboardPage() {
                   <label className="block font-bold mb-1">Status</label>
                   <select
                     value={editQuoteModal.status}
-                    onChange={(e) => setEditQuoteModal({ ...editQuoteModal, status: e.target.value as any })}
+                    onChange={(e) => setEditQuoteModal({ ...editQuoteModal, status: e.target.value as AdminQuoteStatus })}
                     className="w-full border border-gold-300 rounded-lg p-2 text-maroon-900"
                   >
-                    <option value="Pending">Pending</option>
+                    <option value="New">New</option>
                     <option value="Contacted">Contacted</option>
+                    <option value="Quoted">Quoted</option>
                     <option value="Confirmed">Confirmed</option>
                     <option value="Cancelled">Cancelled</option>
                   </select>

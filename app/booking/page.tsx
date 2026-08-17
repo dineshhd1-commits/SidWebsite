@@ -11,6 +11,7 @@ import { getWhatsAppBookingRequestUrl } from '@/lib/whatsapp';
 import { saveAdminQuote } from '@/lib/store/admin-store';
 import { SITE } from '@/lib/site-config';
 import { getCartLines, getEstimatedTotal } from '@/lib/builder/selectors';
+import { buildEnquiryDetails, mergeBookingFormIntoState } from '@/lib/builder/enquiry';
 
 const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
@@ -22,7 +23,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default function BookingPage() {
   const router = useRouter();
-  const { state } = useEventBuilder();
+  const { state, resetBuilder } = useEventBuilder();
   const cartLines = getCartLines(state);
   const estimatedTotal = getEstimatedTotal(state);
 
@@ -37,6 +38,9 @@ export default function BookingPage() {
   }));
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Guards against a second submit (double-click, back-button, etc.) firing
+  // a duplicate enquiry once the first one has already gone through.
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [friendlyErrors, setFriendlyErrors] = useState<string[]>([]);
 
   const validate = (): string[] => {
@@ -47,8 +51,9 @@ export default function BookingPage() {
     return errors;
   };
 
-  const handleSubmitRequest = (e: React.FormEvent) => {
+  const handleSubmitRequest = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting || hasSubmitted) return;
     const errors = validate();
     if (errors.length > 0) {
       setFriendlyErrors(errors);
@@ -58,11 +63,16 @@ export default function BookingPage() {
     setIsSubmitting(true);
 
     const refCode = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
-    const waUrl = getWhatsAppBookingRequestUrl(formData, state, refCode, SITE.whatsappNumber);
 
-    const categorySummary = Array.from(new Set(cartLines.map((l) => CATEGORY_LABELS[l.categoryKey] || l.categoryKey))).join(', ') || 'custom';
+    // Single source of truth for "everything the customer selected" - same
+    // structure used for the owner's WhatsApp notification and the admin
+    // CRM record, built dynamically from whatever categories/items are
+    // actually in the cart right now (nothing category-specific hard-coded).
+    const mergedState = mergeBookingFormIntoState(state, formData);
+    const fullDetails = buildEnquiryDetails(mergedState);
+    const categorySummary = Array.from(new Set(fullDetails.sections.map((s) => s.label))).join(', ') || 'custom';
 
-    saveAdminQuote({
+    const { savedToBackend } = await saveAdminQuote({
       refCode,
       customerName: formData.fullName,
       customerPhone: formData.phone,
@@ -72,18 +82,31 @@ export default function BookingPage() {
       venueAddress: formData.venueAddress,
       guestCount: state.eventDetails.guestCount,
       cateringTier: categorySummary,
-      photographyTier: state.eventTypeId || 'wedding',
+      photographyTier: fullDetails.eventTypeLabel,
       purohitTier: state.selectedPackageId || 'custom',
-      selectedServicesCount: cartLines.length,
+      selectedServicesCount: fullDetails.totalSelectionsCount,
       estimatedCost: estimatedTotal,
       notes: formData.notes,
+      fullDetails,
     });
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      window.open(waUrl, '_blank');
-      router.push(`/request-received?ref=${refCode}`);
-    }, 600);
+    if (!savedToBackend) {
+      // The admin CRM record didn't save - don't silently pretend this
+      // reached the owner. WhatsApp (opened below) is the fallback channel
+      // that still gets it to them even if the database write failed.
+      console.warn('Enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
+    }
+
+    const waUrl = getWhatsAppBookingRequestUrl(formData, state, refCode, SITE.whatsappNumber);
+
+    setHasSubmitted(true);
+    setIsSubmitting(false);
+    window.open(waUrl, '_blank');
+    // Reset the whole builder (cart, catering picks, event details) only now
+    // that submission has actually succeeded, so re-visiting the builder
+    // starts a fresh request instead of re-showing an already-sent one.
+    resetBuilder();
+    router.push(`/request-received?ref=${refCode}`);
   };
 
   return (
@@ -209,8 +232,8 @@ export default function BookingPage() {
               </div>
 
               <div className="pt-2">
-                <GoldButton fullWidth variant="copper" size="lg" disabled={isSubmitting}>
-                  {isSubmitting ? 'Sending Request...' : 'Send Quote Request'}
+                <GoldButton fullWidth variant="copper" size="lg" disabled={isSubmitting || hasSubmitted}>
+                  {isSubmitting ? 'Submitting...' : hasSubmitted ? 'Request Sent' : 'Submit Event Request'}
                 </GoldButton>
               </div>
             </form>

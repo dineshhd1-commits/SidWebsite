@@ -221,7 +221,7 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
 
           <Link href="/booking" className="w-full">
             <GoldButton variant="gold" size="sm" fullWidth icon={<CheckCircle className="w-4 h-4" />}>
-              Request Quote
+              Submit Event Request
             </GoldButton>
           </Link>
         </div>

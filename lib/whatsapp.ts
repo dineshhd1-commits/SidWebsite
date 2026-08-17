@@ -1,5 +1,6 @@
 import { EventBuilderState } from './types/event-builder';
 import { getCartLines, getRequestedExtraLines } from './builder/selectors';
+import { BookingFormOverrides, buildEnquiryDetails, formatEnquiryMessage, mergeBookingFormIntoState } from './builder/enquiry';
 
 const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
@@ -68,39 +69,24 @@ I would like to receive a detailed quote for this package and check date availab
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
+/**
+ * The real owner-facing notification for a final event enquiry submission.
+ * Builds the complete, dynamic breakdown (every category currently in the
+ * cart, plus the catering menu) via buildEnquiryDetails/formatEnquiryMessage
+ * so nothing selected is ever left out, then opens it as a pre-filled
+ * WhatsApp message to the configured owner number - the customer's own
+ * WhatsApp app sends it, which is the existing notification channel this
+ * project already relies on (see SITE.whatsappNumber).
+ */
 export function getWhatsAppBookingRequestUrl(
-  formData: {
-    fullName: string;
-    phone: string;
-    email: string;
-    weddingDate: string;
-    venueCity: string;
-    venueAddress: string;
-    notes?: string;
-  },
+  formData: BookingFormOverrides,
   state: EventBuilderState,
   refCode: string,
   phone: string = '918095408404'
 ): string {
-  const requestedExtras = getRequestedExtraLines(state);
-  const message = `
-Namaste! New Custom Quote Request for *SID Events*.
-
-*Reference Code:* #${refCode}
-*Customer Name:* ${formData.fullName}
-*Contact Phone:* ${formData.phone}
-*Email Address:* ${formData.email}
-*Event Date:* ${formData.weddingDate}
-*Venue City:* ${formData.venueCity}
-*Venue Address:* ${formData.venueAddress}
-${formData.notes ? `*Special Notes:* ${formData.notes}\n` : ''}
---- *Package Selections Breakdown* ---
-*Guest Capacity:* ${state.eventDetails.guestCount} Guests
-${buildSelectionsBlock(state)}
-${buildCateringMenuBlock(state)}${requestedExtras.length > 0 ? `\n*Pending Approval Requests:* ${requestedExtras.map((l) => l.name).join(', ')}` : ''}
-
-Please send me the customized price quotation and confirm date availability!
-  `.trim();
+  const mergedState = mergeBookingFormIntoState(state, formData);
+  const details = buildEnquiryDetails(mergedState);
+  const message = formatEnquiryMessage(details, refCode, new Date().toISOString());
 
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }

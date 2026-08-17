@@ -1,6 +1,9 @@
 import { supabase, isSupabaseConfigured } from '../supabase';
 import { MOCK_SERVICES, MOCK_STANDARD_PACKAGES } from '../mock-data';
 import { Service, StandardPackage } from '../types/wedding';
+import { EnquiryDetails } from '../builder/enquiry';
+
+export type AdminQuoteStatus = 'New' | 'Contacted' | 'Quoted' | 'Confirmed' | 'Cancelled';
 
 export interface AdminQuoteRequest {
   id: string;
@@ -18,7 +21,12 @@ export interface AdminQuoteRequest {
   selectedServicesCount: number;
   estimatedCost: number;
   notes?: string;
-  status: 'Pending' | 'Contacted' | 'Confirmed' | 'Cancelled';
+  /** Complete, category-by-category breakdown of everything the customer
+   * selected in the builder - the source of truth for "view full details"
+   * in the admin CRM. Optional only because older localStorage-only quote
+   * records (created before this existed) won't have it. */
+  fullDetails?: EnquiryDetails;
+  status: AdminQuoteStatus;
   createdAt: string;
 }
 
@@ -54,7 +62,7 @@ const INITIAL_QUOTES: AdminQuoteRequest[] = [
     selectedServicesCount: 8,
     estimatedCost: 385000,
     notes: 'Need special banana leaf arrangement and live Dosa counter.',
-    status: 'Pending',
+    status: 'New',
     createdAt: '2026-07-28T10:15:00Z',
   },
   {
@@ -91,6 +99,13 @@ const INITIAL_INQUIRIES: AdminInquiry[] = [
 ];
 
 // --- 1. Quote Requests CRUD ---
+
+/** Local-only cache (this browser's localStorage) - used as an offline/dev
+ * fallback when Supabase isn't configured, and as an instant optimistic
+ * mirror of whatever this browser has submitted. Not the source of truth
+ * for the admin dashboard once Supabase is configured - see
+ * getAdminQuotesFromBackend below, which is what actually needs to show
+ * every customer's submission regardless of which device they used. */
 export function getAdminQuotes(): AdminQuoteRequest[] {
   if (typeof window === 'undefined') return INITIAL_QUOTES;
   const data = localStorage.getItem(STORAGE_KEY_QUOTES);
@@ -105,38 +120,101 @@ export function getAdminQuotes(): AdminQuoteRequest[] {
   }
 }
 
-export function saveAdminQuote(quote: Omit<AdminQuoteRequest, 'id' | 'createdAt' | 'status'>): AdminQuoteRequest {
-  const current = getAdminQuotes();
+function mapSupabaseQuoteRow(row: any): AdminQuoteRequest {
+  const builderState = row.builder_state || {};
+  return {
+    id: row.id,
+    refCode: row.id,
+    customerName: row.customer_name || '',
+    customerPhone: row.customer_phone || '',
+    customerEmail: row.customer_email || '',
+    weddingDate: row.wedding_date || '',
+    venueCity: row.venue_city || '',
+    venueAddress: builderState.venueAddress || '',
+    guestCount: builderState.guestCount ?? builderState.fullDetails?.guestCount ?? 0,
+    cateringTier: builderState.cateringTier || 'custom',
+    photographyTier: builderState.photographyTier || 'custom',
+    purohitTier: builderState.purohitTier || 'custom',
+    selectedServicesCount: builderState.selectedServicesCount ?? builderState.fullDetails?.totalSelectionsCount ?? 0,
+    estimatedCost: row.price_breakdown?.estimatedCost ?? 0,
+    notes: builderState.notes || '',
+    fullDetails: builderState.fullDetails,
+    status: (row.status as AdminQuoteStatus) || 'New',
+    createdAt: row.created_at,
+  };
+}
+
+/** The real source of truth for the admin CRM: every enquiry submitted by
+ * any customer, from any device, read straight from Supabase. Falls back to
+ * the local browser cache only when Supabase isn't configured (matching the
+ * fallback pattern used everywhere else in this codebase) or the request
+ * fails, so the dashboard never just shows a blank screen. */
+export async function getAdminQuotesFromBackend(): Promise<AdminQuoteRequest[]> {
+  if (!isSupabaseConfigured()) return getAdminQuotes();
+  try {
+    const { data, error } = await supabase
+      .from('quotations')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []).map(mapSupabaseQuoteRow);
+  } catch (e) {
+    console.error('Failed to load quotes from Supabase, falling back to local cache:', e);
+    return getAdminQuotes();
+  }
+}
+
+/** Saves a newly-submitted enquiry. Always writes an optimistic local copy
+ * immediately; when Supabase is configured, awaits the real insert so the
+ * caller can confirm the owner's CRM actually received it before telling
+ * the customer their request went through. */
+export async function saveAdminQuote(
+  quote: Omit<AdminQuoteRequest, 'id' | 'createdAt' | 'status'>
+): Promise<{ record: AdminQuoteRequest; savedToBackend: boolean }> {
   const newRecord: AdminQuoteRequest = {
     ...quote,
     id: `quote-${Date.now()}`,
-    status: 'Pending',
+    status: 'New',
     createdAt: new Date().toISOString(),
   };
-  const updated = [newRecord, ...current];
+
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
+    const current = getAdminQuotes();
+    localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify([newRecord, ...current]));
   }
 
+  let savedToBackend = false;
   if (isSupabaseConfigured()) {
-    supabase.from('quotations').insert([
+    const { error } = await supabase.from('quotations').insert([
       {
         id: newRecord.refCode,
         customer_name: newRecord.customerName,
         customer_email: newRecord.customerEmail,
         customer_phone: newRecord.customerPhone,
-        wedding_date: newRecord.weddingDate,
+        wedding_date: newRecord.weddingDate || null,
         venue_city: newRecord.venueCity,
-        builder_state: { guestCount: newRecord.guestCount, notes: newRecord.notes },
+        builder_state: {
+          venueAddress: newRecord.venueAddress,
+          guestCount: newRecord.guestCount,
+          notes: newRecord.notes || '',
+          cateringTier: newRecord.cateringTier,
+          photographyTier: newRecord.photographyTier,
+          purohitTier: newRecord.purohitTier,
+          selectedServicesCount: newRecord.selectedServicesCount,
+          fullDetails: newRecord.fullDetails,
+        },
         price_breakdown: { estimatedCost: newRecord.estimatedCost },
         status: newRecord.status,
       },
-    ]).then(({ error }) => {
-      if (error) console.error('Supabase quote sync error:', error);
-    });
+    ]);
+    if (error) {
+      console.error('Supabase quote sync error:', error);
+    } else {
+      savedToBackend = true;
+    }
   }
 
-  return newRecord;
+  return { record: newRecord, savedToBackend };
 }
 
 export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteRequest[] {
@@ -145,23 +223,55 @@ export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteReq
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
+  if (isSupabaseConfigured()) {
+    supabase
+      .from('quotations')
+      .update({
+        customer_name: updatedQuote.customerName,
+        customer_email: updatedQuote.customerEmail,
+        customer_phone: updatedQuote.customerPhone,
+        status: updatedQuote.status,
+      })
+      .eq('id', updatedQuote.refCode)
+      .then(({ error }) => {
+        if (error) console.error('Supabase quote update error:', error);
+      });
+  }
   return updated;
 }
 
-export function updateQuoteStatus(id: string, status: AdminQuoteRequest['status']): AdminQuoteRequest[] {
+export function updateQuoteStatus(id: string, refCode: string, status: AdminQuoteStatus): AdminQuoteRequest[] {
   const current = getAdminQuotes();
   const updated = current.map((q) => (q.id === id ? { ...q, status } : q));
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
+  if (isSupabaseConfigured()) {
+    supabase
+      .from('quotations')
+      .update({ status })
+      .eq('id', refCode)
+      .then(({ error }) => {
+        if (error) console.error('Supabase quote status update error:', error);
+      });
+  }
   return updated;
 }
 
-export function deleteAdminQuote(id: string): AdminQuoteRequest[] {
+export function deleteAdminQuote(id: string, refCode: string): AdminQuoteRequest[] {
   const current = getAdminQuotes();
   const updated = current.filter((q) => q.id !== id);
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
+  }
+  if (isSupabaseConfigured()) {
+    supabase
+      .from('quotations')
+      .delete()
+      .eq('id', refCode)
+      .then(({ error }) => {
+        if (error) console.error('Supabase quote delete error:', error);
+      });
   }
   return updated;
 }

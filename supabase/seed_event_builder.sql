@@ -61,7 +61,8 @@ ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_
 INSERT INTO catalog_groups (id, supported_event_types, category_key, name, default_max_selections, free_included_count, requires_approval_after_limit, approval_message, display_order, active) VALUES
 ('dec-home', ARRAY['wedding'], 'decoration', 'Home Decoration', NULL, 0, false, NULL, 2, true),
 ('dec-venue', ARRAY['wedding'], 'decoration', 'Venue Decoration', NULL, 0, false, NULL, 3, true),
-('dec-couple-entry', ARRAY['wedding'], 'decoration', 'Couple Entry', NULL, 0, false, NULL, 4, true)
+('dec-couple-entry', ARRAY['wedding'], 'decoration', 'Couple Entry', NULL, 0, false, NULL, 4, true),
+('dec-welcome-girls', ARRAY['wedding'], 'decoration', 'Welcome Girls', NULL, 0, false, NULL, 5, true)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 4. Catering Groups (Wedding keeps its detailed menu structure; other event types
@@ -126,7 +127,8 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('dec-couple-crackers', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Crackers', 'Celebratory crackers for the couple entry.', '', '[]', 'normal', 4000, 'per event', 'single', 4),
 ('dec-couple-fireworks', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Fire Works', 'Fireworks display for a grand couple entry.', '', '[]', 'gold', 8000, 'per event', 'single', 5),
 ('dec-couple-dole', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Dole', 'Traditional dole (palanquin) entry for the couple.', '', '[]', 'gold', 6000, 'per event', 'single', 6),
-('dec-couple-dancer', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Dancer', 'Professional dancers to lead the couple entry.', '', '[]', 'gold', 10000, 'per event', 'single', 7)
+('dec-couple-dancer', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Dancer', 'Professional dancers to lead the couple entry.', '', '[]', 'gold', 10000, 'per event', 'single', 7),
+('dec-welcome-girls-service', ARRAY['wedding'], 'decoration', 'dec-welcome-girls', 'Welcome Girls', 'Welcome girls to greet and escort guests with flowers and aarti.', '', '[]', 'normal', 5000, 'per event', 'single', 1)
 ON CONFLICT (id) DO UPDATE SET supported_event_types = EXCLUDED.supported_event_types;
 
 -- 9. Photography Catalog Items.

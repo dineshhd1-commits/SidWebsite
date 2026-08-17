@@ -26,11 +26,12 @@ interface DecorationStepProps {
 /** Wedding-only decoration add-on services, organised as three ordered
  * checklists in the exact order specified: Home Decoration, Venue Decoration,
  * Couple Entry. */
-const ADDON_GROUP_IDS = ['dec-home', 'dec-venue', 'dec-couple-entry'];
+const ADDON_GROUP_IDS = ['dec-home', 'dec-venue', 'dec-couple-entry', 'dec-welcome-girls'];
 const ADDON_GROUP_LABELS: Record<string, string> = {
   'dec-home': 'Home Decoration',
   'dec-venue': 'Venue Decoration',
   'dec-couple-entry': 'Couple Entry',
+  'dec-welcome-girls': 'Welcome Girls',
 };
 
 export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onReplace, onUpdateQuantity }: DecorationStepProps) {

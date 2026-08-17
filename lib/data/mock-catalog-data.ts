@@ -97,6 +97,7 @@ export const MOCK_CATALOG_GROUPS: CatalogGroup[] = [
   group('dec-home', ['wedding'], 'decoration', 'Home Decoration', null, 0, false, null, 2),
   group('dec-venue', ['wedding'], 'decoration', 'Venue Decoration', null, 0, false, null, 3),
   group('dec-couple-entry', ['wedding'], 'decoration', 'Couple Entry', null, 0, false, null, 4),
+  group('dec-welcome-girls', ['wedding'], 'decoration', 'Welcome Girls', null, 0, false, null, 5),
 
   group('cat-welcome-drinks', ['wedding'], 'catering', 'Welcome Drinks', 1, 1, true, 'Additional Welcome Drinks require vendor approval.', 1, ['lunch', 'dinner']),
   group('cat-starters', ['wedding'], 'catering', 'Starters', 2, 2, true, 'You have reached the allowed number of starters for your package.', 2, ['lunch', 'dinner']),
@@ -175,6 +176,9 @@ export const MOCK_CATALOG_ITEMS: CatalogItem[] = [
   item({ id: 'dec-couple-fireworks', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Fire Works', description: 'Fireworks display for a grand couple entry.', imageUrl: '', packageLevel: 'gold', price: 8000, unit: 'per event', displayOrder: 5 }),
   item({ id: 'dec-couple-dole', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Dole', description: 'Traditional dole (palanquin) entry for the couple.', imageUrl: '', packageLevel: 'gold', price: 6000, unit: 'per event', displayOrder: 6 }),
   item({ id: 'dec-couple-dancer', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-couple-entry', name: 'Dancer', description: 'Professional dancers to lead the couple entry.', imageUrl: '', packageLevel: 'gold', price: 10000, unit: 'per event', displayOrder: 7 }),
+
+  // Wedding decoration - Welcome Girls (own section, right after Couple Entry)
+  item({ id: 'dec-welcome-girls-service', supportedEventTypes: ['wedding'], categoryKey: 'decoration', groupId: 'dec-welcome-girls', name: 'Welcome Girls', description: 'Welcome girls to greet and escort guests with flowers and aarti.', imageUrl: '', packageLevel: 'normal', price: 5000, unit: 'per event', displayOrder: 1 }),
 
   // Wedding photography - Deverakarya (home / ritual ceremony coverage)
   item({ id: 'photo-traditional-photo', supportedEventTypes: ['wedding'], categoryKey: 'photography', groupId: 'photo-deverakarya', name: 'Traditional Photography', description: 'Classic posed traditional photography for the Deverakarya rituals.', imageUrl: '', packageLevel: 'normal', price: 15000, unit: 'per event', quantityMode: 'team_size', metadata: { teamSize: 1 }, displayOrder: 1 }),

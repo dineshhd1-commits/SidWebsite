@@ -1,0 +1,11 @@
+# Unused, unreferenced media (confirmed via a repo-wide code search - nothing
+# imports or links to these) that were bloating deploy uploads to the point of
+# failing outright. Excluded from the Vercel build/deploy artifact only -
+# still present in git history, not deleted, not touched otherwise.
+public/WhatsApp Video 2026-07-26 at 4.45.51 PM.mp4
+public/WhatsApp Video 2026-07-26 at 4.46.18 PM (1).mp4
+public/WhatsApp Video 2026-07-26 at 4.46.18 PM.mp4
+public/WhatsApp Video 2026-07-26 at 4.46.38 PM.mp4
+public/WhatsApp Video 2026-07-26 at 4.47.04 PM.mp4
+public/WhatsApp Video 2026-07-26 at 4.47.15 PM.mp4
+public/WhatsApp Video 2026-07-26 at 4.47.16 PM.mp4

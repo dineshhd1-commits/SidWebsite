@@ -972,6 +972,18 @@ export default function AdminDashboardPage() {
                       <MessageCircle className="w-4 h-4" />
                     </a>
 
+                    {q.pdfUrl && (
+                      <a
+                        href={q.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-maroon-700 text-white hover:bg-maroon-800 transition-colors shadow-sm"
+                        title="View Event Enquiry PDF"
+                      >
+                        <FileText className="w-4 h-4" />
+                      </a>
+                    )}
+
                     <button
                       onClick={() => handleDeleteQuote(q.id, q.refCode)}
                       className="p-2 rounded-lg bg-rose-100 text-rose-700 hover:bg-rose-200 transition-colors"

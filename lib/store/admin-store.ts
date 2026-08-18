@@ -27,6 +27,11 @@ export interface AdminQuoteRequest {
    * in the admin CRM. Optional only because older localStorage-only quote
    * records (created before this existed) won't have it. */
   fullDetails?: EnquiryDetails;
+  /** Signed/secure URL to this enquiry's generated PDF, when the upload to
+   * storage succeeded. Optional - older records and offline/dev submissions
+   * won't have one, and the admin CRM should just hide the "View PDF" link
+   * in that case rather than breaking. */
+  pdfUrl?: string | null;
   status: AdminQuoteStatus;
   createdAt: string;
 }
@@ -140,6 +145,7 @@ function mapSupabaseQuoteRow(row: any): AdminQuoteRequest {
     estimatedCost: row.price_breakdown?.estimatedCost ?? 0,
     notes: builderState.notes || '',
     fullDetails: builderState.fullDetails,
+    pdfUrl: builderState.pdfUrl || null,
     status: (row.status as AdminQuoteStatus) || 'New',
     createdAt: row.created_at,
   };
@@ -203,6 +209,7 @@ export async function saveAdminQuote(
           purohitTier: newRecord.purohitTier,
           selectedServicesCount: newRecord.selectedServicesCount,
           fullDetails: newRecord.fullDetails,
+          pdfUrl: newRecord.pdfUrl || null,
         },
         price_breakdown: { estimatedCost: newRecord.estimatedCost },
         status: newRecord.status,
@@ -292,6 +299,44 @@ export async function saveCorporateDecorationEnquiry(
   });
 
   return { savedToBackend };
+}
+
+/** Uploads a generated Event Enquiry PDF to Supabase Storage under a
+ * cryptographically-random object key (never the reference code alone,
+ * which is guessable/sequential) so the resulting URL can't be enumerated,
+ * and returns a signed URL scoped to a private bucket rather than a public
+ * one - satisfies "don't expose customer PDFs via a publicly guessable
+ * URL" without needing any new backend infrastructure. Returns null on any
+ * failure (offline dev sandbox, bucket not yet provisioned, network error)
+ * so the caller can fall back to the existing full-text WhatsApp message -
+ * this must never throw and block the actual enquiry submission. */
+export async function uploadEnquiryPdf(pdfBlob: Blob, refCode: string): Promise<string | null> {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const randomSuffix = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const objectPath = `${refCode}/${randomSuffix}.pdf`;
+
+    const { error: uploadError } = await supabase.storage.from('enquiry-pdfs').upload(objectPath, pdfBlob, {
+      contentType: 'application/pdf',
+      upsert: false,
+    });
+    if (uploadError) {
+      console.error('Supabase PDF upload error:', uploadError);
+      return null;
+    }
+
+    // 7-day signed URL on a private bucket - long enough for the owner to
+    // action the enquiry, without making the file permanently public.
+    const { data, error: signError } = await supabase.storage.from('enquiry-pdfs').createSignedUrl(objectPath, 60 * 60 * 24 * 7);
+    if (signError || !data?.signedUrl) {
+      console.error('Supabase PDF signed URL error:', signError);
+      return null;
+    }
+    return data.signedUrl;
+  } catch (e) {
+    console.error('Failed to upload enquiry PDF:', e);
+    return null;
+  }
 }
 
 export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteRequest[] {

@@ -8,10 +8,12 @@ import { GoldButton } from '@/components/ui/gold-button';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
 
 import { getWhatsAppBookingRequestUrl } from '@/lib/whatsapp';
-import { saveAdminQuote } from '@/lib/store/admin-store';
+import { saveAdminQuote, uploadEnquiryPdf } from '@/lib/store/admin-store';
 import { SITE } from '@/lib/site-config';
 import { getCartLines, getEstimatedTotal } from '@/lib/builder/selectors';
 import { buildEnquiryDetails, mergeBookingFormIntoState } from '@/lib/builder/enquiry';
+import { MAX_GUEST_COUNT } from '@/lib/builder/validation';
+import { generateEnquiryPdfBlob } from '@/lib/builder/enquiry-pdf';
 
 const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
@@ -42,12 +44,22 @@ export default function BookingPage() {
   // a duplicate enquiry once the first one has already gone through.
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [friendlyErrors, setFriendlyErrors] = useState<string[]>([]);
+  // Separate from isSubmitting so the button can show a specific message
+  // during the (occasionally slower, image-heavy) PDF generation step
+  // instead of just a generic "Submitting..." that reads as a freeze.
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const validate = (): string[] => {
     const errors: string[] = [];
     if (!formData.fullName.trim()) errors.push('We still need your name before submitting your enquiry.');
     if (!/^\d{10}$/.test(formData.phone.trim())) errors.push('We still need a valid 10-digit phone number before submitting your enquiry.');
     if (!formData.weddingDate) errors.push('Please choose a valid event date.');
+    // Re-checked here (not just in the Event Details field) so the final
+    // submit is never gated only on client-side input attributes that could
+    // be bypassed - this is the actual last gate before an enquiry goes out.
+    if (state.eventDetails.guestCount > MAX_GUEST_COUNT) {
+      errors.push(`Maximum guest capacity is ${MAX_GUEST_COUNT.toLocaleString('en-IN')}.`);
+    }
     return errors;
   };
 
@@ -72,6 +84,22 @@ export default function BookingPage() {
     const fullDetails = buildEnquiryDetails(mergedState);
     const categorySummary = Array.from(new Set(fullDetails.sections.map((s) => s.label))).join(', ') || 'custom';
 
+    // Generate the professional Event Enquiry PDF and attempt to upload it
+    // before opening WhatsApp, so the notification link (when available) is
+    // ready immediately. Wrapped so a PDF failure never blocks the actual
+    // enquiry from going through - the full-text WhatsApp fallback still
+    // carries every detail either way.
+    const submittedAtIso = new Date().toISOString();
+    let pdfUrl: string | null = null;
+    setIsGeneratingPdf(true);
+    try {
+      const pdfBlob = await generateEnquiryPdfBlob(fullDetails, refCode, submittedAtIso);
+      pdfUrl = await uploadEnquiryPdf(pdfBlob, refCode);
+    } catch (err) {
+      console.error('Enquiry PDF generation failed; falling back to full-text WhatsApp notification.', err);
+    }
+    setIsGeneratingPdf(false);
+
     const { savedToBackend } = await saveAdminQuote({
       refCode,
       customerName: formData.fullName,
@@ -88,6 +116,7 @@ export default function BookingPage() {
       estimatedCost: estimatedTotal,
       notes: formData.notes,
       fullDetails,
+      pdfUrl,
     });
 
     if (!savedToBackend) {
@@ -97,7 +126,7 @@ export default function BookingPage() {
       console.warn('Enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
     }
 
-    const waUrl = getWhatsAppBookingRequestUrl(formData, state, refCode, SITE.whatsappNumber);
+    const waUrl = getWhatsAppBookingRequestUrl(formData, state, refCode, SITE.whatsappNumber, pdfUrl);
 
     setHasSubmitted(true);
     setIsSubmitting(false);
@@ -233,7 +262,13 @@ export default function BookingPage() {
 
               <div className="pt-2">
                 <GoldButton fullWidth variant="copper" size="lg" disabled={isSubmitting || hasSubmitted}>
-                  {isSubmitting ? 'Submitting...' : hasSubmitted ? 'Request Sent' : 'Submit Event Request'}
+                  {isGeneratingPdf
+                    ? 'Generating your event summary PDF...'
+                    : isSubmitting
+                    ? 'Submitting...'
+                    : hasSubmitted
+                    ? 'Request Sent'
+                    : 'Submit Event Request'}
                 </GoldButton>
               </div>
             </form>

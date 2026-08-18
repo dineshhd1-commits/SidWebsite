@@ -4,6 +4,12 @@ import { getCartLines } from './selectors';
 
 export type StepStatus = 'not_started' | 'in_progress' | 'completed' | 'pending';
 
+/** Hard ceiling on Number of Guests, enforced both in the field itself
+ * (frontend) and again right before an enquiry is actually submitted
+ * (booking page / saveAdminQuote path) so it can't be bypassed by editing
+ * the input's value via devtools or any other client-side manipulation. */
+export const MAX_GUEST_COUNT = 5000;
+
 interface FieldCheck {
   key: string;
   label: string;
@@ -29,7 +35,11 @@ export function getEventDetailsFieldChecks(state: EventBuilderState): { required
     required: [
       { key: 'eventType', label: 'Event Type', filled: !!eventTypeId },
       { key: 'date', label: 'Event Date', filled: !!eventDetails.date },
-      { key: 'guestCount', label: 'Number of Guests', filled: eventDetails.guestCount > 0 },
+      {
+        key: 'guestCount',
+        label: 'Number of Guests',
+        filled: eventDetails.guestCount > 0 && eventDetails.guestCount <= MAX_GUEST_COUNT,
+      },
       { key: 'location', label: 'Event Location', filled: !!eventDetails.location.trim() },
       { key: 'customerName', label: 'Your Name', filled: !!eventDetails.customerName.trim() },
       { key: 'customerPhone', label: 'Phone Number', filled: /^\d{10}$/.test(eventDetails.customerPhone.trim()) },
@@ -55,7 +65,7 @@ export function getFriendlyMissingFieldMessage(fieldKey: string): string {
   const messages: Record<string, string> = {
     eventType: "We still need to know what type of event you're planning.",
     date: 'Please choose a valid event date before submitting.',
-    guestCount: 'Let us know roughly how many guests to expect.',
+    guestCount: `Let us know roughly how many guests to expect. Maximum guest capacity is ${MAX_GUEST_COUNT.toLocaleString('en-IN')}.`,
     location: 'We still need your event location before submitting your enquiry.',
     customerName: 'We still need your name before submitting your enquiry.',
     customerPhone: 'We still need a valid 10-digit phone number before submitting your enquiry.',

@@ -83,13 +83,49 @@ export function getWhatsAppBookingRequestUrl(
   formData: BookingFormOverrides,
   state: EventBuilderState,
   refCode: string,
-  phone: string = '918095408404'
+  phone: string = '918095408404',
+  pdfUrl?: string | null
 ): string {
   const mergedState = mergeBookingFormIntoState(state, formData);
   const details = buildEnquiryDetails(mergedState);
-  const message = formatEnquiryMessage(details, refCode, new Date().toISOString());
+  const submittedAtIso = new Date().toISOString();
+  // When the PDF made it to storage, send the short-form summary with a
+  // link instead of the full plain-text dump - all the detail now lives in
+  // the PDF itself. If the upload didn't happen (offline dev, storage
+  // hiccup), fall back to the original full-text message so the owner is
+  // never left with nothing.
+  const message = pdfUrl
+    ? formatShortEnquiryNotification(details, refCode, submittedAtIso, pdfUrl)
+    : formatEnquiryMessage(details, refCode, submittedAtIso);
 
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
+/** Short-form owner notification used once the Event Enquiry PDF has been
+ * generated and uploaded - all the detailed breakdown (decoration photos,
+ * catering menu, etc.) lives in the PDF; this is just enough for the owner
+ * to triage at a glance and open the link. */
+function formatShortEnquiryNotification(
+  details: ReturnType<typeof buildEnquiryDetails>,
+  refCode: string,
+  submittedAtIso: string,
+  pdfUrl: string
+): string {
+  const lines: string[] = [];
+  lines.push('\u{1F389} NEW EVENT ENQUIRY – SID EVENTS'); // 🎉 ... –
+  lines.push('');
+  lines.push(`Customer: ${details.customerName || 'Not provided'}`);
+  lines.push(`Event: ${details.eventTypeLabel}`);
+  lines.push(`Date: ${details.eventDate ? new Date(details.eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Not set'}`);
+  lines.push(`Location: ${details.location || 'Not provided'}`);
+  lines.push(`Guests: ${details.guestCount || 'Not specified'}`);
+  lines.push(`Reference: #${refCode}`);
+  lines.push('');
+  lines.push('\u{1F4CE} Event Enquiry PDF'); // 📎
+  lines.push(`View/Download: ${pdfUrl}`);
+  lines.push('');
+  lines.push('Please contact the customer to confirm availability and finalize the booking.');
+  return lines.join('\n');
 }
 
 /** Same delivery mechanism as getWhatsAppBookingRequestUrl - a pre-filled

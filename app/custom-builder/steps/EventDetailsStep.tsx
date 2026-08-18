@@ -6,7 +6,7 @@ import { EventDetails } from '@/lib/types/event-builder';
 import { EventType } from '@/lib/types/catalog';
 import { EventTypeSelectField } from '@/components/builder/EventTypeSelectField';
 import { LocationAutocompleteField } from '@/components/builder/LocationAutocompleteField';
-import { isValidCustomerEmail } from '@/lib/builder/validation';
+import { isValidCustomerEmail, MAX_GUEST_COUNT } from '@/lib/builder/validation';
 
 interface EventDetailsStepProps {
   eventTypes: EventType[];
@@ -66,11 +66,13 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
             <input
               type="number"
               min={1}
+              max={MAX_GUEST_COUNT}
               placeholder="e.g. 300"
               value={eventDetails.guestCount || ''}
-              onChange={(e) => onChange({ guestCount: Math.max(0, parseInt(e.target.value) || 0) })}
+              onChange={(e) => onChange({ guestCount: Math.max(0, Math.min(MAX_GUEST_COUNT, parseInt(e.target.value) || 0)) })}
               className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
             />
+            <p className="text-[10px] text-maroon-700/60 mt-1">Maximum guest capacity is {MAX_GUEST_COUNT.toLocaleString('en-IN')}.</p>
           </div>
         </div>
 

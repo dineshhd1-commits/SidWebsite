@@ -33,6 +33,13 @@ export interface EnquirySelectionLine {
   name: string;
   quantity: number;
   imageUrl?: string;
+  /** The catalog group this line came from (e.g. 'dec-home',
+   * 'photo-prewedding-services', or 'decoration-inspiration' for the photo
+   * gallery) - carried through so downstream consumers like the PDF
+   * generator can sub-group a section (Home Decoration vs Venue Decoration,
+   * Pre-Wedding Shoot vs Wedding Hall photography) without re-deriving it
+   * from scratch. */
+  groupId?: string | null;
 }
 
 export interface EnquiryCategorySection {
@@ -123,7 +130,7 @@ export function buildEnquiryDetails(state: EventBuilderState): EnquiryDetails {
         lines: [],
       });
     }
-    sectionsByCategory.get(key)!.lines.push({ name: line.name, quantity: line.quantity, imageUrl: line.imageUrl });
+    sectionsByCategory.get(key)!.lines.push({ name: line.name, quantity: line.quantity, imageUrl: line.imageUrl, groupId: line.groupId });
   }
 
   const cateringSelections = Object.values(state.cateringSelections);
@@ -157,7 +164,7 @@ export function buildEnquiryDetails(state: EventBuilderState): EnquiryDetails {
   };
 }
 
-function formatDate(dateStr: string): string {
+export function formatDate(dateStr: string): string {
   if (!dateStr) return 'Not set';
   try {
     return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -166,7 +173,7 @@ function formatDate(dateStr: string): string {
   }
 }
 
-function formatDateTime(iso: string): string {
+export function formatDateTime(iso: string): string {
   try {
     return new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
   } catch {

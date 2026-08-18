@@ -36,14 +36,20 @@ export function CartSidebar({
   const listRef = useRef<HTMLDivElement>(null);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-  // When something new lands in the cart, scroll it into view within this
-  // list's own scroll container (never the page) and flash it briefly -
-  // the customer never has to hunt for what they just picked.
+  // When something new lands in the cart, flash it briefly so it's easy to
+  // spot if this list is already on screen. Deliberately does NOT call
+  // scrollIntoView: this sidebar is `position: sticky`, and scrollIntoView on
+  // a descendant of a sticky element is a well-known cross-browser trap - the
+  // browser can compute "is this visible?" off the element's static
+  // (un-stuck) position in the document rather than its current stuck
+  // position, and "helpfully" scroll the whole page to chase it. The
+  // customer's actual confirmation that a selection landed is
+  // AddedToCartToast (a fixed-position overlay, unaffected by any of this)
+  // plus the selected-state highlight on the photo/card itself - neither of
+  // which ever needs to move the viewport, so nothing here should either.
   useEffect(() => {
     if (!lastAdded) return;
     setHighlightedId(lastAdded.id);
-    const row = listRef.current?.querySelector<HTMLElement>(`[data-line-id="${CSS.escape(lastAdded.id)}"]`);
-    row?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     const timer = setTimeout(() => setHighlightedId(null), HIGHLIGHT_MS);
     return () => clearTimeout(timer);
   }, [lastAdded]);

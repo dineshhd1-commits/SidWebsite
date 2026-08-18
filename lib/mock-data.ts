@@ -16,7 +16,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Heavy cloud low fog dry ice effect for couple stage entry and first dance.',
     price: 15000,
     unit: 'event',
-    imageUrl: '/Gemini_Generated_Image_drzo1ddrzo1ddrzo.png',
+    imageUrl: '/Gemini_Generated_Image_drzo1ddrzo1ddrzo.webp',
     popular: true,
   },
   // Step 1 – Decoration (Home Functions)
@@ -102,7 +102,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Grand entrance arch decorated with fresh flowers, traditional brass lamps & flower rangoli.',
     price: 40000,
     unit: 'foyer',
-    imageUrl: '/Gemini_Generated_Image_p4o0ivp4o0ivp4o0.png',
+    imageUrl: '/Gemini_Generated_Image_p4o0ivp4o0ivp4o0.webp',
     popular: true,
   },
   {
@@ -113,7 +113,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Vintage brass mirror, silk drapes, peacock feather motif, and royal wooden swing setup.',
     price: 28000,
     unit: 'booth',
-    imageUrl: '/Gemini_Generated_Image_110eey110eey110e.png',
+    imageUrl: '/Gemini_Generated_Image_110eey110eey110e.webp',
   },
   {
     id: 'dec-stage',
@@ -143,7 +143,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Grand traditional brass mandapam decorated with fresh jasmine, marigold, lotus garlands & banana trunk pillars.',
     price: 150000,
     unit: 'setup',
-    imageUrl: '/Gemini_Generated_Image_nlsfrwnlsfrwnlsf.png',
+    imageUrl: '/Gemini_Generated_Image_nlsfrwnlsfrwnlsf.webp',
     popular: true,
   },
 
@@ -156,7 +156,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Handcrafted fresh Jasmine, Red Rose, Orchids & Pink Lotus Varmala pair for bride & groom.',
     price: 18000,
     unit: 'pair',
-    imageUrl: '/Gemini_Generated_Image_mwji35mwji35mwji.png',
+    imageUrl: '/Gemini_Generated_Image_mwji35mwji35mwji.webp',
     popular: true,
   },
 
@@ -169,7 +169,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Hand-carved wooden floral Doli decorated with silk drapes & flowers, carried by 4 uniformed palanquin bearers.',
     price: 25000,
     unit: 'entry',
-    imageUrl: '/Gemini_Generated_Image_mrs98imrs98imrs9.png',
+    imageUrl: '/Gemini_Generated_Image_mrs98imrs98imrs9.webp',
   },
   {
     id: 'dec-nadaswaram',
@@ -179,7 +179,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Traditional auspicious live Nadaswaram music team playing classical ragas throughout the ceremony.',
     price: 35000,
     unit: 'per event',
-    imageUrl: '/ChatGPT Image Jul 28, 2026, 04_57_21 PM.png',
+    imageUrl: '/ChatGPT Image Jul 28, 2026, 04_57_21 PM.jpg',
     popular: true,
   },
 
@@ -192,7 +192,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: '12-member traditional brass band with brass drums & trumpets welcoming groom procession.',
     price: 30000,
     unit: 'event',
-    imageUrl: '/Gemini_Generated_Image_ccs34nccs34nccs3.png',
+    imageUrl: '/Gemini_Generated_Image_ccs34nccs34nccs3.webp',
   },
   {
     id: 'dec-orchestra',
@@ -202,7 +202,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Full live orchestra with vocalists performing South Indian film songs & classical melodies during reception.',
     price: 60000,
     unit: 'performance',
-    imageUrl: '/Gemini_Generated_Image_8f6wrb8f6wrb8f6w.png',
+    imageUrl: '/Gemini_Generated_Image_8f6wrb8f6wrb8f6w.webp',
   },
   {
     id: 'dec-cold-fire',
@@ -212,7 +212,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Stunning 6 cold sparkler pyro jets for grand varmala & couple entry moments.',
     price: 18000,
     unit: 'event',
-    imageUrl: '/Gemini_Generated_Image_la9ccmla9ccmla9c.png',
+    imageUrl: '/Gemini_Generated_Image_la9ccmla9ccmla9c.webp',
   },
   {
     id: 'dec-crackers',
@@ -222,7 +222,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Eco-friendly aerial flower shots and sparklers for outdoor celebration.',
     price: 25000,
     unit: 'event',
-    imageUrl: '/Gemini_Generated_Image_glaxgjglaxgjglax.png',
+    imageUrl: '/Gemini_Generated_Image_glaxgjglaxgjglax.webp',
   },
   {
     id: 'dec-colour-pots',
@@ -306,7 +306,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Experienced Vedic scholars performing complete Muhurtham, Ganapathi Homa, Saptapadi & Ashirvadam.',
     price: 30000,
     unit: 'package',
-    imageUrl: '/ChatGPT Image Jul 28, 2026, 11_34_17 AM.png',
+    imageUrl: '/ChatGPT Image Jul 28, 2026, 11_34_17 AM.jpg',
     popular: true,
   },
 
@@ -765,7 +765,7 @@ export const MOCK_GALLERY: GalleryItem[] = [
     title: 'Live Nadaswaram & Thavil Ensemble',
     category: 'traditional',
     mediaType: 'image',
-    url: '/ChatGPT Image Jul 28, 2026, 04_57_21 PM.png',
+    url: '/ChatGPT Image Jul 28, 2026, 04_57_21 PM.jpg',
   },
   {
     id: 'gal-46',

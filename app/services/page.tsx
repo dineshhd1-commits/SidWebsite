@@ -24,7 +24,7 @@ export default function ServicesPage() {
       {/* Full-Width Full-Screen Hero Banner Section */}
       <section className="relative w-full min-h-screen-dvh sm:min-h-[100dvh] flex items-center justify-center overflow-hidden border-b-2 border-gold-400/40 bg-maroon-950 pt-20 sm:pt-24">
         <Image
-          src="/Sid1.png"
+          src="/Sid1.jpg"
           alt="Dream. Plan. Create. Celebrate. - SID Events"
           fill
           sizes="100vw"

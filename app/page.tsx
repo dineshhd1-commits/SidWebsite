@@ -33,6 +33,7 @@ import {
   Quote,
 } from 'lucide-react';
 import { GoldButton } from '@/components/ui/gold-button';
+import { LazyVideo } from '@/components/ui/lazy-video';
 import { GlassCard } from '@/components/ui/glass-card';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { CountdownTimer } from '@/components/ui/countdown-timer';
@@ -162,12 +163,8 @@ export default function HomePage() {
         
         {/* Background Video rotated 90 degrees to the left with Warm Ambient Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center bg-maroon-950">
-          <video
+          <LazyVideo
             src="/sid-video1.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
             className="absolute top-1/2 left-1/2 object-cover opacity-85 pointer-events-none"
             style={{
               width: 'max(160dvh, 160vw)',

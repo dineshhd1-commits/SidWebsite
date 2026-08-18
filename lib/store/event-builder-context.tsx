@@ -196,11 +196,16 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => ({ ...prev, eventDetails: { ...prev.eventDetails, ...partial } }));
   }, []);
 
-  /** Timing determines which meal (Breakfast/Lunch/Dinner) the menu shows - switching
-   * it away from the meal a selection belongs to would leave orphaned selections the
-   * user can no longer see or edit, so we drop those instead of hiding them silently. */
+  /** Timing only changes which meal's categories are shown in the browse
+   * grid - it must never touch cateringSelections. That one map is the single
+   * source of truth for every catering pick across every timing (dish
+   * categories like Welcome Drinks/Chats/Starters are the same category ids
+   * whether you're looking at the Afternoon or Evening tab, and
+   * cateringSelections is keyed by itemId), so switching tabs back and forth
+   * has to leave it completely untouched or picks silently vanish the moment
+   * the customer looks at a different meal and comes back. */
   const setCateringTiming = useCallback((timing: CateringTiming) => {
-    setState((prev) => ({ ...prev, cateringTiming: timing, cateringSelections: {} }));
+    setState((prev) => ({ ...prev, cateringTiming: timing }));
   }, []);
 
   /** Guest count is kept per meal timing, so a number entered for one meal

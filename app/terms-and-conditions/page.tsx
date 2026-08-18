@@ -1,7 +1,23 @@
 'use client';
 
 import React from 'react';
-import { AlertTriangle, ShieldCheck } from 'lucide-react';
+import {
+  AlertTriangle,
+  Building2,
+  Camera,
+  CalendarClock,
+  CheckCircle2,
+  CreditCard,
+  Gavel,
+  Megaphone,
+  Package,
+  RefreshCw,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+  UtensilsCrossed,
+  type LucideIcon,
+} from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 
@@ -37,11 +53,14 @@ function TermsCallout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TermsSection({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
+function TermsSection({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: React.ReactNode }) {
   return (
     <GlassCard className="space-y-4">
       <h2 className="font-playfair text-xl sm:text-2xl font-bold text-maroon-900 border-b border-gold-300 pb-3 flex items-center gap-2.5">
-        <span aria-hidden>{icon}</span> {title}
+        <span className="w-8 h-8 rounded-lg bg-maroon-800 text-gold-300 flex items-center justify-center shrink-0">
+          <Icon className="w-4 h-4" />
+        </span>
+        {title}
       </h2>
       <ol className="space-y-4">{children}</ol>
     </GlassCard>
@@ -65,7 +84,7 @@ export default function TermsAndConditionsPage() {
         <TraditionalBorder />
       </div>
 
-      <TermsSection icon="📸" title="Photography & Data Delivery">
+      <TermsSection icon={Camera} title="Photography & Data Delivery">
         <TermsPoint number={1}>
           A preview set of 10 edited photographs will be shared within <strong>10-15 days</strong>{' '}after the shoot is
           completed.
@@ -91,7 +110,7 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="💳" title="Payment Terms">
+      <TermsSection icon={CreditCard} title="Payment Terms">
         <TermsPoint number={6}>
           <strong>50% advance payment</strong>{' '}is required at the time of booking confirmation.
         </TermsPoint>
@@ -109,7 +128,7 @@ export default function TermsAndConditionsPage() {
         </li>
       </TermsSection>
 
-      <TermsSection icon="🗓️" title="Postponement & Cancellation Policy">
+      <TermsSection icon={CalendarClock} title="Postponement & Cancellation Policy">
         <TermsPoint number={10}>
           If the event is postponed <strong>more than 40 days</strong>{' '}before the scheduled date, the entire advance
           amount will be adjusted for the new date.
@@ -124,7 +143,7 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="📦" title="Delivery Timeline">
+      <TermsSection icon={Package} title="Delivery Timeline">
         <TermsPoint number={13}>Preview photos will be delivered within <strong>15 days</strong>{' '}from the shoot date.</TermsPoint>
         <TermsPoint number={14}>RAW photographs will be delivered within <strong>30 days</strong>.</TermsPoint>
         <TermsPoint number={15}>Final edited photos and digital album will be delivered within <strong>60 days</strong>.</TermsPoint>
@@ -135,7 +154,7 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="⚖️" title="Copyright & Usage">
+      <TermsSection icon={Gavel} title="Copyright & Usage">
         <TermsPoint number={18}>
           All photographs, videos, and content produced are the <strong>intellectual property of the agency
           (L.I.F.)</strong>.
@@ -150,7 +169,7 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="🍽️" title="Food & Meals Policy">
+      <TermsSection icon={UtensilsCrossed} title="Food & Meals Policy">
         <TermsPoint number={21}>
           Meals for the event team must be arranged by the client. If not, the team will require designated breaks
           for meals.
@@ -195,7 +214,7 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="🏛️" title="Venue, Cleaning & Infrastructure Policy">
+      <TermsSection icon={Building2} title="Venue, Cleaning & Infrastructure Policy">
         <TermsPoint number={32}>
           If the <strong>marriage hall is booked by the client</strong>, <strong>cleaning responsibilities</strong>{' '}
           fall entirely on the client. The event team will not provide manpower for this task.
@@ -227,7 +246,7 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="🚚" title="Transportation & Liability">
+      <TermsSection icon={Truck} title="Transportation & Liability">
         <TermsPoint number={39}>
           If transportation is included in the package, any <strong>accidents, legal fines, or medical
           emergencies</strong>{' '}will be at the client&apos;s expense. The event management team will not cover these
@@ -235,7 +254,7 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="📢" title="Permissions & Noise Regulations">
+      <TermsSection icon={Megaphone} title="Permissions & Noise Regulations">
         <TermsPoint number={40}>
           As per government rules, <strong>music systems will be turned off after 10:00 PM</strong>. If continued use
           leads to complaints, the client is solely responsible for resolving them.
@@ -253,13 +272,13 @@ export default function TermsAndConditionsPage() {
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="🎀" title="Decor & Presentation Policy">
+      <TermsSection icon={Sparkles} title="Decor & Presentation Policy">
         <TermsPoint number={44}>
           Decorations will match the <strong>agreed concept with 70-80% accuracy</strong>, depending on the location.
         </TermsPoint>
       </TermsSection>
 
-      <TermsSection icon="🔁" title="Event Changes Policy">
+      <TermsSection icon={RefreshCw} title="Event Changes Policy">
         <TermsPoint number={45}>
           Any changes to the event structure, design, or arrangements must be informed at least{' '}
           <strong>30 days before the event</strong>{' '}to allow time for adjustments.{' '}
@@ -269,7 +288,10 @@ export default function TermsAndConditionsPage() {
 
       <GlassCard variant="warm" className="space-y-4 text-center border-2 border-gold-400">
         <h2 className="font-playfair text-xl sm:text-2xl font-bold text-maroon-900 flex items-center justify-center gap-2.5">
-          <span aria-hidden>✅</span> Client Confirmation
+          <span className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-4 h-4" />
+          </span>
+          Client Confirmation
         </h2>
         <p className="text-sm text-maroon-900 leading-relaxed max-w-2xl mx-auto">
           Please carefully read and understand all terms and conditions before confirming the booking.

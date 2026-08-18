@@ -838,6 +838,7 @@
       "welcome_drinks",
       "chats",
       "starters",
+      "soups",
       "pickles",
       "kosumbri",
       "dry_palya",
@@ -902,7 +903,8 @@
         "categoryIds": [
           "welcome_drinks",
           "chats",
-          "starters"
+          "starters",
+          "soups"
         ]
       },
       {

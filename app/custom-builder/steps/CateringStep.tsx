@@ -59,10 +59,10 @@ function CategoryTile({
   );
 }
 
-const TIMING_OPTIONS: { id: CateringTiming; label: string; hint: string; emoji: string }[] = [
-  { id: 'evening', label: 'Evening', hint: 'Dinner menu', emoji: '\u{1F319}' }, // 🌙
-  { id: 'morning', label: 'Morning', hint: 'Breakfast menu', emoji: '\u{1F305}' }, // 🌅
-  { id: 'afternoon', label: 'Afternoon', hint: 'Lunch menu', emoji: '\u{2600}\u{FE0F}' }, // ☀️
+const TIMING_OPTIONS: { id: CateringTiming; label: string; hint: string }[] = [
+  { id: 'evening', label: 'Evening', hint: 'Dinner menu' },
+  { id: 'morning', label: 'Morning', hint: 'Breakfast menu' },
+  { id: 'afternoon', label: 'Afternoon', hint: 'Lunch menu' },
 ];
 
 // Display order for the "Menu Selections" cart - fixed regardless of tab
@@ -284,8 +284,8 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
                     const timingOption = TIMING_OPTIONS.find((o) => o.id === menuType);
                     return (
                       <div key={menuType} className="space-y-3">
-                        <p className="text-xs font-bold text-gold-300 uppercase tracking-wide flex items-center gap-1.5">
-                          <span>{timingOption?.emoji}</span>
+                        <p className="text-xs font-bold text-gold-300 uppercase tracking-wide flex items-center gap-2 border-b border-gold-400/30 pb-1.5">
+                          <span className="text-gold-400 text-[10px]" aria-hidden="true">&#9670;</span>
                           {timingOption?.label} Menu
                         </p>
                         <div className="space-y-3 pl-1">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CatalogItem } from '@/lib/types/catalog';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { DecorationPhoto } from '@/lib/types/decoration-inspiration';
@@ -58,12 +58,19 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onUpdateQ
 
   // Every decoration photo currently in the cart, keyed by the photo's own id
   // (not the cart item id) - the gallery is multi-select, so any number of
-  // these can be selected at once, across any number of categories.
-  const selectedPhotoIds = new Set(
-    Object.values(state.cart)
-      .filter((line) => line.categoryKey === 'decoration' && line.groupId === 'decoration-inspiration')
-      .map((line) => decorationPhotoIdFromCartItemId(line.id))
-      .filter((id): id is string => !!id)
+  // these can be selected at once, across any number of categories. Memoized
+  // on state.cart alone so the gallery's ~150+ memoized photo tiles don't get
+  // a new Set (and re-render) every time DecorationStep re-renders for a
+  // reason that has nothing to do with the cart.
+  const selectedPhotoIds = useMemo(
+    () =>
+      new Set(
+        Object.values(state.cart)
+          .filter((line) => line.categoryKey === 'decoration' && line.groupId === 'decoration-inspiration')
+          .map((line) => decorationPhotoIdFromCartItemId(line.id))
+          .filter((id): id is string => !!id)
+      ),
+    [state.cart]
   );
 
   const categories = !isWedding && !isEnquiryOnly && state.eventTypeId ? getDecorationCategoriesForEventType(state.eventTypeId) : [];
@@ -74,15 +81,21 @@ export function DecorationStep({ state, onAddToCart, onRemoveFromCart, onUpdateQ
    * is now its own independent cart line, so multiple photos - from the
    * same category or different ones - can be selected at once). Clicking an
    * already-selected photo removes it; nothing is ever duplicated since the
-   * cart is keyed by the photo's own id. */
-  const handleTogglePhoto = (photo: DecorationPhoto) => {
-    const cartId = decorationCartItemId(photo.id);
-    if (state.cart[cartId]) {
-      onRemoveFromCart(cartId);
-    } else {
-      onAddToCart(decorationPhotoToCartItem(photo));
-    }
-  };
+   * cart is keyed by the photo's own id. Stable across renders (only changes
+   * when the cart or the add/remove handlers do) so memoized photo tiles can
+   * actually skip re-rendering instead of the callback identity forcing them
+   * to re-render anyway. */
+  const handleTogglePhoto = useCallback(
+    (photo: DecorationPhoto) => {
+      const cartId = decorationCartItemId(photo.id);
+      if (state.cart[cartId]) {
+        onRemoveFromCart(cartId);
+      } else {
+        onAddToCart(decorationPhotoToCartItem(photo));
+      }
+    },
+    [state.cart, onAddToCart, onRemoveFromCart]
+  );
 
   return (
     <div className="space-y-6">

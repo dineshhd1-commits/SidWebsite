@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Check, ShoppingBag } from 'lucide-react';
+import { Check, Lock, ShoppingBag } from 'lucide-react';
 import { StepStatus } from '@/lib/builder/validation';
 
 export interface BuilderStepDef {
@@ -15,6 +15,13 @@ interface ProgressStepperProps {
   onStepClick: (index: number) => void;
   cartCount: number;
   stepStatuses: StepStatus[];
+  /** The furthest step the customer has legitimately reached - anything
+   * beyond this is locked. This is a display-only reflection of the same
+   * rule event-builder-context's goToStep already enforces at the state
+   * level, so even if this prop were wrong the real navigation stays safe;
+   * it's here purely so locked chips look and behave locked (no pointer
+   * cursor, no click, a lock icon) instead of just silently refusing. */
+  furthestStepIndex: number;
 }
 
 const STATUS_DOT_CLASSES: Record<StepStatus, string> = {
@@ -31,7 +38,7 @@ const STATUS_LABELS: Record<StepStatus, string> = {
   pending: 'Pending',
 };
 
-export function ProgressStepper({ steps, currentStepIndex, onStepClick, cartCount, stepStatuses }: ProgressStepperProps) {
+export function ProgressStepper({ steps, currentStepIndex, onStepClick, cartCount, stepStatuses, furthestStepIndex }: ProgressStepperProps) {
   return (
     <div className="space-y-3">
       <div className="overflow-x-auto pb-2 scrollbar-thin">
@@ -40,25 +47,39 @@ export function ProgressStepper({ steps, currentStepIndex, onStepClick, cartCoun
             const isActive = currentStepIndex === index;
             const status = stepStatuses[index] || 'not_started';
             const isCompleted = status === 'completed';
+            const isLocked = index > furthestStepIndex;
             return (
               <button
                 key={step.title}
-                onClick={() => onStepClick(index)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? 'bg-maroon-800 text-gold-300 shadow-md border border-gold-400'
+                onClick={() => !isLocked && onStepClick(index)}
+                disabled={isLocked}
+                aria-disabled={isLocked}
+                title={isLocked ? `Complete the previous steps to unlock ${step.title}` : undefined}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                  isLocked
+                    ? 'bg-ivory/60 text-maroon-400 cursor-not-allowed opacity-60'
+                    : isActive
+                    ? 'bg-maroon-800 text-gold-300 shadow-md border border-gold-400 cursor-pointer'
                     : isCompleted
-                    ? 'bg-gold-100 text-maroon-900 border border-gold-300'
-                    : 'bg-ivory text-maroon-700 hover:bg-gold-50'
+                    ? 'bg-gold-100 text-maroon-900 border border-gold-300 cursor-pointer'
+                    : 'bg-ivory text-maroon-700 hover:bg-gold-50 cursor-pointer'
                 }`}
               >
                 <div
                   className={`relative w-6 h-6 rounded-full flex items-center justify-center text-[11px] ${
-                    isActive ? 'bg-gold-400 text-maroon-950 font-bold' : isCompleted ? 'bg-maroon-700 text-ivory' : 'bg-gold-200 text-maroon-800'
+                    isLocked
+                      ? 'bg-gold-100 text-maroon-400'
+                      : isActive
+                      ? 'bg-gold-400 text-maroon-950 font-bold'
+                      : isCompleted
+                      ? 'bg-maroon-700 text-ivory'
+                      : 'bg-gold-200 text-maroon-800'
                   }`}
                 >
-                  {isCompleted ? <Check className="w-3.5 h-3.5" /> : index + 1}
-                  <span className={`absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white ${STATUS_DOT_CLASSES[status]}`} />
+                  {isLocked ? <Lock className="w-3 h-3" /> : isCompleted ? <Check className="w-3.5 h-3.5" /> : index + 1}
+                  {!isLocked && (
+                    <span className={`absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white ${STATUS_DOT_CLASSES[status]}`} />
+                  )}
                 </div>
                 <span>{step.title}</span>
               </button>

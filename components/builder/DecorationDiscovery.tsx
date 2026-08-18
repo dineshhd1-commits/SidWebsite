@@ -16,7 +16,7 @@ import { DecorationPhoto } from '@/lib/types/decoration-inspiration';
  * raw source, and layers on reasonable web-level copy protection - right-
  * click, drag, and the iOS long-press "Save to Photos" callout are all
  * disabled. None of this touches the click-to-select interaction itself. */
-function DecorationPhotoTile({
+const DecorationPhotoTile = React.memo(function DecorationPhotoTile({
   photo,
   isSelected,
   onToggle,
@@ -70,7 +70,7 @@ function DecorationPhotoTile({
       )}
     </motion.button>
   );
-}
+});
 
 interface DecorationCategorySectionProps {
   slug: string;
@@ -81,8 +81,16 @@ interface DecorationCategorySectionProps {
 
 /** One category's full gallery - every photo the client has for this
  * category, always, never paginated or capped. */
-function DecorationCategorySection({ slug, label, selectedPhotoIds, onTogglePhoto }: DecorationCategorySectionProps) {
-  const photos = getDecorationPhotosByCategory(slug);
+const DecorationCategorySection = React.memo(function DecorationCategorySection({
+  slug,
+  label,
+  selectedPhotoIds,
+  onTogglePhoto,
+}: DecorationCategorySectionProps) {
+  // Re-filtering the same ~180-photo array on every keystroke/selection
+  // elsewhere on the page is pure waste - this only needs to change when the
+  // category itself changes.
+  const photos = React.useMemo(() => getDecorationPhotosByCategory(slug), [slug]);
   const selectedCount = photos.filter((p) => selectedPhotoIds.has(p.id)).length;
 
   if (photos.length === 0) return null;
@@ -107,7 +115,7 @@ function DecorationCategorySection({ slug, label, selectedPhotoIds, onTogglePhot
       </div>
     </div>
   );
-}
+});
 
 interface DecorationDiscoveryProps {
   /** Every category relevant to the customer's chosen event type, in display order. */

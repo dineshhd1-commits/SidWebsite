@@ -63,6 +63,11 @@ function mergeWithDefaultState(parsed: any): EventBuilderState {
     cart: parsed.cart || {},
     cateringSelections: parsed.cateringSelections || {},
     cateringGuestCounts: parsed.cateringGuestCounts || {},
+    // Drafts saved before step-locking existed have no furthestStepIndex at
+    // all - fall back to wherever they already were, so restoring an
+    // in-progress build never locks a customer out of the step they were
+    // literally sitting on.
+    furthestStepIndex: Math.max(parsed.furthestStepIndex ?? 0, parsed.currentStepIndex ?? 0),
   };
 }
 
@@ -162,12 +167,25 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     void groupLimits; // consumed by step components via getPackageGroupLimits(packageId) directly
   }, [state.eventTypeId]);
 
+  /** The real enforcement for "no jumping ahead to a locked step" - clamped
+   * here, not just in the UI, so every caller (the stepper's own step-chip
+   * clicks, "Edit" links from the summary card and Review & Cart, the
+   * "Change Event Type" shortcut) is bound by the same rule no matter how
+   * navigation is triggered. Going backward to an already-reached step is
+   * always allowed. */
   const goToStep = useCallback((index: number) => {
-    setState((prev) => ({ ...prev, currentStepIndex: Math.max(0, index) }));
+    setState((prev) => ({ ...prev, currentStepIndex: Math.max(0, Math.min(index, prev.furthestStepIndex)) }));
   }, []);
 
+  /** Advancing is the only way furthestStepIndex ever increases - covers the
+   * normal "Next Step" button, the Photography step's "Skip Photography"
+   * (same handler, it just doesn't require a selection first), and the cart
+   * sidebar's "Continue". */
   const nextStep = useCallback((lastIndex: number) => {
-    setState((prev) => ({ ...prev, currentStepIndex: Math.min(prev.currentStepIndex + 1, lastIndex) }));
+    setState((prev) => {
+      const currentStepIndex = Math.min(prev.currentStepIndex + 1, lastIndex);
+      return { ...prev, currentStepIndex, furthestStepIndex: Math.max(prev.furthestStepIndex, currentStepIndex) };
+    });
   }, []);
 
   const prevStep = useCallback(() => {

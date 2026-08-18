@@ -21,12 +21,30 @@ import { EventDetailsSummaryCard } from '@/components/builder/EventDetailsSummar
 // route's initial JS bundle.
 const ChangeEventTypeModal = dynamic(() => import('@/components/builder/ChangeEventTypeModal').then((m) => m.ChangeEventTypeModal));
 const StepConfirmationModal = dynamic(() => import('@/components/builder/StepConfirmationModal').then((m) => m.StepConfirmationModal));
+
+// Event Details (step 0) is the only step every visitor sees immediately, so
+// it's the only one imported eagerly. Every other step - each with its own
+// heavy data (180 decoration photos, the full catering menu JSON, the
+// catalog item lists) - is code-split via next/dynamic so opening the
+// builder only compiles/downloads step 0's code; a given step's bundle only
+// loads the moment the customer actually reaches it, matching how the wizard
+// is meant to be used (in order, one step at a time).
 import { EventDetailsStep } from './steps/EventDetailsStep';
-import { DecorationStep } from './steps/DecorationStep';
-import { PhotographyStep } from './steps/PhotographyStep';
-import { CateringStep } from './steps/CateringStep';
-import { AdditionalServicesStep } from './steps/AdditionalServicesStep';
-import { ReviewCartStep } from './steps/ReviewCartStep';
+const DecorationStep = dynamic(() => import('./steps/DecorationStep').then((m) => m.DecorationStep), {
+  loading: () => <LoadingState label="Loading decoration options..." />,
+});
+const PhotographyStep = dynamic(() => import('./steps/PhotographyStep').then((m) => m.PhotographyStep), {
+  loading: () => <LoadingState label="Loading photography options..." />,
+});
+const CateringStep = dynamic(() => import('./steps/CateringStep').then((m) => m.CateringStep), {
+  loading: () => <LoadingState label="Loading catering menu..." />,
+});
+const AdditionalServicesStep = dynamic(() => import('./steps/AdditionalServicesStep').then((m) => m.AdditionalServicesStep), {
+  loading: () => <LoadingState label="Loading additional services..." />,
+});
+const ReviewCartStep = dynamic(() => import('./steps/ReviewCartStep').then((m) => m.ReviewCartStep), {
+  loading: () => <LoadingState label="Preparing your review..." />,
+});
 import { GoldButton } from '@/components/ui/gold-button';
 import { getCartItemCount } from '@/lib/builder/selectors';
 import { getEventDetailsFieldChecks, getStepStatus } from '@/lib/builder/validation';
@@ -50,6 +68,7 @@ const STEP_WELCOME_MESSAGES = [
 ];
 
 const QUOTE_ID_PREFIX = 'SID-2026';
+const PHOTOGRAPHY_STEP_INDEX = 2;
 const CATERING_STEP_INDEX = 3;
 
 export default function CustomBuilderPage() {
@@ -279,6 +298,12 @@ function CustomBuilderPageInner() {
     (currentStepIndex > 0 || !!state.eventTypeId) && !cateringTimingMissing && !nameAndPhoneMissing;
   const { required: requiredFieldChecks, optional: optionalFieldChecks } = getEventDetailsFieldChecks(state);
 
+  // Photography is the only optional step - nothing forces a selection here,
+  // and the CTA says so plainly rather than just behaving the same as every
+  // other "Next Step" with no visible difference.
+  const isPhotographyStep = currentStepIndex === PHOTOGRAPHY_STEP_INDEX;
+  const hasPhotographySelections = Object.values(state.cart).some((line) => line.categoryKey === 'photography');
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 pb-24 lg:pb-10">
       <div ref={stepContentRef} className="text-center space-y-3 scroll-mt-24">
@@ -316,6 +341,7 @@ function CustomBuilderPageInner() {
         onStepClick={goToStep}
         cartCount={cartItemCount}
         stepStatuses={stepStatuses}
+        furthestStepIndex={state.furthestStepIndex}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -352,7 +378,7 @@ function CustomBuilderPageInner() {
 
             {currentStepIndex < STEP_DEFS.length - 1 && (
               <GoldButton size="sm" variant="copper" onClick={handleNextClick} disabled={!canGoNext}>
-                Next Step
+                {isPhotographyStep && !hasPhotographySelections ? 'Skip Photography' : 'Next Step'}
               </GoldButton>
             )}
           </div>

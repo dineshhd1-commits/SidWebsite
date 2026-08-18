@@ -30,6 +30,15 @@ export interface EventBuilderState {
   eventTypeId: string | null;
   selectedPackageId: string | null;
   currentStepIndex: number;
+  /** The furthest step index the customer has legitimately reached by
+   * advancing forward (via Next Step / Skip Photography / Continue) - only
+   * ever increases. This, not currentStepIndex, is what gates navigation:
+   * goToStep() clamps to this so a stepper click, an "Edit" link, or any
+   * other jump can never land on a step the customer hasn't earned yet, and
+   * it's part of the persisted state so a refresh can't re-lock steps that
+   * were already unlocked or (more importantly) can't be used to unlock
+   * steps that weren't. */
+  furthestStepIndex: number;
   eventDetails: EventDetails;
   cart: Record<string, CartLine>;
   cateringTiming: CateringTiming | null;
@@ -57,6 +66,7 @@ export const DEFAULT_EVENT_BUILDER_STATE: EventBuilderState = {
   eventTypeId: null,
   selectedPackageId: null,
   currentStepIndex: 0,
+  furthestStepIndex: 0,
   eventDetails: DEFAULT_EVENT_DETAILS,
   cart: {},
   cateringTiming: null,

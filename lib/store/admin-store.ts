@@ -262,9 +262,7 @@ export async function saveCorporateDecorationEnquiry(
             },
           ]
         : [],
-    cateringTiming: null,
-    cateringGuestCount: null,
-    cateringSections: [],
+    cateringMenus: [],
     requestedExtras: [],
     estimatedTotal: 0,
     totalSelectionsCount: details.selectedOptions.length,

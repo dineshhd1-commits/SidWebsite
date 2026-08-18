@@ -37,21 +37,30 @@ function buildCateringMenuBlock(state: EventBuilderState): string {
   const selections = Object.values(state.cateringSelections);
   if (selections.length === 0) return '';
 
-  const byCategory = new Map<string, string[]>();
+  // Menu → Category, never a single Category list merging every meal - the
+  // same category name (Welcome Drinks, Pickles, ...) can hold different
+  // picks in different meals and must not collapse together here either.
+  const MENU_ORDER = ['morning', 'afternoon', 'evening'] as const;
+  const byMenu = new Map<string, Map<string, string[]>>();
   for (const line of selections) {
+    if (!byMenu.has(line.menuType)) byMenu.set(line.menuType, new Map());
+    const byCategory = byMenu.get(line.menuType)!;
     const entry = `${line.itemName}${line.quantity > 1 ? ` x${line.quantity}` : ''}`;
     byCategory.set(line.categoryName, [...(byCategory.get(line.categoryName) || []), entry]);
   }
 
-  const cateringGuests = state.cateringTiming ? state.cateringGuestCounts[state.cateringTiming] : undefined;
-  const timingLine = state.cateringTiming
-    ? `*Catering Timing:* ${CATERING_TIMING_LABELS[state.cateringTiming]}${cateringGuests ? ` (${cateringGuests} guests)` : ''}\n`
-    : '';
-  const menuLines = Array.from(byCategory.entries())
-    .map(([label, items]) => `*${label}:* ${items.join(', ')}`)
-    .join('\n');
+  const menuBlocks = MENU_ORDER.filter((menuType) => byMenu.has(menuType))
+    .map((menuType) => {
+      const guests = state.cateringGuestCounts[menuType];
+      const heading = `*${CATERING_TIMING_LABELS[menuType]}*${guests ? ` (${guests} guests)` : ''}`;
+      const menuLines = Array.from(byMenu.get(menuType)!.entries())
+        .map(([label, items]) => `*${label}:* ${items.join(', ')}`)
+        .join('\n');
+      return `${heading}\n${menuLines}`;
+    })
+    .join('\n\n');
 
-  return `\n--- *Catering Menu* ---\n${timingLine}${menuLines}\n`;
+  return `\n--- *Catering Menu* ---\n${menuBlocks}\n`;
 }
 
 export function getWhatsAppShareUrl(quoteId: string, state: EventBuilderState, phone: string = '918095408404'): string {

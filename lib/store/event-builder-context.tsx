@@ -38,8 +38,8 @@ interface EventBuilderContextType {
   updateEventDetails: (partial: Partial<EventDetails>) => void;
   setCateringTiming: (timing: CateringTiming) => void;
   setCateringGuestCount: (timing: CateringTiming, guestCount: number) => void;
-  toggleCateringMenuItem: (categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
-  updateCateringMenuItemQuantity: (itemId: string, quantity: number) => void;
+  toggleCateringMenuItem: (menuType: CateringTiming, categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
+  updateCateringMenuItemQuantity: (menuType: CateringTiming, itemId: string, quantity: number) => void;
   addToCart: (item: CatalogItem, quantity?: number, origin?: CartLineOrigin) => void;
   removeFromCart: (catalogItemId: string) => void;
   updateQuantity: (catalogItemId: string, quantity: number) => void;
@@ -51,6 +51,15 @@ interface EventBuilderContextType {
 
 const EventBuilderContext = createContext<EventBuilderContextType | undefined>(undefined);
 
+/** Several catering category ids (Welcome Drinks, Pickles, Kosumbri, Gravies,
+ * ...) are shared across meal periods in the underlying menu data, so an
+ * itemId alone isn't unique - "Cold Badam Milk" picked for Afternoon and a
+ * different Welcome Drinks pick for Evening would otherwise collide in the
+ * same map slot. Every catering selection is keyed by menu + item instead. */
+function cateringSelectionKey(menuType: CateringTiming, itemId: string): string {
+  return `${menuType}::${itemId}`;
+}
+
 const SESSION_STORAGE_KEY = 'sid_events_builder_draft_v2';
 const LOCAL_STORAGE_KEY = 'sid_events_builder_draft_v2';
 
@@ -61,7 +70,14 @@ function mergeWithDefaultState(parsed: any): EventBuilderState {
     ...parsed,
     eventDetails: { ...DEFAULT_EVENT_BUILDER_STATE.eventDetails, ...(parsed.eventDetails || {}) },
     cart: parsed.cart || {},
-    cateringSelections: parsed.cateringSelections || {},
+    // Drafts saved before catering selections were keyed by menu (menuType +
+    // itemId) instead of itemId alone won't have `menuType` on their lines -
+    // keeping them around would silently merge into whichever menu they're
+    // grouped under first, which is exactly the bug this fixed. Drop them
+    // rather than guess which meal they were for.
+    cateringSelections: Object.fromEntries(
+      Object.entries(parsed.cateringSelections || {}).filter(([, line]: [string, any]) => !!line?.menuType)
+    ),
     cateringGuestCounts: parsed.cateringGuestCounts || {},
     // Drafts saved before step-locking existed have no furthestStepIndex at
     // all - fall back to wherever they already were, so restoring an
@@ -222,34 +238,40 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
    * selecting a new item is blocked once the category's maxSelections is
    * already met - a no-op rather than an error, since the UI's own disabled
    * state is what explains why to the customer. */
-  const toggleCateringMenuItem = useCallback((categoryId: string, categoryName: string, itemId: string, itemName: string) => {
+  const toggleCateringMenuItem = useCallback((menuType: CateringTiming, categoryId: string, categoryName: string, itemId: string, itemName: string) => {
     setState((prev) => {
+      const key = cateringSelectionKey(menuType, itemId);
       const cateringSelections = { ...prev.cateringSelections };
-      if (cateringSelections[itemId]) {
-        delete cateringSelections[itemId];
+      if (cateringSelections[key]) {
+        delete cateringSelections[key];
       } else {
         const maxSelections = getCateringCategoryById(categoryId)?.maxSelections;
         if (maxSelections !== undefined) {
-          const currentCount = Object.values(prev.cateringSelections).filter((s) => s.categoryId === categoryId).length;
+          // The cap applies within this one menu only - Afternoon and Evening
+          // each get their own independent quota for the same category.
+          const currentCount = Object.values(prev.cateringSelections).filter(
+            (s) => s.categoryId === categoryId && s.menuType === menuType
+          ).length;
           if (currentCount >= maxSelections) return prev;
         }
-        cateringSelections[itemId] = { categoryId, categoryName, itemId, itemName, quantity: 1 };
-        setLastAdded({ id: itemId, name: itemName, token: Date.now() });
+        cateringSelections[key] = { menuType, categoryId, categoryName, itemId, itemName, quantity: 1 };
+        setLastAdded({ id: key, name: itemName, token: Date.now() });
       }
       return { ...prev, cateringSelections };
     });
   }, []);
 
-  const updateCateringMenuItemQuantity = useCallback((itemId: string, quantity: number) => {
+  const updateCateringMenuItemQuantity = useCallback((menuType: CateringTiming, itemId: string, quantity: number) => {
     setState((prev) => {
-      const existing = prev.cateringSelections[itemId];
+      const key = cateringSelectionKey(menuType, itemId);
+      const existing = prev.cateringSelections[key];
       if (!existing) return prev;
       if (quantity <= 0) {
         const cateringSelections = { ...prev.cateringSelections };
-        delete cateringSelections[itemId];
+        delete cateringSelections[key];
         return { ...prev, cateringSelections };
       }
-      return { ...prev, cateringSelections: { ...prev.cateringSelections, [itemId]: { ...existing, quantity } } };
+      return { ...prev, cateringSelections: { ...prev.cateringSelections, [key]: { ...existing, quantity } } };
     });
   }, []);
 

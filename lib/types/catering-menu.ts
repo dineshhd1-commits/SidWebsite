@@ -28,6 +28,13 @@ export interface CateringMenuSection {
 }
 
 export interface CateringSelectionLine {
+  /** Which meal this selection belongs to (Morning/Afternoon/Evening). Several
+   * category ids (e.g. 'welcome_drinks', 'pickles') are shared across meal
+   * periods in the underlying menu data - this field is what actually keeps
+   * a "Cold Badam Milk" picked for Afternoon separate from a different dish
+   * picked under the same category for Evening. Required, not optional: a
+   * selection with no menuType has nowhere unambiguous to belong. */
+  menuType: CateringTiming;
   categoryId: string;
   categoryName: string;
   itemId: string;

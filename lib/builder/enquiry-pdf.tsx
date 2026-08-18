@@ -226,12 +226,6 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
   const decorationGroups = decorationSection ? groupDecorationLines(decorationSection.lines) : [];
   const photographyGroups = photographySection ? groupPhotographyLines(photographySection.lines) : [];
 
-  const cateringTimingLabel: Record<string, string> = {
-    morning: 'Morning (Breakfast menu)',
-    afternoon: 'Afternoon (Lunch menu)',
-    evening: 'Evening (Dinner menu)',
-  };
-
   return (
     <Document title={`SID Events Enquiry ${refCode}`} author="SID Events">
       <Page size="A4" style={s.page} wrap>
@@ -332,21 +326,25 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
           </View>
         ))}
 
-        {/* Catering Menu - already grouped/ordered exactly as the site's
-            catering data structure defines, nothing re-derived here. */}
-        {details.cateringSections.length > 0 && (
+        {/* Catering Menu - one block per meal (Morning/Afternoon/Evening),
+            each with its own guest count and category breakdown, exactly as
+            selected - same-named categories in different meals are never
+            merged together here. */}
+        {details.cateringMenus.length > 0 && (
           <View style={s.section} wrap>
             <Text style={s.sectionTitle}>Catering Menu</Text>
-            {details.cateringTiming && (
-              <Text style={{ fontSize: 9, color: '#7a5540', marginBottom: 6 }}>
-                {cateringTimingLabel[details.cateringTiming] || details.cateringTiming}
-                {details.cateringGuestCount ? `  ·  Guest Count: ${details.cateringGuestCount}` : ''}
-              </Text>
-            )}
-            {details.cateringSections.map((section) => (
-              <View key={section.categoryName} style={{ marginBottom: 8 }} wrap={false}>
-                <Text style={s.subheading}>{section.categoryName}</Text>
-                <BulletList lines={section.lines} />
+            {details.cateringMenus.map((menu) => (
+              <View key={menu.menuType} style={{ marginBottom: 12 }} wrap>
+                <Text style={{ fontSize: 10, fontWeight: 700, color: '#5c0a18', marginBottom: 4 }}>
+                  {menu.menuLabel.toUpperCase()}
+                  {menu.guestCount ? `  ·  Guest Count: ${menu.guestCount}` : ''}
+                </Text>
+                {menu.sections.map((section) => (
+                  <View key={`${menu.menuType}-${section.categoryName}`} style={{ marginBottom: 8, marginLeft: 6 }} wrap={false}>
+                    <Text style={s.subheading}>{section.categoryName}</Text>
+                    <BulletList lines={section.lines} />
+                  </View>
+                ))}
               </View>
             ))}
           </View>

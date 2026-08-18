@@ -16,7 +16,7 @@ interface CateringStepProps {
   state: EventBuilderState;
   onSetTiming: (timing: CateringTiming) => void;
   onSetGuestCount: (timing: CateringTiming, guestCount: number) => void;
-  onToggleItem: (categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
+  onToggleItem: (menuType: CateringTiming, categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
 }
 
 /** One clickable category tile in the browse grid - opens that category's
@@ -59,11 +59,15 @@ function CategoryTile({
   );
 }
 
-const TIMING_OPTIONS: { id: CateringTiming; label: string; hint: string }[] = [
-  { id: 'evening', label: 'Evening', hint: 'Dinner menu' },
-  { id: 'morning', label: 'Morning', hint: 'Breakfast menu' },
-  { id: 'afternoon', label: 'Afternoon', hint: 'Lunch menu' },
+const TIMING_OPTIONS: { id: CateringTiming; label: string; hint: string; emoji: string }[] = [
+  { id: 'evening', label: 'Evening', hint: 'Dinner menu', emoji: '\u{1F319}' }, // 🌙
+  { id: 'morning', label: 'Morning', hint: 'Breakfast menu', emoji: '\u{1F305}' }, // 🌅
+  { id: 'afternoon', label: 'Afternoon', hint: 'Lunch menu', emoji: '\u{2600}\u{FE0F}' }, // ☀️
 ];
+
+// Display order for the "Menu Selections" cart - fixed regardless of tab
+// order above, so the cart always reads Morning → Afternoon → Evening.
+const MENU_DISPLAY_ORDER: CateringTiming[] = ['morning', 'afternoon', 'evening'];
 
 export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem }: CateringStepProps) {
   const [search, setSearch] = useState('');
@@ -96,16 +100,43 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
   }, [sections, normalizedSearch]);
 
   const selectedCount = Object.keys(state.cateringSelections).length;
-  const selectionsByCategory = useMemo(() => {
+
+  // Menu → Category → Items, never Category → Items-from-every-menu. Every
+  // menu that has at least one selection gets its own section in the cart,
+  // in a fixed Morning/Afternoon/Evening order regardless of which tab the
+  // customer currently has open, per spec.
+  const selectionsByMenu = useMemo(() => {
     const selectionsList = Object.values(state.cateringSelections);
-    const map = new Map<string, { categoryName: string; lines: typeof selectionsList }>();
+    const byMenu = new Map<CateringTiming, Map<string, { categoryName: string; lines: typeof selectionsList }>>();
     for (const line of selectionsList) {
-      const existing = map.get(line.categoryId);
+      if (!byMenu.has(line.menuType)) byMenu.set(line.menuType, new Map());
+      const byCategory = byMenu.get(line.menuType)!;
+      const existing = byCategory.get(line.categoryId);
       if (existing) existing.lines.push(line);
-      else map.set(line.categoryId, { categoryName: line.categoryName, lines: [line] });
+      else byCategory.set(line.categoryId, { categoryName: line.categoryName, lines: [line] });
     }
-    return map;
+    return MENU_DISPLAY_ORDER.filter((menuType) => byMenu.has(menuType)).map((menuType) => ({
+      menuType,
+      categories: byMenu.get(menuType)!,
+    }));
   }, [state.cateringSelections]);
+
+  // Only this menu's own picks count toward "selected" checkmarks/limits in
+  // the browse grid and modal - a dish chosen for Evening must never show as
+  // already-selected while browsing Afternoon.
+  const selectedItemIdsForCurrentTiming = useMemo(() => {
+    if (!state.cateringTiming) return new Set<string>();
+    return new Set(
+      Object.values(state.cateringSelections)
+        .filter((line) => line.menuType === state.cateringTiming)
+        .map((line) => line.itemId)
+    );
+  }, [state.cateringSelections, state.cateringTiming]);
+
+  const handleToggleItem = (categoryId: string, categoryName: string, itemId: string, itemName: string) => {
+    if (!state.cateringTiming) return;
+    onToggleItem(state.cateringTiming, categoryId, categoryName, itemId, itemName);
+  };
 
   const modalCategory = modalCategoryId ? categories.find((c) => c.id === modalCategoryId) || null : null;
 
@@ -212,7 +243,7 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
                           <CategoryTile
                             key={category.id}
                             category={category}
-                            selectedInCategory={category.items.filter((item) => state.cateringSelections[item.id]).length}
+                            selectedInCategory={category.items.filter((item) => selectedItemIdsForCurrentTiming.has(item.id)).length}
                             onOpen={() => setModalCategoryId(category.id)}
                           />
                         ))}
@@ -229,7 +260,7 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
                   <CategoryTile
                     key={category.id}
                     category={category}
-                    selectedInCategory={category.items.filter((item) => state.cateringSelections[item.id]).length}
+                    selectedInCategory={category.items.filter((item) => selectedItemIdsForCurrentTiming.has(item.id)).length}
                     onOpen={() => setModalCategoryId(category.id)}
                   />
                 ))}
@@ -245,30 +276,43 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
                   {selectedCount} item{selectedCount === 1 ? '' : 's'}
                 </span>
               </div>
-              <div className="max-h-96 overflow-y-auto pr-1 space-y-4">
-                {selectionsByCategory.size === 0 ? (
+              <div className="max-h-96 overflow-y-auto pr-1 space-y-5">
+                {selectionsByMenu.length === 0 ? (
                   <p className="text-xs text-gold-200/70 py-6 text-center">No dishes selected yet.</p>
                 ) : (
-                  Array.from(selectionsByCategory.entries()).map(([categoryId, group]) => (
-                    <div key={categoryId} className="space-y-1.5">
-                      <p className="text-[10px] uppercase tracking-wider font-bold text-gold-400">{group.categoryName}</p>
-                      {group.lines.map((line) => (
-                        <div key={line.itemId} className="flex items-center justify-between gap-2 text-xs text-gold-100">
-                          <span className="truncate">
-                            {line.itemName}
-                            {line.quantity > 1 ? ` x${line.quantity}` : ''}
-                          </span>
-                          <button
-                            onClick={() => onToggleItem(line.categoryId, line.categoryName, line.itemId, line.itemName)}
-                            className="text-gold-400 hover:text-rose-300 shrink-0"
-                            aria-label={`Remove ${line.itemName}`}
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
+                  selectionsByMenu.map(({ menuType, categories: categoryMap }) => {
+                    const timingOption = TIMING_OPTIONS.find((o) => o.id === menuType);
+                    return (
+                      <div key={menuType} className="space-y-3">
+                        <p className="text-xs font-bold text-gold-300 uppercase tracking-wide flex items-center gap-1.5">
+                          <span>{timingOption?.emoji}</span>
+                          {timingOption?.label} Menu
+                        </p>
+                        <div className="space-y-3 pl-1">
+                          {Array.from(categoryMap.entries()).map(([categoryId, group]) => (
+                            <div key={categoryId} className="space-y-1.5">
+                              <p className="text-[10px] uppercase tracking-wider font-bold text-gold-400">{group.categoryName}</p>
+                              {group.lines.map((line) => (
+                                <div key={line.itemId} className="flex items-center justify-between gap-2 text-xs text-gold-100">
+                                  <span className="truncate">
+                                    {line.itemName}
+                                    {line.quantity > 1 ? ` x${line.quantity}` : ''}
+                                  </span>
+                                  <button
+                                    onClick={() => onToggleItem(line.menuType, line.categoryId, line.categoryName, line.itemId, line.itemName)}
+                                    className="text-gold-400 hover:text-rose-300 shrink-0"
+                                    aria-label={`Remove ${line.itemName} from ${timingOption?.label}`}
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  ))
+                      </div>
+                    );
+                  })
                 )}
               </div>
               <p className="text-[10px] text-gold-200/60 border-t border-gold-400/40 pt-3">
@@ -282,8 +326,8 @@ export function CateringStep({ state, onSetTiming, onSetGuestCount, onToggleItem
       {modalCategory && (
         <CateringCategoryModal
           category={modalCategory}
-          selectedItemIds={new Set(Object.keys(state.cateringSelections))}
-          onToggleItem={onToggleItem}
+          selectedItemIds={selectedItemIdsForCurrentTiming}
+          onToggleItem={handleToggleItem}
           onClose={() => setModalCategoryId(null)}
         />
       )}

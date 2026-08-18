@@ -1,5 +1,6 @@
 import { EventBuilderState } from '../types/event-builder';
 import { CatalogCategoryKey } from '../types/catalog';
+import { CateringTiming } from '../types/catering-menu';
 import { MOCK_EVENT_TYPES } from '../data/mock-catalog-data';
 import { getCartLines, getEstimatedTotal, getRequestedExtraLines } from './selectors';
 
@@ -54,6 +55,18 @@ export interface EnquiryCateringSection {
   lines: EnquirySelectionLine[];
 }
 
+/** One meal's full catering picks - kept as its own guest count + own set of
+ * category sections so an Afternoon "Welcome Drinks: Cold Badam Milk" and an
+ * Evening "Welcome Drinks: Fresh Pulpy Grape Juice" can never collapse into
+ * a single merged "Welcome Drinks" line downstream (cart, review, WhatsApp,
+ * PDF, admin CRM all read from this same structure). */
+export interface EnquiryCateringMenu {
+  menuType: CateringTiming;
+  menuLabel: string;
+  guestCount: number | null;
+  sections: EnquiryCateringSection[];
+}
+
 /** Everything the customer picked, structured by whatever categories are
  * actually present in their cart right now - nothing here is hard-coded to
  * a fixed list of categories, so a new catalog category (or the catering
@@ -69,9 +82,10 @@ export interface EnquiryDetails {
   guestCount: number;
   specialRequirements: string;
   sections: EnquiryCategorySection[];
-  cateringTiming: string | null;
-  cateringGuestCount: number | null;
-  cateringSections: EnquiryCateringSection[];
+  /** Every meal the customer has any picks for, Morning → Afternoon →
+   * Evening, each with its own guest count and category breakdown - never
+   * flattened into a single combined menu. */
+  cateringMenus: EnquiryCateringMenu[];
   requestedExtras: EnquirySelectionLine[];
   estimatedTotal: number;
   totalSelectionsCount: number;
@@ -133,16 +147,26 @@ export function buildEnquiryDetails(state: EventBuilderState): EnquiryDetails {
     sectionsByCategory.get(key)!.lines.push({ name: line.name, quantity: line.quantity, imageUrl: line.imageUrl, groupId: line.groupId });
   }
 
+  // Menu → Category → Items, kept strictly separate per menu so same-named
+  // categories (or even same-named dishes) picked under different meals
+  // never merge into one section.
+  const MENU_ORDER: CateringTiming[] = ['morning', 'afternoon', 'evening'];
   const cateringSelections = Object.values(state.cateringSelections);
-  const cateringSectionsByName = new Map<string, EnquiryCateringSection>();
+  const sectionsByMenu = new Map<CateringTiming, Map<string, EnquiryCateringSection>>();
   for (const line of cateringSelections) {
-    if (!cateringSectionsByName.has(line.categoryName)) {
-      cateringSectionsByName.set(line.categoryName, { categoryName: line.categoryName, lines: [] });
+    if (!sectionsByMenu.has(line.menuType)) sectionsByMenu.set(line.menuType, new Map());
+    const sectionsByName = sectionsByMenu.get(line.menuType)!;
+    if (!sectionsByName.has(line.categoryName)) {
+      sectionsByName.set(line.categoryName, { categoryName: line.categoryName, lines: [] });
     }
-    cateringSectionsByName.get(line.categoryName)!.lines.push({ name: line.itemName, quantity: line.quantity });
+    sectionsByName.get(line.categoryName)!.lines.push({ name: line.itemName, quantity: line.quantity });
   }
-
-  const cateringGuestCount = state.cateringTiming ? state.cateringGuestCounts[state.cateringTiming] ?? null : null;
+  const cateringMenus: EnquiryCateringMenu[] = MENU_ORDER.filter((menuType) => sectionsByMenu.has(menuType)).map((menuType) => ({
+    menuType,
+    menuLabel: CATERING_TIMING_LABELS[menuType] || menuType,
+    guestCount: state.cateringGuestCounts[menuType] ?? null,
+    sections: Array.from(sectionsByMenu.get(menuType)!.values()),
+  }));
 
   return {
     eventTypeId: state.eventTypeId,
@@ -155,9 +179,7 @@ export function buildEnquiryDetails(state: EventBuilderState): EnquiryDetails {
     guestCount: state.eventDetails.guestCount,
     specialRequirements: state.eventDetails.specialRequirements,
     sections: Array.from(sectionsByCategory.values()),
-    cateringTiming: state.cateringTiming,
-    cateringGuestCount,
-    cateringSections: Array.from(cateringSectionsByName.values()),
+    cateringMenus,
     requestedExtras: requestedExtras.map((l) => ({ name: l.name, quantity: l.quantity })),
     estimatedTotal: getEstimatedTotal(state),
     totalSelectionsCount: cartLines.length + cateringSelections.length,
@@ -211,7 +233,7 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
   lines.push('\u{1F4E6} SELECTED SERVICES'); // 📦
   lines.push(divider);
 
-  if (details.sections.length === 0 && details.cateringSections.length === 0) {
+  if (details.sections.length === 0 && details.cateringMenus.length === 0) {
     lines.push('');
     lines.push('No services selected yet.');
   }
@@ -224,15 +246,15 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
     }
   }
 
-  if (details.cateringSections.length > 0) {
+  if (details.cateringMenus.length > 0) {
     lines.push('');
     lines.push(`${CATEGORY_ICONS.catering} CATERING MENU`);
-    if (details.cateringTiming) {
-      const timingLabel = CATERING_TIMING_LABELS[details.cateringTiming] || details.cateringTiming;
-      lines.push(`• Timing: ${timingLabel}${details.cateringGuestCount ? ` (${details.cateringGuestCount} guests)` : ''}`);
-    }
-    for (const section of details.cateringSections) {
-      lines.push(`• ${section.categoryName}: ${section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}`);
+    for (const menu of details.cateringMenus) {
+      lines.push('');
+      lines.push(`${menu.menuLabel.toUpperCase()}${menu.guestCount ? ` (${menu.guestCount} guests)` : ''}`);
+      for (const section of menu.sections) {
+        lines.push(`• ${section.categoryName}: ${section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}`);
+      }
     }
   }
 

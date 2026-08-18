@@ -1043,7 +1043,7 @@ export default function AdminDashboardPage() {
                           </p>
                         )}
 
-                        {q.fullDetails.sections.length === 0 && q.fullDetails.cateringSections.length === 0 ? (
+                        {q.fullDetails.sections.length === 0 && q.fullDetails.cateringMenus.length === 0 ? (
                           <p className="text-xs text-gold-200/70">No services were selected for this enquiry.</p>
                         ) : (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1066,21 +1066,27 @@ export default function AdminDashboardPage() {
                               </div>
                             ))}
 
-                            {q.fullDetails.cateringSections.length > 0 && (
-                              <div className="space-y-1.5 sm:col-span-2">
+                            {q.fullDetails.cateringMenus.length > 0 && (
+                              <div className="space-y-3 sm:col-span-2">
                                 <span className="text-xs font-bold uppercase tracking-wider text-gold-300">
                                   {'\u{1F37D}\u{FE0F}'} Catering Menu
-                                  {q.fullDetails.cateringTiming ? ` — ${q.fullDetails.cateringTiming}` : ''}
-                                  {q.fullDetails.cateringGuestCount ? ` (${q.fullDetails.cateringGuestCount} guests)` : ''}
                                 </span>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-gold-100/90">
-                                  {q.fullDetails.cateringSections.map((section) => (
-                                    <div key={section.categoryName}>
-                                      <span className="font-semibold text-gold-200">{section.categoryName}: </span>
-                                      {section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}
+                                {q.fullDetails.cateringMenus.map((menu) => (
+                                  <div key={menu.menuType} className="space-y-1">
+                                    <p className="text-[11px] font-bold text-gold-200">
+                                      {menu.menuLabel}
+                                      {menu.guestCount ? ` (${menu.guestCount} guests)` : ''}
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-gold-100/90 pl-2">
+                                      {menu.sections.map((section) => (
+                                        <div key={section.categoryName}>
+                                          <span className="font-semibold text-gold-200">{section.categoryName}: </span>
+                                          {section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}
+                                        </div>
+                                      ))}
                                     </div>
-                                  ))}
-                                </div>
+                                  </div>
+                                ))}
                               </div>
                             )}
                           </div>

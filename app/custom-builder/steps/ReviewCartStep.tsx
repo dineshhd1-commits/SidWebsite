@@ -60,14 +60,22 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
     }, {});
 
   const cateringSelections = Object.values(state.cateringSelections);
-  const cateringSelectionsByCategory = cateringSelections.reduce<Record<string, { categoryName: string; lines: typeof cateringSelections }>>(
-    (acc, line) => {
-      if (!acc[line.categoryId]) acc[line.categoryId] = { categoryName: line.categoryName, lines: [] };
-      acc[line.categoryId].lines.push(line);
-      return acc;
-    },
-    {}
-  );
+  // Menu → Category, in a fixed Morning/Afternoon/Evening order - matches the
+  // Catering step's own cart so nothing merges together here that was kept
+  // separate there.
+  const MENU_ORDER = ['morning', 'afternoon', 'evening'] as const;
+  const cateringByMenu = cateringSelections.reduce<
+    Record<string, { lines: typeof cateringSelections; byCategory: Record<string, { categoryName: string; lines: typeof cateringSelections }> }>
+  >((acc, line) => {
+    if (!acc[line.menuType]) acc[line.menuType] = { lines: [], byCategory: {} };
+    acc[line.menuType].lines.push(line);
+    if (!acc[line.menuType].byCategory[line.categoryId]) {
+      acc[line.menuType].byCategory[line.categoryId] = { categoryName: line.categoryName, lines: [] };
+    }
+    acc[line.menuType].byCategory[line.categoryId].lines.push(line);
+    return acc;
+  }, {});
+  const cateringMenusInOrder = MENU_ORDER.filter((menuType) => cateringByMenu[menuType]);
 
   return (
     <div className="space-y-6">
@@ -143,32 +151,33 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
               <Edit3 className="w-3.5 h-3.5" /> Edit
             </button>
           </div>
-          {state.cateringTiming && (
-            <p className="text-xs text-maroon-900">
-              <span className="font-semibold text-maroon-700/60">Timing: </span>
-              {CATERING_TIMING_LABELS[state.cateringTiming]}
-              {!!state.cateringGuestCounts[state.cateringTiming] && (
-                <>
-                  <span className="font-semibold text-maroon-700/60"> · Guests: </span>
-                  {state.cateringGuestCounts[state.cateringTiming]}
-                </>
-              )}
-            </p>
-          )}
           {cateringSelections.length === 0 ? (
             <p className="text-xs text-maroon-700/80">No dishes selected yet.</p>
           ) : (
-            Object.entries(cateringSelectionsByCategory).map(([categoryId, group]) => (
-              <div key={categoryId} className="space-y-1.5 pb-2 border-b border-gold-200/60 last:border-b-0 last:pb-0">
-                <span className="text-xs font-bold uppercase tracking-wider text-gold-700">{group.categoryName}</span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 text-xs text-maroon-900">
-                  {group.lines.map((line) => (
-                    <div key={line.itemId}>
-                      {line.itemName}
-                      {line.quantity > 1 ? ` x${line.quantity}` : ''}
+            cateringMenusInOrder.map((menuType) => (
+              <div key={menuType} className="space-y-2 pb-3 border-b border-gold-300/60 last:border-b-0 last:pb-0">
+                <p className="text-xs font-bold text-maroon-900">
+                  {CATERING_TIMING_LABELS[menuType]}
+                  {!!state.cateringGuestCounts[menuType] && (
+                    <>
+                      <span className="font-semibold text-maroon-700/60"> · Guests: </span>
+                      {state.cateringGuestCounts[menuType]}
+                    </>
+                  )}
+                </p>
+                {Object.entries(cateringByMenu[menuType].byCategory).map(([categoryId, group]) => (
+                  <div key={categoryId} className="space-y-1.5 pb-2 last:pb-0">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gold-700">{group.categoryName}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 text-xs text-maroon-900">
+                      {group.lines.map((line) => (
+                        <div key={line.itemId}>
+                          {line.itemName}
+                          {line.quantity > 1 ? ` x${line.quantity}` : ''}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             ))
           )}

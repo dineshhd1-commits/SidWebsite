@@ -35,7 +35,7 @@ function DecorationPhotoTile({
       whileTap={{ scale: 0.96 }}
       aria-pressed={isSelected}
       style={{ WebkitTouchCallout: 'none', WebkitUserDrag: 'none' } as React.CSSProperties}
-      className={`group relative aspect-square rounded-xl overflow-hidden border-2 select-none transition-colors ${
+      className={`group relative aspect-square rounded-xl overflow-hidden border-2 bg-maroon-950/5 select-none transition-colors ${
         isSelected ? 'border-gold-500 ring-2 ring-gold-400' : 'border-gold-200 hover:border-gold-400'
       }`}
     >
@@ -52,7 +52,7 @@ function DecorationPhotoTile({
           loading="lazy"
           draggable={false}
           onDragStart={(e) => e.preventDefault()}
-          className={`object-cover pointer-events-none transition-transform duration-300 group-hover:scale-105 ${isSelected ? 'brightness-90' : ''}`}
+          className={`object-contain pointer-events-none transition-transform duration-300 group-hover:scale-105 ${isSelected ? 'brightness-90' : ''}`}
           onError={() => setFailed(true)}
         />
       )}

@@ -65,6 +65,7 @@ export const Footer: React.FC = () => {
               <li><Link href="/gallery" className="hover:text-gold-300 transition-colors">Portfolio & Gallery</Link></li>
               <li><Link href="/testimonials" className="hover:text-gold-300 transition-colors">Client Reviews</Link></li>
               <li><Link href="/about" className="hover:text-gold-300 transition-colors">About Us</Link></li>
+              <li><Link href="/terms-and-conditions" className="hover:text-gold-300 transition-colors">Terms &amp; Conditions</Link></li>
               <li><Link href="/admin" className="hover:text-gold-300 transition-colors text-gold-400 font-bold">Admin Portal</Link></li>
             </ul>
           </div>
@@ -129,7 +130,7 @@ export const Footer: React.FC = () => {
           </div>
           <div className="flex items-center gap-6">
             <Link href="#" className="hover:underline">Privacy Policy</Link>
-            <Link href="#" className="hover:underline">Terms of Service</Link>
+            <Link href="/terms-and-conditions" className="hover:underline">Terms &amp; Conditions</Link>
             <Link href="#" className="hover:underline">Cancellation Policy</Link>
           </div>
         </div>

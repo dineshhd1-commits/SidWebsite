@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, Great_Vibes, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
-import { Navbar } from '@/components/navigation/navbar';
-import { Footer } from '@/components/navigation/footer';
-import { WhatsAppFloatingButton } from '@/components/navigation/whatsapp-floating-button';
-import { IntroSplash } from '@/components/ui/intro-splash';
+import { SiteChrome } from '@/components/navigation/site-chrome';
 import { EventBuilderProvider } from '@/lib/store/event-builder-context';
 import { SITE } from '@/lib/site-config';
 
@@ -120,11 +117,7 @@ export default function RootLayout({
           }}
         />
         <EventBuilderProvider>
-          <IntroSplash />
-          <Navbar />
-          <main className="flex-grow">{children}</main>
-          <WhatsAppFloatingButton />
-          <Footer />
+          <SiteChrome>{children}</SiteChrome>
         </EventBuilderProvider>
       </body>
     </html>

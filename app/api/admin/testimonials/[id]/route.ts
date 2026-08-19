@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSupabaseAdminClient } from '@/lib/supabase-admin';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 const testimonialPatchSchema = z
   .object({
@@ -31,6 +32,9 @@ function toRowPatch(input: z.infer<typeof testimonialPatchSchema>) {
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const { id } = await params;
   const admin = getSupabaseAdminClient();
   const { error } = await admin.from('testimonials').delete().eq('id', id);
@@ -39,6 +43,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const { id } = await params;
   const body = await request.json();
   const parsed = testimonialPatchSchema.safeParse(body);

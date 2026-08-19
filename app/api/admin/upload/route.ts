@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdminClient, CATALOG_IMAGES_BUCKET } from '@/lib/supabase-admin';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024; // 8MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
@@ -11,6 +12,9 @@ const EXTENSION_BY_TYPE: Record<string, string> = {
 };
 
 export async function POST(request: NextRequest) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const formData = await request.formData();
     const file = formData.get('file');

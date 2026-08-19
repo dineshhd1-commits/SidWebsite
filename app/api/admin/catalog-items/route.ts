@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSupabaseAdminClient } from '@/lib/supabase-admin';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 const catalogItemSchema = z.object({
   id: z.string().min(1).max(120),
@@ -55,6 +56,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const body = await request.json();
   const parsed = catalogItemSchema.safeParse(body);
   if (!parsed.success) {

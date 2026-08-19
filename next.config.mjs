@@ -28,6 +28,45 @@ const nextConfig = {
       },
     ],
   },
+  // Fonts are self-hosted via next/font/google (built at compile time, no
+  // runtime request to fonts.googleapis.com), so the CSP below doesn't need
+  // a font-src exception. The only external network target the app actually
+  // talks to is Supabase (REST + Storage, both over HTTPS) - everything
+  // else (WhatsApp) is a plain <a>/window.open() navigation, which CSP's
+  // connect-src doesn't govern.
+  async headers() {
+    const csp = [
+      "default-src 'self'",
+      // Next.js needs 'unsafe-inline' for its own hydration/RSC bootstrap
+      // scripts and 'unsafe-eval' in dev; no external script hosts are used
+      // anywhere in this app (no Google Maps JS SDK, no analytics tag), so
+      // both remain scoped to 'self' otherwise.
+      "script-src 'self' 'unsafe-inline'" + (process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''),
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://plus.unsplash.com",
+      "font-src 'self' data:",
+      "connect-src 'self' https://*.supabase.co",
+      "frame-src 'none'",
+      "frame-ancestors 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; ');
+
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Content-Security-Policy', value: csp },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

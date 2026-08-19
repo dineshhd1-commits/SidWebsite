@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSupabaseAdminClient } from '@/lib/supabase-admin';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 const patchSchema = z.object({
   includedItemIds: z.array(z.string()),
@@ -23,6 +24,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const { id } = await params;
   const body = await request.json();
   const parsed = patchSchema.safeParse(body);

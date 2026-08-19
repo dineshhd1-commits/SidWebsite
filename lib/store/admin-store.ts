@@ -157,16 +157,19 @@ function mapSupabaseQuoteRow(row: any): AdminQuoteRequest {
  * fallback pattern used everywhere else in this codebase) or the request
  * fails, so the dashboard never just shows a blank screen. */
 export async function getAdminQuotesFromBackend(): Promise<AdminQuoteRequest[]> {
-  if (!isSupabaseConfigured()) return getAdminQuotes();
   try {
-    const { data, error } = await supabase
-      .from('quotations')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    return (data || []).map(mapSupabaseQuoteRow);
+    // Routed through the authenticated /api/admin/quotes endpoint (service-role
+    // key, admin session required) rather than a direct anon-key Supabase
+    // query - the anon key is public by design, and quotations contain
+    // customer PII (name, phone, email, event details) that must never be
+    // readable by an unauthenticated visitor who simply has the anon key.
+    const res = await fetch('/api/admin/quotes');
+    if (res.status === 401) throw new Error('Not authenticated as admin.');
+    if (!res.ok) throw new Error('Failed to load quotes.');
+    const { items } = await res.json();
+    return (items || []).map(mapSupabaseQuoteRow);
   } catch (e) {
-    console.error('Failed to load quotes from Supabase, falling back to local cache:', e);
+    console.error('Failed to load quotes from backend, falling back to local cache:', e);
     return getAdminQuotes();
   }
 }
@@ -337,26 +340,31 @@ export async function uploadEnquiryPdf(pdfBlob: Blob, refCode: string): Promise<
   }
 }
 
+// All three mutations below go through the authenticated /api/admin/quotes
+// endpoint (admin session + service-role key) instead of an anon-key
+// Supabase call, for the same reason as getAdminQuotesFromBackend above -
+// an anonymous visitor must never be able to edit, re-status, or delete
+// another customer's enquiry record just by having the public anon key.
+
 export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteRequest[] {
   const current = getAdminQuotes();
   const updated = current.map((q) => (q.id === updatedQuote.id ? updatedQuote : q));
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  if (isSupabaseConfigured()) {
-    supabase
-      .from('quotations')
-      .update({
-        customer_name: updatedQuote.customerName,
-        customer_email: updatedQuote.customerEmail,
-        customer_phone: updatedQuote.customerPhone,
-        status: updatedQuote.status,
-      })
-      .eq('id', updatedQuote.refCode)
-      .then(({ error }) => {
-        if (error) console.error('Supabase quote update error:', error);
-      });
-  }
+  fetch('/api/admin/quotes', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      refCode: updatedQuote.refCode,
+      customerName: updatedQuote.customerName,
+      customerEmail: updatedQuote.customerEmail,
+      customerPhone: updatedQuote.customerPhone,
+      status: updatedQuote.status,
+    }),
+  }).then((res) => {
+    if (!res.ok) console.error('Admin quote update failed:', res.status);
+  });
   return updated;
 }
 
@@ -366,15 +374,13 @@ export function updateQuoteStatus(id: string, refCode: string, status: AdminQuot
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  if (isSupabaseConfigured()) {
-    supabase
-      .from('quotations')
-      .update({ status })
-      .eq('id', refCode)
-      .then(({ error }) => {
-        if (error) console.error('Supabase quote status update error:', error);
-      });
-  }
+  fetch('/api/admin/quotes', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refCode, status }),
+  }).then((res) => {
+    if (!res.ok) console.error('Admin quote status update failed:', res.status);
+  });
   return updated;
 }
 
@@ -384,15 +390,9 @@ export function deleteAdminQuote(id: string, refCode: string): AdminQuoteRequest
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  if (isSupabaseConfigured()) {
-    supabase
-      .from('quotations')
-      .delete()
-      .eq('id', refCode)
-      .then(({ error }) => {
-        if (error) console.error('Supabase quote delete error:', error);
-      });
-  }
+  fetch(`/api/admin/quotes?refCode=${encodeURIComponent(refCode)}`, { method: 'DELETE' }).then((res) => {
+    if (!res.ok) console.error('Admin quote delete failed:', res.status);
+  });
   return updated;
 }
 
@@ -424,20 +424,20 @@ export function saveAdminInquiry(inquiry: Omit<AdminInquiry, 'id' | 'createdAt' 
     localStorage.setItem(STORAGE_KEY_INQUIRIES, JSON.stringify(updated));
   }
 
-  if (isSupabaseConfigured()) {
-    supabase.from('inquiries').insert([
-      {
-        id: newRecord.id,
-        full_name: newRecord.fullName,
-        phone: newRecord.phone,
-        wedding_date: newRecord.weddingDate || null,
-        notes: newRecord.notes || '',
-        status: newRecord.status,
-      },
-    ]).then(({ error }) => {
-      if (error) console.error('Supabase inquiry sync error:', error);
-    });
-  }
+  // Routed through /api/contact (validated + rate-limited server-side) rather
+  // than an anon-key insert straight from the browser - same reasoning as
+  // the enquiry submission flow: an unauthenticated write endpoint should
+  // still validate its input and not be trivially spammable.
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fullName: newRecord.fullName,
+      phone: newRecord.phone,
+      weddingDate: newRecord.weddingDate || '',
+      notes: newRecord.notes || '',
+    }),
+  }).catch((e) => console.error('Contact inquiry sync error:', e));
 
   return newRecord;
 }

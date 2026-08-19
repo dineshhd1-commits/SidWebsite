@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSupabaseAdminClient } from '@/lib/supabase-admin';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 const testimonialSchema = z.object({
   id: z.string().min(1),
@@ -23,6 +24,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const body = await request.json();
   const parsed = testimonialSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });

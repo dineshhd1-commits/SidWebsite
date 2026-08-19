@@ -8,7 +8,7 @@ import { GoldButton } from '@/components/ui/gold-button';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
 
 import { getWhatsAppBookingRequestUrl } from '@/lib/whatsapp';
-import { saveAdminQuote, uploadEnquiryPdf } from '@/lib/store/admin-store';
+import { uploadEnquiryPdf } from '@/lib/store/admin-store';
 import { SITE } from '@/lib/site-config';
 import { getCartLines, getEstimatedTotal } from '@/lib/builder/selectors';
 import { buildEnquiryDetails, mergeBookingFormIntoState } from '@/lib/builder/enquiry';
@@ -37,6 +37,10 @@ export default function BookingPage() {
     venueCity: state.eventDetails.location || 'Davanagere',
     venueAddress: '',
     notes: state.eventDetails.specialRequirements,
+    // Honeypot field - stays empty for real customers (hidden from view and
+    // from screen readers below); a filled value flags the submission as
+    // automated to the server without showing a bot anything to react to.
+    companyWebsite: '',
   }));
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,8 +78,6 @@ export default function BookingPage() {
     setFriendlyErrors([]);
     setIsSubmitting(true);
 
-    const refCode = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
-
     // Single source of truth for "everything the customer selected" - same
     // structure used for the owner's WhatsApp notification and the admin
     // CRM record, built dynamically from whatever categories/items are
@@ -83,6 +85,59 @@ export default function BookingPage() {
     const mergedState = mergeBookingFormIntoState(state, formData);
     const fullDetails = buildEnquiryDetails(mergedState);
     const categorySummary = Array.from(new Set(fullDetails.sections.map((s) => s.label))).join(', ') || 'custom';
+
+    // The enquiry is validated and recorded server-side first - the browser
+    // never gets to assert its own reference code or push an out-of-range
+    // guest count past the API (see app/api/enquiry/route.ts). Everything
+    // downstream (the PDF, the WhatsApp message) uses the refCode the
+    // server actually issued, not one generated in this component.
+    let refCode: string;
+    let savedToBackend = false;
+    try {
+      const res = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: formData.fullName,
+          customerPhone: formData.phone,
+          customerEmail: formData.email,
+          weddingDate: formData.weddingDate,
+          venueCity: formData.venueCity,
+          venueAddress: formData.venueAddress,
+          guestCount: state.eventDetails.guestCount,
+          cateringTier: categorySummary,
+          photographyTier: fullDetails.eventTypeLabel,
+          purohitTier: state.selectedPackageId || 'custom',
+          selectedServicesCount: fullDetails.totalSelectionsCount,
+          estimatedCost: estimatedTotal,
+          notes: formData.notes,
+          fullDetails,
+          // Honeypot - real customers never see or fill this field (see the
+          // visually-hidden input below); a filled value marks the request
+          // as automated without ever telling the bot why it "succeeded".
+          companyWebsite: formData.companyWebsite,
+        }),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) {
+        setFriendlyErrors([body?.error || 'Something went wrong submitting your enquiry. Please try again.']);
+        setIsSubmitting(false);
+        return;
+      }
+      refCode = body.refCode;
+      savedToBackend = !!body.savedToBackend;
+    } catch {
+      setFriendlyErrors(['Something went wrong submitting your enquiry. Please check your connection and try again.']);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!savedToBackend) {
+      // The admin CRM record didn't save - don't silently pretend this
+      // reached the owner. WhatsApp (opened below) is the fallback channel
+      // that still gets it to them even if the database write failed.
+      console.warn('Enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
+    }
 
     // Generate the professional Event Enquiry PDF and attempt to upload it
     // before opening WhatsApp, so the notification link (when available) is
@@ -95,36 +150,17 @@ export default function BookingPage() {
     try {
       const pdfBlob = await generateEnquiryPdfBlob(fullDetails, refCode, submittedAtIso);
       pdfUrl = await uploadEnquiryPdf(pdfBlob, refCode);
+      if (pdfUrl) {
+        fetch('/api/enquiry', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refCode, pdfUrl }),
+        }).catch(() => {});
+      }
     } catch (err) {
       console.error('Enquiry PDF generation failed; falling back to full-text WhatsApp notification.', err);
     }
     setIsGeneratingPdf(false);
-
-    const { savedToBackend } = await saveAdminQuote({
-      refCode,
-      customerName: formData.fullName,
-      customerPhone: formData.phone,
-      customerEmail: formData.email,
-      weddingDate: formData.weddingDate,
-      venueCity: formData.venueCity,
-      venueAddress: formData.venueAddress,
-      guestCount: state.eventDetails.guestCount,
-      cateringTier: categorySummary,
-      photographyTier: fullDetails.eventTypeLabel,
-      purohitTier: state.selectedPackageId || 'custom',
-      selectedServicesCount: fullDetails.totalSelectionsCount,
-      estimatedCost: estimatedTotal,
-      notes: formData.notes,
-      fullDetails,
-      pdfUrl,
-    });
-
-    if (!savedToBackend) {
-      // The admin CRM record didn't save - don't silently pretend this
-      // reached the owner. WhatsApp (opened below) is the fallback channel
-      // that still gets it to them even if the database write failed.
-      console.warn('Enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
-    }
 
     const waUrl = getWhatsAppBookingRequestUrl(formData, state, refCode, SITE.whatsappNumber, pdfUrl);
 
@@ -173,6 +209,22 @@ export default function BookingPage() {
             )}
 
             <form onSubmit={handleSubmitRequest} className="space-y-4" noValidate>
+              {/* Honeypot - invisible to real visitors, hidden from assistive
+                  tech, and never tab-focusable. Bots that blindly fill every
+                  form field trip it; real customers never see it exists. */}
+              <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+                <label htmlFor="company-website">Company Website</label>
+                <input
+                  id="company-website"
+                  name="companyWebsite"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.companyWebsite}
+                  onChange={(e) => setFormData({ ...formData, companyWebsite: e.target.value })}
+                />
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-maroon-900 mb-1">Full Name <span className="text-rose-600">*</span></label>
                 <input

@@ -12,6 +12,7 @@ import {
 import { CateringTiming } from '../types/catering-menu';
 import { getPackageGroupLimits, getPackageIncludedItems, getCatalogItems } from '../data/catalog';
 import { getCateringCategoryById } from '../data/catering-menu';
+import { getEventTypes } from '../data/event-types';
 
 /** Fired whenever something genuinely new lands in the cart/catering
  * selections (not on removal, not on a quantity-only change) - purely
@@ -105,6 +106,18 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [state, setState] = useState<EventBuilderState>(DEFAULT_EVENT_BUILDER_STATE);
   const [isLoaded, setIsLoaded] = useState(false);
   const [lastAdded, setLastAdded] = useState<LastAddedSelection | null>(null);
+
+  // Kicks off the Supabase event-types fetch the moment the app mounts
+  // (EventBuilderProvider wraps every page via the root layout), rather than
+  // waiting until the customer actually lands on /packages or
+  // /custom-builder - both of those pages await this same getEventTypes()
+  // call on mount, so whichever page they open first previously had to eat
+  // the full network round-trip before showing real content. getEventTypes()
+  // caches its promise internally, so this is a no-op if something already
+  // triggered it, and harmless if the customer never visits either page.
+  React.useEffect(() => {
+    getEventTypes().catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {

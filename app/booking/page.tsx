@@ -13,7 +13,11 @@ import { SITE } from '@/lib/site-config';
 import { getCartLines, getEstimatedTotal } from '@/lib/builder/selectors';
 import { buildEnquiryDetails, mergeBookingFormIntoState } from '@/lib/builder/enquiry';
 import { MAX_GUEST_COUNT } from '@/lib/builder/validation';
-import { generateEnquiryPdfBlob } from '@/lib/builder/enquiry-pdf';
+// @react-pdf/renderer is a large library (~1.3MB) that's only ever needed
+// at the moment an enquiry is actually submitted - importing it statically
+// here would put its entire bundle on this route's initial load for every
+// visitor who just opens the booking form. Loaded on demand instead, inside
+// handleSubmitRequest below.
 
 const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
@@ -148,6 +152,7 @@ export default function BookingPage() {
     let pdfUrl: string | null = null;
     setIsGeneratingPdf(true);
     try {
+      const { generateEnquiryPdfBlob } = await import('@/lib/builder/enquiry-pdf');
       const pdfBlob = await generateEnquiryPdfBlob(fullDetails, refCode, submittedAtIso);
       pdfUrl = await uploadEnquiryPdf(pdfBlob, refCode);
       if (pdfUrl) {

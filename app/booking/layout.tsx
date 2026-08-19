@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Request a Quotation | SID Events Davanagere',
+  title: 'Request a Quotation | Davanagere, Karnataka',
   description: 'Send your event details to SID Events in Davanagere, Karnataka and receive a custom quotation - no payment required, just share your requirements and our team will follow up.',
   alternates: { canonical: '/booking' },
 };

@@ -1,7 +1,7 @@
 export const SITE = {
   name: 'SID Events',
   legalName: 'SID Events',
-  tagline: "Davanagere's Top 1 Event Company",
+  tagline: "Davanagere's Trusted Event Management Company",
   foundedYear: 2014,
   city: 'Davanagere',
   state: 'Karnataka',
@@ -13,9 +13,14 @@ export const SITE = {
   instagramUrl: 'https://www.instagram.com/sideventsdvg/',
   facebookUrl: 'https://www.facebook.com/sideventsdvg/',
   googleRating: '4.9/5',
-  // IMPORTANT: replace with the real production domain before/at deploy time.
   // Used for the sitemap, robots.txt, canonical/OG metadata and JSON-LD.
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  // Defaults to the real production domain (rather than localhost) so the
+  // sitemap/canonical/OG tags are correct in production even if
+  // NEXT_PUBLIC_SITE_URL isn't set in Vercel - this previously defaulted to
+  // http://localhost:3000, which is what was actually being served in
+  // production's sitemap.xml, robots.txt, and every page's canonical tag.
+  // NEXT_PUBLIC_SITE_URL still overrides this (e.g. for preview deployments).
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sideventsmanagement.com',
 } as const;
 
 export const SITE_STATS = [

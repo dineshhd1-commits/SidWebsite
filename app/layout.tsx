@@ -40,14 +40,14 @@ export const metadata: Metadata = {
     default: 'SID Events | Premium Event Management Company in Davanagere, Karnataka',
     template: '%s | SID Events',
   },
-  description: "Davanagere's #1 event company. Weddings, corporate events, birthdays and more, plus a live custom wedding package builder to plan every detail.",
-  keywords: ['Event Management Davanagere', 'Wedding Planner Davanagere', 'Corporate Events Karnataka', 'South Indian Wedding', 'Custom Wedding Builder', 'Maternity Photoshoot Davanagere', 'Naming Ceremony Decoration'],
+  description: "SID Events is an event management company based in Davanagere, Karnataka, planning weddings, engagements, receptions, traditional functions and corporate events - with decoration, photography and catering handled end-to-end.",
+  keywords: ['Event Management Davanagere', 'Wedding Planner Davanagere', 'Wedding Decoration Karnataka', 'Corporate Events Karnataka', 'South Indian Wedding', 'Wedding Catering Davanagere', 'Wedding Photography Davanagere'],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'SID Events | Premium Event Management Company in Davanagere, Karnataka',
-    description: "Davanagere's #1 event company — weddings, corporate events, birthdays and more.",
+    title: 'SID Events | Event Management Company in Davanagere, Karnataka',
+    description: 'Weddings, engagements, traditional functions and corporate events in Davanagere, Karnataka - decoration, photography and catering planned end-to-end.',
     siteName: 'SID Events',
     url: SITE.siteUrl,
     images: [
@@ -62,9 +62,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SID Events | Premium Event Management Company in Davanagere, Karnataka',
-    description: "Davanagere's #1 event company — weddings, corporate events, birthdays and more.",
+    title: 'SID Events | Event Management Company in Davanagere, Karnataka',
+    description: 'Weddings, engagements, traditional functions and corporate events in Davanagere, Karnataka - decoration, photography and catering planned end-to-end.',
     images: ['/logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 
@@ -72,7 +77,8 @@ const localBusinessJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'EventPlanningBusiness',
   name: SITE.name,
-  description: "Davanagere's #1 event management company - weddings, corporate events, birthdays, naming ceremonies, housewarming and maternity photoshoots.",
+  alternateName: SITE.legalName,
+  description: 'SID Events plans and manages weddings, engagements, receptions, traditional home functions, housewarmings and corporate events in Davanagere, Karnataka, including decoration, photography, videography and catering.',
   url: SITE.siteUrl,
   logo: `${SITE.siteUrl}/logo.png`,
   image: `${SITE.siteUrl}/logo.png`,
@@ -89,6 +95,27 @@ const localBusinessJsonLd = {
   },
   areaServed: ['Davanagere', 'Karnataka'],
   foundingDate: String(SITE.foundedYear),
+  sameAs: [SITE.instagramUrl, SITE.facebookUrl],
+  // Mirrors the actual service categories built out elsewhere on the site
+  // (custom-builder catalog, /services) - not an exhaustive price list, just
+  // a factual list of what the business offers, matching visible content.
+  makesOffer: [
+    'Wedding Event Management',
+    'Engagement & Reception Events',
+    'Traditional Home Functions (Haldi, Shrimanthakarya, Half-Saree Function, Housewarming)',
+    'Corporate Events',
+    'Event Decoration',
+    'Photography & Videography',
+    'Pre-Wedding Shoots',
+    'Catering',
+  ].map((name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name } })),
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.name,
+  url: SITE.siteUrl,
 };
 
 export default function RootLayout({
@@ -102,6 +129,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         {/* Some antivirus/ad-block browser extensions (e.g. Bitdefender's
             TrafficLight) inject a bis_skin_checked attribute into every

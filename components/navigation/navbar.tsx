@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Calculator, Phone, User } from 'lucide-react';
+import { Menu, X, Calculator, Phone } from 'lucide-react';
 import { GoldButton } from '../ui/gold-button';
 import { BrandMark } from '../ui/brand-mark';
 import { cn } from '@/lib/utils';
@@ -114,19 +114,6 @@ export const Navbar: React.FC = () => {
 
             {/* Right Action CTA Buttons */}
             <div className="hidden lg:flex items-center gap-2 ml-2 xl:ml-3 pl-2 xl:pl-3 border-l border-gold-400/40 shrink-0">
-              <Link href="/admin">
-                <button
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] xl:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 border",
-                    isTransparent
-                      ? "bg-white/10 text-gold-300 border-gold-400/40 hover:bg-white/20"
-                      : "bg-maroon-900 text-gold-300 border-gold-400/50 hover:bg-maroon-950"
-                  )}
-                >
-                  <User className="w-3.5 h-3.5" />
-                  Admin Login
-                </button>
-              </Link>
               <Link href="/custom-builder">
                 <GoldButton size="sm" variant="gold">
                   Build Package
@@ -175,15 +162,10 @@ export const Navbar: React.FC = () => {
                 ))}
               </div>
 
-              <div className="pt-3 border-t border-gold-400/30 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="pt-3 border-t border-gold-400/30">
                 <Link href="/custom-builder" onClick={() => setMobileMenuOpen(false)}>
                   <GoldButton fullWidth variant="gold">
                     Build Custom Package
-                  </GoldButton>
-                </Link>
-                <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
-                  <GoldButton fullWidth variant="dark" icon={<User className="w-4 h-4" />}>
-                    Admin Portal Login
                   </GoldButton>
                 </Link>
               </div>

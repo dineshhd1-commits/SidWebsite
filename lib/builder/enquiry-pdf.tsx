@@ -10,10 +10,17 @@ import { SITE } from '../site-config';
  * "Wedding Hall"). Anything not listed here just falls back to its raw
  * groupId, so a new catalog group still renders instead of disappearing. */
 const GROUP_LABELS: Record<string, string> = {
-  'dec-home': 'Home Decoration',
+  'dec-home': 'House Decoration',
   'dec-venue': 'Venue Decoration',
-  'dec-couple-entry': 'Couple Entry',
+  'dec-couple-entry': 'Couple Entry Concept',
   'dec-welcome-girls': 'Welcome Girls',
+  'dec-venue-engagement': 'Venue Decoration',
+  'dec-entry-engagement': 'Couple Entry Concept',
+  'dec-venue-reception': 'Venue Decoration',
+  'dec-entry-reception': 'Couple Entry Concept',
+  'dec-venue-birthday': 'Venue Decoration',
+  'dec-entry-birthday': 'Entry Concept',
+  'dec-venue-anniversary': 'Venue Decoration',
   'photo-deverakarya': 'Deverakarya',
   'photo-wedding-hall': 'Wedding Hall',
   'photo-services': 'Photography & Videography',

@@ -9,9 +9,19 @@ export function sanitizeAlphaInput(value: string): string {
   return value.replace(/[^a-zA-Z\s]/g, '');
 }
 
-/** Defensive check for submit time (autofill, paste via a path that skips
- * onChange, etc.) - the live sanitization above should make this redundant
- * in normal typing, but submission should never trust that alone. */
+/** Defensive check for submit time. */
 export function isAlphaSpaceOnly(value: string): boolean {
   return ALPHA_SPACE_PATTERN.test(value);
+}
+
+/** Strict alphanumeric only - A-Z, a-z, 0-9. Rejects spaces, punctuation,
+ * emojis, and all special/unicode symbols. */
+const ALPHANUMERIC_PATTERN = /^[a-zA-Z0-9]*$/;
+
+export function sanitizeAlphanumericOnly(value: string): string {
+  return value.replace(/[^a-zA-Z0-9]/g, '');
+}
+
+export function isAlphanumericOnly(value: string): boolean {
+  return ALPHANUMERIC_PATTERN.test(value);
 }

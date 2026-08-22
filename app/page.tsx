@@ -40,10 +40,16 @@ import { CountdownTimer } from '@/components/ui/countdown-timer';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { SITE, SITE_STATS, getWhatsAppUrl } from '@/lib/site-config';
 import { getTestimonials, TestimonialWithVerification } from '@/lib/data/testimonials';
+import { SharedImageLightbox } from '@/components/ui/shared-image-lightbox';
 
 export default function HomePage() {
-  const [galleryCategory, setGalleryCategory] = useState('all');
-  const [lightboxImg, setLightboxImg] = useState<{ title: string; url: string; category: string } | null>(null);
+  const [galleryCategory, setGalleryCategory] = useState<string>('all');
+  const [activeLightbox, setActiveLightbox] = useState<{
+    images: string[];
+    index: number;
+    title?: string;
+    subtitle?: string;
+  } | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [testimonials, setTestimonials] = useState<TestimonialWithVerification[]>([]);
 
@@ -58,15 +64,6 @@ export default function HomePage() {
   const handleNextTestimonial = () => {
     setTestimonialIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
   };
-
-  useEffect(() => {
-    if (!lightboxImg) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightboxImg(null);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxImg]);
 
   const statIcons = [
     <Award key="i1" className="w-5 h-5 text-gold-500" />,
@@ -96,57 +93,92 @@ export default function HomePage() {
 
   const pillars = [
     {
+      id: 'photography',
       title: 'Photography',
       subtitle: 'Traditional, Candid & Cinematic Coverage',
       desc: 'Traditional and candid photography and videography, drone coverage, LED wall and live streaming.',
       img: '/photography-videography-collage.jpg',
       badge: 'PHOTOGRAPHY',
+      href: '/gallery',
+      cta: 'Explore Portfolio',
+      galleryImages: [
+        '/photography-videography-collage.jpg',
+        '/sid-party9.jpeg',
+        '/sid-party10.jpeg',
+        '/sid-party11.jpeg',
+        '/sid-party12.jpeg',
+      ],
     },
     {
+      id: 'decoration',
       title: 'Decoration',
       subtitle: 'Silver, Gold & Platinum Tier Décor',
-      desc: 'Stage, mandap, entrance and home decor in Silver, Gold and Platinum tiers with floral and lighting design.',
+      desc: 'Stage, manthapa, entrance and home decor in Silver, Gold and Platinum tiers with floral and lighting design.',
       img: '/sid-party29.jpeg',
       badge: 'DECORATION',
+      href: '/custom-builder',
+      cta: 'Customize Item',
+      galleryImages: [
+        '/sid-party29.jpeg',
+        '/sid-party25.jpeg',
+        '/sid-party22.jpeg',
+        '/sid-party32.jpeg',
+        '/sid-party15.jpeg',
+      ],
     },
     {
+      id: 'catering',
       title: 'Catering',
       subtitle: 'Full South Indian Breakfast, Lunch & Dinner Menus',
       desc: 'Full South Indian menus for breakfast, lunch and dinner - from welcome drinks and starters to desserts and paan.',
       img: '/onam-sadhya-lunch-menu-1.webp',
       badge: 'CATERING',
+      href: '/custom-builder',
+      cta: 'Customize Item',
+      galleryImages: [
+        '/onam-sadhya-lunch-menu-1.webp',
+        '/sid-party19.jpeg',
+        '/sid-party20.jpeg',
+        'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80',
+      ],
     },
   ];
 
   const galleryShowcase = [
     {
       title: 'Tropical Floral Reception Backdrop',
-      category: 'mandapam',
+      category: 'manthapa',
+      categoryLabel: 'Manthapa',
       url: '/sid-party25.jpeg',
     },
     {
       title: 'Traditional Saptapadi Muhurtham Ceremony',
       category: 'rituals',
+      categoryLabel: 'Rituals',
       url: '/sid-party7.jpeg',
     },
     {
       title: 'Authentic South Indian Feast',
       category: 'sadhya',
+      categoryLabel: 'Sadhya Feast',
       url: 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80',
     },
     {
       title: 'Kanchipuram Silk Bridal Portrait & Jewelry',
       category: 'bridal',
+      categoryLabel: 'Bridal Portraits',
       url: '/sid-party9.jpeg',
     },
     {
       title: 'Vibrant Floral Wall Art Decoration',
-      category: 'mandapam',
+      category: 'manthapa',
+      categoryLabel: 'Manthapa',
       url: '/sid-party22.jpeg',
     },
     {
       title: 'Live Auspicious Nadaswaram & Thavil Recital',
       category: 'rituals',
+      categoryLabel: 'Rituals',
       url: 'https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?auto=format&fit=crop&w=1200&q=80',
     },
   ];
@@ -271,30 +303,82 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pillars.map((p, idx) => (
-            <div key={idx} className="flex flex-col justify-between bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <div className="relative h-96 sm:h-[440px] lg:h-[500px] w-full">
-                <Image src={p.img} alt={p.title} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover transition-transform duration-700 hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/40 via-transparent to-transparent" />
+            <div
+              key={idx}
+              className="group flex flex-col justify-between bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left border border-gold-200/50"
+            >
+              <div
+                onClick={() =>
+                  setActiveLightbox({
+                    images: p.galleryImages,
+                    index: 0,
+                    title: `${p.title} Showcase`,
+                    subtitle: 'Muhurtham Service',
+                  })
+                }
+                className="relative h-96 sm:h-[440px] lg:h-[500px] w-full overflow-hidden cursor-pointer"
+                title="Tap to preview gallery"
+              >
+                <Image
+                  src={p.img}
+                  alt={p.title}
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/50 via-transparent to-transparent" />
                 <span className="absolute top-4 left-4 bg-maroon-900/90 text-gold-300 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-gold-400/40 backdrop-blur-md shadow-md">
                   {p.badge}
                 </span>
+
+                <div className="absolute top-4 right-4 bg-maroon-950/80 text-gold-300 p-2 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-gold-400/30">
+                  <ZoomIn className="w-4 h-4" />
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 text-silk-50">
+                  <span className="text-[10px] font-semibold text-gold-300 bg-maroon-950/80 px-2 py-0.5 rounded border border-gold-400/30 inline-flex items-center gap-1">
+                    <ZoomIn className="w-3 h-3" /> Preview {p.galleryImages.length} Photos
+                  </span>
+                </div>
               </div>
 
               <div className="p-8 space-y-3">
-                <h3 className="font-playfair text-2xl font-bold text-maroon-950">{p.title}</h3>
+                <h3 className="font-playfair text-2xl font-bold text-maroon-950 group-hover:text-gold-600 transition-colors">
+                  {p.title}
+                </h3>
                 <p className="text-xs font-bold text-gold-700 uppercase tracking-wider">{p.subtitle}</p>
                 <p className="text-xs text-maroon-800/80 leading-relaxed font-sans">{p.desc}</p>
-                
-                <div className="pt-3">
-                  <Link href="/custom-builder" className="inline-flex items-center gap-1.5 text-xs font-bold text-maroon-800 hover:text-gold-600">
-                    Customize Item <ArrowRight className="w-3.5 h-3.5" />
+
+                <div className="pt-3 flex items-center justify-between gap-3">
+                  <Link
+                    href={p.href}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-maroon-800 hover:text-gold-600 transition-colors"
+                  >
+                    {p.cta} <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActiveLightbox({
+                        images: p.galleryImages,
+                        index: 0,
+                        title: `${p.title} Showcase`,
+                        subtitle: 'Muhurtham Service',
+                      })
+                    }
+                    className="text-[11px] font-bold text-gold-700 hover:text-maroon-950 underline cursor-pointer"
+                  >
+                    View Photos
+                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* 4. WEDDING SHOWCASE */}
       <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gold-400/30 pb-6">
           <div>
@@ -307,13 +391,14 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-2">
             {[
               { id: 'all', label: 'All Showcase' },
-              { id: 'mandapam', label: 'Mandapams' },
+              { id: 'manthapa', label: 'Manthapas' },
               { id: 'rituals', label: 'Rituals' },
               { id: 'sadhya', label: 'Sadhya Feast' },
               { id: 'bridal', label: 'Bridal Portraits' },
             ].map((cat) => (
               <button
                 key={cat.id}
+                type="button"
                 onClick={() => setGalleryCategory(cat.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                   galleryCategory === cat.id
@@ -331,19 +416,32 @@ export default function HomePage() {
           {filteredGallery.map((item, i) => (
             <div
               key={i}
-              onClick={() => setLightboxImg(item)}
+              onClick={() =>
+                setActiveLightbox({
+                  images: filteredGallery.map((g) => g.url),
+                  index: i,
+                  title: item.title,
+                  subtitle: item.categoryLabel || item.category,
+                })
+              }
               className="group relative h-96 sm:h-[420px] rounded-3xl overflow-hidden shadow-lg cursor-pointer border border-gold-400/30"
             >
-              <Image src={item.url} alt={item.title} fill sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-110" />
+              <Image
+                src={item.url}
+                alt={item.title}
+                fill
+                sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/60 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity" />
-              
+
               <div className="absolute top-4 right-4 bg-maroon-950/80 text-gold-300 p-2 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-gold-400/30">
                 <ZoomIn className="w-5 h-5" />
               </div>
 
               <div className="absolute bottom-4 left-4 right-4 text-silk-50">
                 <span className="text-[10px] uppercase font-bold text-gold-300 bg-maroon-950/80 px-2.5 py-0.5 rounded border border-gold-400/30">
-                  {item.category}
+                  {item.categoryLabel || (item.category === 'manthapa' ? 'Manthapa' : item.category)}
                 </span>
                 <h4 className="font-playfair text-lg font-bold text-silk-50 mt-1">{item.title}</h4>
               </div>
@@ -549,33 +647,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* LIGHTBOX MODAL */}
-      {lightboxImg && (
-        <div
-          onClick={() => setLightboxImg(null)}
-          className="fixed inset-0 z-50 bg-maroon-950/90 backdrop-blur-md flex items-center justify-center p-4"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-w-4xl w-full bg-maroon-900 rounded-3xl p-4 border-2 border-gold-400 shadow-2xl"
-          >
-            <button
-              onClick={() => setLightboxImg(null)}
-              className="absolute top-4 right-4 text-gold-300 bg-maroon-950 p-2 rounded-full border border-gold-400/40 hover:bg-maroon-800"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            <div className="relative h-[65vh] w-full rounded-2xl overflow-hidden mb-4">
-              <Image src={lightboxImg.url} alt={lightboxImg.title} fill sizes="100vw" className="object-contain" />
-            </div>
-
-            <div className="text-center text-silk-50 space-y-1">
-              <h3 className="font-playfair text-2xl font-bold text-gold-300">{lightboxImg.title}</h3>
-              <p className="text-xs text-gold-200/70 uppercase tracking-widest">{lightboxImg.category}</p>
-            </div>
-          </div>
-        </div>
+      {/* SHARED LIGHTBOX MODAL */}
+      {activeLightbox && (
+        <SharedImageLightbox
+          images={activeLightbox.images}
+          initialIndex={activeLightbox.index}
+          isOpen={true}
+          onClose={() => setActiveLightbox(null)}
+          title={activeLightbox.title}
+          subtitle={activeLightbox.subtitle}
+        />
       )}
     </div>
   );

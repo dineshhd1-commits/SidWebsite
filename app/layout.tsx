@@ -144,7 +144,29 @@ export default function RootLayout({
             keeps stripping it if the extension re-adds it. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){function c(){document.querySelectorAll('[bis_skin_checked]').forEach(function(el){el.removeAttribute('bis_skin_checked')})}c();new MutationObserver(c).observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['bis_skin_checked']})})();`,
+            __html: `(function(){
+              function c(){document.querySelectorAll('[bis_skin_checked]').forEach(function(el){el.removeAttribute('bis_skin_checked')})}
+              c();
+              new MutationObserver(c).observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['bis_skin_checked']});
+              function preventMediaMenu(e){
+                var t = e.target;
+                if (t && (t.tagName === 'IMG' || t.tagName === 'VIDEO' || t.tagName === 'SOURCE' || t.closest('img') || t.closest('video') || t.closest('[data-lightbox]') || t.closest('.no-context-menu'))) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return false;
+                }
+              }
+              window.addEventListener('contextmenu', preventMediaMenu, true);
+              document.addEventListener('contextmenu', preventMediaMenu, true);
+              window.addEventListener('dragstart', function(e){
+                var t = e.target;
+                if (t && (t.tagName === 'IMG' || t.tagName === 'VIDEO')) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return false;
+                }
+              }, true);
+            })();`,
           }}
         />
         <EventBuilderProvider>

@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Share2, CheckCircle, Edit3, AlertCircle } from 'lucide-react';
+import { Share2, CheckCircle, Edit3, AlertCircle, Loader2 } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { CatalogCategoryKey } from '@/lib/types/catalog';
 import { getCartLines, getRequestedExtraLines } from '@/lib/builder/selectors';
@@ -10,6 +10,9 @@ import { getMissingRequiredFieldsForSubmit } from '@/lib/builder/validation';
 import { GlassCard } from '@/components/ui/glass-card';
 import { GoldButton } from '@/components/ui/gold-button';
 import { getWhatsAppShareUrl } from '@/lib/whatsapp';
+import { buildEnquiryDetails } from '@/lib/builder/enquiry';
+import { uploadEnquiryPdf } from '@/lib/store/admin-store';
+import { getWatermarkedDecorationSrc } from '@/lib/data/decoration-inspiration';
 
 const CATEGORY_LABELS: Record<string, string> = {
   decoration: 'Decoration',
@@ -47,6 +50,7 @@ interface ReviewCartStepProps {
 }
 
 export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepProps) {
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const cartLines = getCartLines(state);
   const requestedExtras = getRequestedExtraLines(state);
   const missingRequired = getMissingRequiredFieldsForSubmit(state);
@@ -77,6 +81,37 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
   }, {});
   const cateringMenusInOrder = MENU_ORDER.filter((menuType) => cateringByMenu[menuType]);
 
+  const handleWhatsAppInquiry = async () => {
+    setIsGeneratingPdf(true);
+    let pdfUrl: string | null = null;
+    try {
+      const fullDetails = buildEnquiryDetails(state);
+      const submittedAtIso = new Date().toISOString();
+      const { generateEnquiryPdfBlob } = await import('@/lib/builder/enquiry-pdf');
+      const pdfBlob = await generateEnquiryPdfBlob(fullDetails, quoteId, submittedAtIso);
+
+      // Trigger instant browser download so user has the generated PDF file directly
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `SID-Events-Quotation-${quoteId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+
+      // Upload to storage if configured
+      pdfUrl = await uploadEnquiryPdf(pdfBlob, quoteId);
+    } catch (err) {
+      console.error('PDF generation/upload failed; falling back to standard WhatsApp message.', err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+
+    const waUrl = getWhatsAppShareUrl(quoteId, state, undefined, pdfUrl);
+    window.open(waUrl, '_blank');
+  };
+
   return (
     <div className="space-y-6">
       <div className="border-b border-gold-300/40 pb-4">
@@ -101,6 +136,9 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
           <div><span className="text-maroon-700/60 block font-semibold">Date</span>{formatDate(eventDetails.date)}</div>
           <div><span className="text-maroon-700/60 block font-semibold">Guests</span>{eventDetails.guestCount || 'Not set'}</div>
           <div><span className="text-maroon-700/60 block font-semibold">Location</span>{eventDetails.location || 'Not set'}</div>
+          {eventDetails.anniversaryType && (
+            <div><span className="text-maroon-700/60 block font-semibold">Anniversary Type</span>{eventDetails.anniversaryType}</div>
+          )}
           <div><span className="text-maroon-700/60 block font-semibold">Name</span>{eventDetails.customerName || 'Not set'}</div>
           <div><span className="text-maroon-700/60 block font-semibold">Phone</span>{eventDetails.customerPhone || 'Not set'}</div>
           <div><span className="text-maroon-700/60 block font-semibold">Email</span>{eventDetails.customerEmail || 'Not set'}</div>
@@ -129,18 +167,42 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
                   <Edit3 className="w-3 h-3" /> Edit
                 </button>
               </div>
-              {lines.map((line) => (
-                <div key={line.id} className="text-xs text-maroon-900">
-                  <span>{line.name}{line.quantity > 1 ? ` x${line.quantity}` : ''}</span>
-                </div>
-              ))}
+              <div className="space-y-2">
+                {lines.map((line) => {
+                  const isDec = categoryKey === 'decoration';
+                  const imgUrl = line.imageUrl ? getWatermarkedDecorationSrc(line.imageUrl) : null;
+
+                  return (
+                    <div key={line.id} className="flex items-center gap-3 text-xs text-maroon-900 py-1">
+                      {isDec && imgUrl && (
+                        <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-gold-300 shrink-0 bg-gold-50 shadow-xs">
+                          <img
+                            src={imgUrl}
+                            alt={line.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <span className="font-semibold text-maroon-950 block">{line.name}</span>
+                        {line.quantity > 1 && (
+                          <span className="text-[11px] text-maroon-700/80 font-medium">Quantity: {line.quantity}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ))
         )}
       </GlassCard>
 
       {/* Catering Menu Section */}
-      {(state.cateringTiming || cateringSelections.length > 0) && (
+      {(state.cateringTiming || cateringSelections.length > 0 || state.cateringSkipped) && (
         <GlassCard className="space-y-4">
           <div className="flex justify-between items-center border-b border-gold-300 pb-3">
             <h3 className="font-playfair text-lg font-bold text-maroon-900">Catering Menu</h3>
@@ -151,7 +213,11 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
               <Edit3 className="w-3.5 h-3.5" /> Edit
             </button>
           </div>
-          {cateringSelections.length === 0 ? (
+          {state.cateringSkipped && cateringSelections.length === 0 ? (
+            <p className="text-xs text-emerald-800 font-semibold bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
+              Catering has been skipped for this event package.
+            </p>
+          ) : cateringSelections.length === 0 ? (
             <p className="text-xs text-maroon-700/80">No dishes selected yet.</p>
           ) : (
             cateringMenusInOrder.map((menuType) => (
@@ -222,11 +288,16 @@ export function ReviewCartStep({ state, quoteId, onGoToStep }: ReviewCartStepPro
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-          <a href={getWhatsAppShareUrl(quoteId, state)} target="_blank" rel="noopener noreferrer" className="w-full">
-            <GoldButton variant="dark" size="sm" fullWidth icon={<Share2 className="w-4 h-4" />}>
-              WhatsApp Inquiry
+          <button
+            type="button"
+            onClick={handleWhatsAppInquiry}
+            disabled={isGeneratingPdf}
+            className="w-full"
+          >
+            <GoldButton variant="dark" size="sm" fullWidth icon={isGeneratingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}>
+              {isGeneratingPdf ? 'Generating PDF...' : 'WhatsApp Inquiry'}
             </GoldButton>
-          </a>
+          </button>
 
           <Link href="/booking" className="w-full">
             <GoldButton variant="gold" size="sm" fullWidth icon={<CheckCircle className="w-4 h-4" />}>

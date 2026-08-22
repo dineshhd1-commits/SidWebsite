@@ -9,6 +9,7 @@ import { getCorporateDecorationEnquiryWhatsAppUrl } from '@/lib/whatsapp';
 import { saveCorporateDecorationEnquiry } from '@/lib/store/admin-store';
 import { SITE } from '@/lib/site-config';
 import { CorporateDecorationEnquiryDetails } from '@/lib/builder/corporate-decoration-enquiry';
+import { MAX_GUEST_COUNT } from '@/lib/builder/validation';
 
 const CORPORATE_EVENT_TYPES = [
   'Conference / Seminar',
@@ -305,10 +306,17 @@ export function CorporateDecorationEnquiryModal({ eventTypeId, eventTypeLabel, s
                     <input
                       type="number"
                       min={0}
+                      max={MAX_GUEST_COUNT}
                       inputMode="numeric"
                       placeholder="e.g. 150"
                       value={form.guestCount}
-                      onChange={(e) => setForm({ ...form, guestCount: e.target.value })}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setForm({
+                          ...form,
+                          guestCount: isNaN(val) ? '' : String(Math.max(0, Math.min(MAX_GUEST_COUNT, val))),
+                        });
+                      }}
                       className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
                     />
                   </div>

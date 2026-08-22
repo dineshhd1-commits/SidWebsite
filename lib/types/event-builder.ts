@@ -24,6 +24,7 @@ export interface EventDetails {
   customerPhone: string;
   customerEmail: string;
   specialRequirements: string;
+  anniversaryType?: string;
 }
 
 export interface EventBuilderState {
@@ -47,6 +48,8 @@ export interface EventBuilderState {
    * between Morning/Afternoon/Evening doesn't lose a number already entered.
    * 0 or missing means "not entered yet". */
   cateringGuestCounts: Partial<Record<CateringTiming, number>>;
+  /** Indicates whether the customer intentionally skipped the catering step. */
+  cateringSkipped?: boolean;
 }
 
 export const DEFAULT_EVENT_DETAILS: EventDetails = {
@@ -60,6 +63,7 @@ export const DEFAULT_EVENT_DETAILS: EventDetails = {
   customerPhone: '',
   customerEmail: '',
   specialRequirements: '',
+  anniversaryType: '',
 };
 
 export const DEFAULT_EVENT_BUILDER_STATE: EventBuilderState = {
@@ -72,4 +76,5 @@ export const DEFAULT_EVENT_BUILDER_STATE: EventBuilderState = {
   cateringTiming: null,
   cateringSelections: {},
   cateringGuestCounts: {},
+  cateringSkipped: false,
 };

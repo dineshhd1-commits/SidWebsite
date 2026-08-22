@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Palette, Camera, Utensils, Sparkles, CheckCircle, ClipboardList, RefreshCw } from 'lucide-react';
 import { useEventBuilder } from '@/lib/store/event-builder-context';
@@ -98,6 +98,8 @@ function CustomBuilderPageInner() {
     updateEventDetails,
     setCateringTiming,
     setCateringGuestCount,
+    skipCatering,
+    unskipCatering,
     toggleCateringMenuItem,
     updateCateringMenuItemQuantity,
     addToCart,
@@ -106,6 +108,7 @@ function CustomBuilderPageInner() {
     replaceInCart,
     clearCart,
   } = useEventBuilder();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const stepContentRef = useRef<HTMLDivElement>(null);
 
@@ -198,17 +201,45 @@ function CustomBuilderPageInner() {
   const isCatalogReady = !!selectedEventType?.isCatalogReady;
   const stepStatuses = STEP_DEFS.map((_, i) => getStepStatus(state, i, STEP_DEFS.length - 1));
 
-  const cateringTimingMissing = currentStepIndex === CATERING_STEP_INDEX && !state.cateringTiming;
+  const cateringTimingMissing =
+    currentStepIndex === CATERING_STEP_INDEX && !state.cateringTiming && !state.cateringSkipped;
 
   const handleNextClick = () => {
     if (cateringTimingMissing) return;
+
     if (currentStepIndex === 0) {
+      // Anniversary event routing rules
+      if (state.eventTypeId === 'anniversary') {
+        const annType = state.eventDetails.anniversaryType;
+        if (!annType) {
+          alert('Please select an Anniversary Type before proceeding.');
+          return;
+        }
+        if (annType !== 'Couple Anniversary') {
+          // Route non-couple anniversary types to contact inquiry
+          const params = new URLSearchParams({
+            event: 'anniversary',
+            anniversaryType: annType,
+            name: state.eventDetails.customerName || '',
+            phone: state.eventDetails.customerPhone || '',
+            email: state.eventDetails.customerEmail || '',
+            date: state.eventDetails.date || '',
+            guests: state.eventDetails.guestCount ? String(state.eventDetails.guestCount) : '',
+            location: state.eventDetails.location || '',
+            notes: state.eventDetails.specialRequirements || `${annType} celebration inquiry`,
+          });
+          router.push(`/contact?${params.toString()}`);
+          return;
+        }
+      }
+
       const { optional } = getEventDetailsFieldChecks(state);
       if (optional.some((f) => !f.filled)) {
         setShowStepConfirmation(true);
         return;
       }
     }
+
     nextStep(STEP_DEFS.length - 1);
   };
 
@@ -273,6 +304,8 @@ function CustomBuilderPageInner() {
             onSetTiming={setCateringTiming}
             onSetGuestCount={setCateringGuestCount}
             onToggleItem={toggleCateringMenuItem}
+            onSkip={skipCatering}
+            onUnskip={unskipCatering}
           />
         );
       case 4:
@@ -294,8 +327,13 @@ function CustomBuilderPageInner() {
   const nameAndPhoneMissing =
     currentStepIndex === 0 &&
     (!state.eventDetails.customerName.trim() || !/^\d{10}$/.test(state.eventDetails.customerPhone.trim()));
+  const anniversaryTypeMissing =
+    currentStepIndex === 0 && state.eventTypeId === 'anniversary' && !state.eventDetails.anniversaryType;
   const canGoNext =
-    (currentStepIndex > 0 || !!state.eventTypeId) && !cateringTimingMissing && !nameAndPhoneMissing;
+    (currentStepIndex > 0 || !!state.eventTypeId) &&
+    !cateringTimingMissing &&
+    !nameAndPhoneMissing &&
+    !anniversaryTypeMissing;
   const { required: requiredFieldChecks, optional: optionalFieldChecks } = getEventDetailsFieldChecks(state);
 
   // Photography is the only optional step - nothing forces a selection here,

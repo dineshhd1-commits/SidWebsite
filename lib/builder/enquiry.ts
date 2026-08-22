@@ -74,6 +74,7 @@ export interface EnquiryCateringMenu {
 export interface EnquiryDetails {
   eventTypeId: string | null;
   eventTypeLabel: string;
+  anniversaryType?: string;
   customerName: string;
   customerPhone: string;
   customerEmail: string;
@@ -86,6 +87,7 @@ export interface EnquiryDetails {
    * Evening, each with its own guest count and category breakdown - never
    * flattened into a single combined menu. */
   cateringMenus: EnquiryCateringMenu[];
+  cateringSkipped?: boolean;
   requestedExtras: EnquirySelectionLine[];
   estimatedTotal: number;
   totalSelectionsCount: number;
@@ -171,6 +173,7 @@ export function buildEnquiryDetails(state: EventBuilderState): EnquiryDetails {
   return {
     eventTypeId: state.eventTypeId,
     eventTypeLabel: getEventTypeLabel(state.eventTypeId),
+    anniversaryType: state.eventDetails.anniversaryType,
     customerName: state.eventDetails.customerName,
     customerPhone: state.eventDetails.customerPhone,
     customerEmail: state.eventDetails.customerEmail,
@@ -180,6 +183,7 @@ export function buildEnquiryDetails(state: EventBuilderState): EnquiryDetails {
     specialRequirements: state.eventDetails.specialRequirements,
     sections: Array.from(sectionsByCategory.values()),
     cateringMenus,
+    cateringSkipped: state.cateringSkipped,
     requestedExtras: requestedExtras.map((l) => ({ name: l.name, quantity: l.quantity })),
     estimatedTotal: getEstimatedTotal(state),
     totalSelectionsCount: cartLines.length + cateringSelections.length,
@@ -222,6 +226,9 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
   lines.push('');
   lines.push('\u{1F4C5} EVENT DETAILS'); // 📅
   lines.push(`Event Type: ${details.eventTypeLabel}`);
+  if (details.anniversaryType) {
+    lines.push(`Anniversary Type: ${details.anniversaryType}`);
+  }
   lines.push(`Date: ${formatDate(details.eventDate)}`);
   lines.push(`Location: ${details.location || 'Not provided'}`);
   lines.push(`Guests: ${details.guestCount || 'Not specified'}`);
@@ -233,7 +240,7 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
   lines.push('\u{1F4E6} SELECTED SERVICES'); // 📦
   lines.push(divider);
 
-  if (details.sections.length === 0 && details.cateringMenus.length === 0) {
+  if (details.sections.length === 0 && details.cateringMenus.length === 0 && !details.cateringSkipped) {
     lines.push('');
     lines.push('No services selected yet.');
   }
@@ -256,6 +263,9 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
         lines.push(`• ${section.categoryName}: ${section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}`);
       }
     }
+  } else if (details.cateringSkipped) {
+    lines.push('');
+    lines.push(`${CATEGORY_ICONS.catering} CATERING: Skipped by customer`);
   }
 
   if (details.requestedExtras.length > 0) {

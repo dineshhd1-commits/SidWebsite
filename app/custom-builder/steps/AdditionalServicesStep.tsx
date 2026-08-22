@@ -5,9 +5,10 @@ import { CatalogItem } from '@/lib/types/catalog';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { getCatalogItems } from '@/lib/data/catalog';
 import { CatalogItemCard } from '@/components/builder/CatalogItemCard';
-import { QuantityStepper } from '@/components/builder/QuantityStepper';
+import { NumericQuantityInput } from '@/components/builder/NumericQuantityInput';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 import { GlassCard } from '@/components/ui/glass-card';
+import { isAdditionalServiceAllowed } from '@/lib/builder/event-rules';
 
 interface AdditionalServicesStepProps {
   state: EventBuilderState;
@@ -21,7 +22,9 @@ export function AdditionalServicesStep({ state, onAddToCart, onRemoveFromCart, o
 
   useEffect(() => {
     if (!state.eventTypeId) return;
-    getCatalogItems(state.eventTypeId, 'additional_services').then(setItems);
+    getCatalogItems(state.eventTypeId, 'additional_services').then((catalogItems) => {
+      setItems(catalogItems.filter((item) => isAdditionalServiceAllowed(state.eventTypeId, item.id)));
+    });
   }, [state.eventTypeId]);
 
   if (items === null) {
@@ -59,12 +62,14 @@ export function AdditionalServicesStep({ state, onAddToCart, onRemoveFromCart, o
                   </div>
                   <p className="text-xs text-maroon-700/80 mb-2 line-clamp-2">{item.description}</p>
                 </div>
-                <div className="pt-2 flex items-center justify-between border-t border-gold-200">
-                  <QuantityStepper
+                <div className="pt-3 flex items-center justify-between border-t border-gold-200">
+                  <NumericQuantityInput
                     value={cartLine.quantity}
-                    onChange={(qty) => (qty <= 0 ? onRemoveFromCart(item.id) : onUpdateQuantity(item.id, qty))}
-                    min={0}
+                    onChange={(qty) => onUpdateQuantity(item.id, qty)}
+                    onRemove={() => onRemoveFromCart(item.id)}
+                    min={1}
                     max={item.maxQuantity ?? undefined}
+                    unitLabel={item.unit ? `(${item.unit})` : undefined}
                   />
                 </div>
               </GlassCard>

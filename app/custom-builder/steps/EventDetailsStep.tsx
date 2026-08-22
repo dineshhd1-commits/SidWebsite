@@ -7,6 +7,9 @@ import { EventType } from '@/lib/types/catalog';
 import { EventTypeSelectField } from '@/components/builder/EventTypeSelectField';
 import { LocationAutocompleteField } from '@/components/builder/LocationAutocompleteField';
 import { isValidCustomerEmail, MAX_GUEST_COUNT } from '@/lib/builder/validation';
+import { sanitizeAlphanumericOnly } from '@/lib/text-validation';
+
+import { ANNIVERSARY_TYPES } from '@/lib/builder/event-rules';
 
 interface EventDetailsStepProps {
   eventTypes: EventType[];
@@ -48,6 +51,31 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
             autoOpenToken={autoOpenEventTypeToken}
           />
         </div>
+
+        {/* Anniversary Type (Conditional for Anniversary events) */}
+        {selectedEventTypeId === 'anniversary' && (
+          <div className="bg-gold-50/60 p-4 rounded-xl border border-gold-300 space-y-1">
+            <label htmlFor="anniversary-type-select" className="block text-xs font-bold text-maroon-900">
+              Anniversary Type <span className="text-rose-600">*</span>
+            </label>
+            <select
+              id="anniversary-type-select"
+              value={eventDetails.anniversaryType || ''}
+              onChange={(e) => onChange({ anniversaryType: e.target.value })}
+              className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30 font-medium"
+            >
+              <option value="">-- Select Anniversary Type --</option>
+              {ANNIVERSARY_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+            <p className="text-[11px] text-maroon-700/80 mt-1">
+              Note: Couple Anniversaries proceed to the custom event builder. Other anniversary types are custom-tailored through our dedicated team inquiry.
+            </p>
+          </div>
+        )}
 
         {/* Row 2: Event Date | Number of Guests */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -137,12 +165,19 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
 
         {/* Row 6: Special Requirements */}
         <div>
-          <label className="block text-xs font-bold text-maroon-900 mb-1">Special Requirements</label>
+          <label className="block text-xs font-bold text-maroon-900 mb-1">
+            Special Requirements <span className="text-[10px] text-maroon-700/60 font-normal">(Alphanumeric only)</span>
+          </label>
           <textarea
             rows={3}
-            placeholder="Anything specific we should know..."
+            placeholder="Anything specific we should know (letters and numbers only)..."
             value={eventDetails.specialRequirements}
-            onChange={(e) => onChange({ specialRequirements: e.target.value })}
+            onChange={(e) => onChange({ specialRequirements: sanitizeAlphanumericOnly(e.target.value) })}
+            onPaste={(e) => {
+              e.preventDefault();
+              const pasted = e.clipboardData.getData('text');
+              onChange({ specialRequirements: sanitizeAlphanumericOnly(eventDetails.specialRequirements + pasted) });
+            }}
             className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
           />
         </div>

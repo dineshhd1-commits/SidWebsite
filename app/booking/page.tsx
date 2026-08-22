@@ -13,6 +13,7 @@ import { SITE } from '@/lib/site-config';
 import { getCartLines, getEstimatedTotal } from '@/lib/builder/selectors';
 import { buildEnquiryDetails, mergeBookingFormIntoState } from '@/lib/builder/enquiry';
 import { MAX_GUEST_COUNT } from '@/lib/builder/validation';
+import { sanitizeAlphanumericOnly } from '@/lib/text-validation';
 // @react-pdf/renderer is a large library (~1.3MB) that's only ever needed
 // at the moment an enquiry is actually submitted - importing it statically
 // here would put its entire bundle on this route's initial load for every
@@ -307,12 +308,19 @@ export default function BookingPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-maroon-900 mb-1">Anything Else We Should Know?</label>
+                <label className="block text-xs font-bold text-maroon-900 mb-1">
+                  Anything Else We Should Know? <span className="text-[10px] text-maroon-700/60 font-normal">(Alphanumeric only)</span>
+                </label>
                 <textarea
                   rows={4}
-                  placeholder="Special requests, themes, or questions about your package..."
+                  placeholder="Special requests, themes, or questions (letters and numbers only)..."
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, notes: sanitizeAlphanumericOnly(e.target.value) })}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pasted = e.clipboardData.getData('text');
+                    setFormData({ ...formData, notes: sanitizeAlphanumericOnly(formData.notes + pasted) });
+                  }}
                   className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 transition-all duration-200 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
                 />
               </div>

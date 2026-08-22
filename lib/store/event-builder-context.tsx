@@ -13,6 +13,7 @@ import { CateringTiming } from '../types/catering-menu';
 import { getPackageGroupLimits, getPackageIncludedItems, getCatalogItems } from '../data/catalog';
 import { getCateringCategoryById } from '../data/catering-menu';
 import { getEventTypes } from '../data/event-types';
+import { cleanEventBuilderState } from '../builder/event-rules';
 
 /** Fired whenever something genuinely new lands in the cart/catering
  * selections (not on removal, not on a quantity-only change) - purely
@@ -37,8 +38,10 @@ interface EventBuilderContextType {
   nextStep: (lastIndex: number) => void;
   prevStep: () => void;
   updateEventDetails: (partial: Partial<EventDetails>) => void;
-  setCateringTiming: (timing: CateringTiming) => void;
+  setCateringTiming: (timing: CateringTiming | null) => void;
   setCateringGuestCount: (timing: CateringTiming, guestCount: number) => void;
+  skipCatering: () => void;
+  unskipCatering: () => void;
   toggleCateringMenuItem: (menuType: CateringTiming, categoryId: string, categoryName: string, itemId: string, itemName: string) => void;
   updateCateringMenuItemQuantity: (menuType: CateringTiming, itemId: string, quantity: number) => void;
   addToCart: (item: CatalogItem, quantity?: number, origin?: CartLineOrigin) => void;
@@ -148,7 +151,14 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [state, isLoaded]);
 
   const setEventType = useCallback((eventTypeId: string) => {
-    setState((prev) => ({ ...DEFAULT_EVENT_BUILDER_STATE, eventDetails: prev.eventDetails, eventTypeId, currentStepIndex: 0 }));
+    setState((prev) =>
+      cleanEventBuilderState({
+        ...DEFAULT_EVENT_BUILDER_STATE,
+        eventDetails: prev.eventDetails,
+        eventTypeId,
+        currentStepIndex: 0,
+      })
+    );
   }, []);
 
   /** Switches event type and starts the build completely over: every cart line,
@@ -158,7 +168,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
    * carries over from the previous event - the only thing kept is the newly
    * chosen event type itself. */
   const changeEventType = useCallback((eventTypeId: string) => {
-    setState({ ...DEFAULT_EVENT_BUILDER_STATE, eventTypeId });
+    setState(cleanEventBuilderState({ ...DEFAULT_EVENT_BUILDER_STATE, eventTypeId }));
   }, []);
 
   /** Applies a package's included items on top of the current cart - never wipes
@@ -171,11 +181,13 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       getPackageGroupLimits(packageId),
     ]);
     if (includedItems.length === 0) {
-      setState((prev) => ({
-        ...prev,
-        selectedPackageId: packageId,
-        cart: Object.fromEntries(Object.entries(prev.cart).filter(([, line]) => line.origin !== 'included')),
-      }));
+      setState((prev) =>
+        cleanEventBuilderState({
+          ...prev,
+          selectedPackageId: packageId,
+          cart: Object.fromEntries(Object.entries(prev.cart).filter(([, line]) => line.origin !== 'included')),
+        })
+      );
       return;
     }
     if (!state.eventTypeId) return;
@@ -191,7 +203,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (!item) continue;
         cart[item.id] = cartLineFromItem(item, included.quantity, 'included');
       }
-      return { ...prev, selectedPackageId: packageId, cart };
+      return cleanEventBuilderState({ ...prev, selectedPackageId: packageId, cart });
     });
     void groupLimits; // consumed by step components via getPackageGroupLimits(packageId) directly
   }, [state.eventTypeId]);
@@ -225,16 +237,30 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => ({ ...prev, eventDetails: { ...prev.eventDetails, ...partial } }));
   }, []);
 
-  /** Timing only changes which meal's categories are shown in the browse
-   * grid - it must never touch cateringSelections. That one map is the single
-   * source of truth for every catering pick across every timing (dish
-   * categories like Welcome Drinks/Chats/Starters are the same category ids
-   * whether you're looking at the Afternoon or Evening tab, and
-   * cateringSelections is keyed by itemId), so switching tabs back and forth
-   * has to leave it completely untouched or picks silently vanish the moment
-   * the customer looks at a different meal and comes back. */
-  const setCateringTiming = useCallback((timing: CateringTiming) => {
-    setState((prev) => ({ ...prev, cateringTiming: timing }));
+  /** Timing changes which meal's categories are shown. If already selected,
+   * clicking it again deselects it (sets to null) to unlock other slots. */
+  const setCateringTiming = useCallback((timing: CateringTiming | null) => {
+    setState((prev) =>
+      cleanEventBuilderState({
+        ...prev,
+        cateringTiming: timing,
+        cateringSkipped: false, // Normal timing selection unskips catering
+      })
+    );
+  }, []);
+
+  const skipCatering = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      cateringSkipped: true,
+    }));
+  }, []);
+
+  const unskipCatering = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      cateringSkipped: false,
+    }));
   }, []);
 
   /** Guest count is kept per meal timing, so a number entered for one meal
@@ -270,7 +296,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
         cateringSelections[key] = { menuType, categoryId, categoryName, itemId, itemName, quantity: 1 };
         setLastAdded({ id: key, name: itemName, token: Date.now() });
       }
-      return { ...prev, cateringSelections };
+      return cleanEventBuilderState({ ...prev, cateringSelections, cateringSkipped: false });
     });
   }, []);
 
@@ -296,10 +322,10 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (!prev.cart[item.id]) {
         setLastAdded({ id: item.id, name: item.name, token: Date.now() });
       }
-      return {
+      return cleanEventBuilderState({
         ...prev,
         cart: { ...prev.cart, [item.id]: cartLineFromItem(item, quantity, origin) },
-      };
+      });
     });
   }, []);
 
@@ -307,7 +333,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => {
       const cart = { ...prev.cart };
       delete cart[catalogItemId];
-      return { ...prev, cart };
+      return cleanEventBuilderState({ ...prev, cart });
     });
   }, []);
 
@@ -318,7 +344,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (quantity <= 0) {
         const cart = { ...prev.cart };
         delete cart[catalogItemId];
-        return { ...prev, cart };
+        return cleanEventBuilderState({ ...prev, cart });
       }
       return { ...prev, cart: { ...prev.cart, [catalogItemId]: { ...existing, quantity } } };
     });
@@ -329,7 +355,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const cart = { ...prev.cart };
       delete cart[oldCatalogItemId];
       cart[item.id] = cartLineFromItem(item, quantity, origin);
-      return { ...prev, cart };
+      return cleanEventBuilderState({ ...prev, cart });
     });
     setLastAdded({ id: item.id, name: item.name, token: Date.now() });
   }, []);
@@ -339,7 +365,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [addToCart]);
 
   const clearCart = useCallback(() => {
-    setState((prev) => ({ ...prev, cart: {} }));
+    setState((prev) => cleanEventBuilderState({ ...prev, cart: {} }));
   }, []);
 
   const resetBuilder = useCallback(() => {
@@ -364,6 +390,8 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       updateEventDetails,
       setCateringTiming,
       setCateringGuestCount,
+      skipCatering,
+      unskipCatering,
       toggleCateringMenuItem,
       updateCateringMenuItemQuantity,
       addToCart,
@@ -387,6 +415,8 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       updateEventDetails,
       setCateringTiming,
       setCateringGuestCount,
+      skipCatering,
+      unskipCatering,
       toggleCateringMenuItem,
       updateCateringMenuItemQuantity,
       addToCart,

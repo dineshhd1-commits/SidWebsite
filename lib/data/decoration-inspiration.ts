@@ -60,7 +60,7 @@ export function decorationPhotoToCartItem(photo: DecorationPhoto): CatalogItem {
 /** Display order + labels for the category filter chips. */
 export const DECORATION_CATEGORIES: { slug: string; label: string }[] = [
   { slug: 'stage-decoration', label: 'Stage Decoration' },
-  { slug: 'mantap-decoration', label: 'Mantap Decoration' },
+  { slug: 'mantap-decoration', label: 'Manthapa Decoration' },
   { slug: 'chapra-with-flowers', label: 'Chapra With Flowers' },
   { slug: 'garlands', label: 'Garlands' },
   { slug: 'passage-decoration', label: 'Passage Decoration' },
@@ -123,4 +123,78 @@ export function getDecorationPhotoById(id: string): DecorationPhoto | undefined 
  * pre-built file, there's no runtime image-processing cost per view. */
 export function getWatermarkedDecorationSrc(src: string): string {
   return src.startsWith('/decotion/') ? `/decotion-watermarked/${src.slice('/decotion/'.length)}` : src;
+}
+
+/**
+ * Returns the related photos for any decoration checklist option/item.
+ * Maps the item's id or name to its curated photo collection from decoration-inspiration.
+ */
+export function getDecorationPhotosForItem(item: CatalogItem | { id: string; name?: string; groupId?: string | null }): DecorationPhoto[] {
+  const id = item.id.toLowerCase();
+  const name = (item.name || '').toLowerCase();
+  const groupId = (item.groupId || '').toLowerCase();
+
+  // Stage Decoration
+  if (id.includes('stage') || name.includes('stage')) {
+    return getDecorationPhotosByCategory('stage-decoration');
+  }
+  // Muhurtha Manthapa
+  if (id.includes('mantap') || name.includes('mantap') || name.includes('manthapa')) {
+    return getDecorationPhotosByCategory('mantap-decoration');
+  }
+  // Chappara / Flowers
+  if (id.includes('chappara') || name.includes('chappara') || id.includes('chapra') || name.includes('chapra')) {
+    return getDecorationPhotosByCategory('chapra-with-flowers');
+  }
+  // Door / Entrance
+  if (id.includes('door') || name.includes('door') || id.includes('gate') || name.includes('name plate')) {
+    return getDecorationPhotosByCategory('door-decoration');
+  }
+  // Passage
+  if (id.includes('passage') || name.includes('passage') || name.includes('walkway')) {
+    return getDecorationPhotosByCategory('passage-decoration');
+  }
+  // Garlands
+  if (id.includes('garland') || name.includes('garland')) {
+    return getDecorationPhotosByCategory('garlands');
+  }
+  // Saptapadi
+  if (id.includes('saptapadi') || name.includes('saptapadi')) {
+    return getDecorationPhotosByCategory('saptapadi');
+  }
+  // Cold fire / pyros / fireworks
+  if (id.includes('cold') || id.includes('pyro') || id.includes('smoke') || id.includes('firework') || name.includes('pyro') || name.includes('sparkler') || name.includes('smoke') || name.includes('firework')) {
+    return getDecorationPhotosByCategory('cold-fire-entry');
+  }
+  // Couple Entry Concept / Bridal entry / Vintage car / Carriage
+  if (groupId.includes('entry') || id.includes('entry') || name.includes('entry') || id.includes('vintage') || id.includes('carriage') || id.includes('canopy') || id.includes('cloud') || name.includes('cloud') || name.includes('canopy')) {
+    const bridal = getDecorationPhotosByCategory('bridal-entry');
+    const cold = getDecorationPhotosByCategory('cold-fire-entry');
+    return [...bridal, ...cold];
+  }
+  // Bouncers & Security
+  if (groupId.includes('security') || id.includes('security') || name.includes('security') || name.includes('bouncer')) {
+    return [
+      { id: 'security-1', src: '/sid-party28.jpeg', category: 'security', categoryLabel: 'Bouncers & Security' },
+      { id: 'security-2', src: '/sid-party35.jpeg', category: 'security', categoryLabel: 'Bouncers & Security' },
+    ];
+  }
+  // Photo Booth / Haldi / Mehndi
+  if (id.includes('photo-booth') || name.includes('photo booth')) {
+    return [
+      { id: 'booth-1', src: '/sid-party25.jpeg', category: 'photo-booth', categoryLabel: 'Photo Booth' },
+      { id: 'booth-2', src: '/sid-party22.jpeg', category: 'photo-booth', categoryLabel: 'Photo Booth' },
+    ];
+  }
+  // Fallback to item images if present or stage photos
+  if ('images' in item && item.images && item.images.length > 0) {
+    return item.images.map((src, idx) => ({
+      id: `${item.id}-${idx + 1}`,
+      src,
+      category: 'custom',
+      categoryLabel: item.name || 'Decoration Option',
+    }));
+  }
+
+  return getDecorationPhotosByCategory('stage-decoration').slice(0, 4);
 }

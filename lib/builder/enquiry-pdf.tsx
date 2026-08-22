@@ -13,7 +13,7 @@ const GROUP_LABELS: Record<string, string> = {
   'dec-home': 'House Decoration',
   'dec-venue': 'Venue Decoration',
   'dec-couple-entry': 'Couple Entry Concept',
-  'dec-welcome-girls': 'Welcome Girls',
+  'dec-security': 'Bouncers & Security',
   'dec-venue-engagement': 'Venue Decoration',
   'dec-entry-engagement': 'Couple Entry Concept',
   'dec-venue-reception': 'Venue Decoration',
@@ -42,14 +42,15 @@ interface DecorationGroup {
 }
 
 /** Splits the Decoration section into per-category groups, keeping photo-
- * backed picks (the browsable gallery) separate from Wedding's checklist
- * items (Home/Venue/Couple Entry/Welcome Girls - real services, but no photo
- * behind them) so the PDF never fabricates a placeholder image for those. */
+ * backed picks separate from text-only checklist items so the PDF renders
+ * all decoration images cleanly and gracefully handles items without images. */
 function groupDecorationLines(lines: EnquirySelectionLine[]): DecorationGroup[] {
   const groups = new Map<string, DecorationGroup>();
   for (const line of lines) {
-    const isPhotoPick = line.groupId === 'decoration-inspiration' && !!line.imageUrl;
-    const label = isPhotoPick ? decorationPhotoCategory(line.name) : GROUP_LABELS[line.groupId || ''] || line.groupId || 'Decoration';
+    const isPhotoPick = !!line.imageUrl;
+    const label = isPhotoPick && line.groupId === 'decoration-inspiration'
+      ? decorationPhotoCategory(line.name)
+      : GROUP_LABELS[line.groupId || ''] || line.groupId || 'Decoration';
     if (!groups.has(label)) groups.set(label, { label, photos: [], textOnly: [] });
     const group = groups.get(label)!;
     if (isPhotoPick) group.photos.push(line);
@@ -277,6 +278,7 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
         <View style={s.section} wrap={false}>
           <Text style={s.sectionTitle}>Event Details</Text>
           <Field label="Event Type" value={details.eventTypeLabel} />
+          {details.anniversaryType ? <Field label="Anniversary Type" value={details.anniversaryType} /> : null}
           <Field label="Event Date" value={formatDate(details.eventDate)} />
           <Field label="Location" value={details.location || 'Not provided'} />
           <Field label="Guests" value={details.guestCount ? String(details.guestCount) : 'Not specified'} />
@@ -337,7 +339,7 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
             each with its own guest count and category breakdown, exactly as
             selected - same-named categories in different meals are never
             merged together here. */}
-        {details.cateringMenus.length > 0 && (
+        {details.cateringMenus.length > 0 ? (
           <View style={s.section} wrap>
             <Text style={s.sectionTitle}>Catering Menu</Text>
             {details.cateringMenus.map((menu) => (
@@ -355,7 +357,12 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
               </View>
             ))}
           </View>
-        )}
+        ) : details.cateringSkipped ? (
+          <View style={s.section} wrap={false}>
+            <Text style={s.sectionTitle}>Catering</Text>
+            <Field label="Status" value="Skipped by customer" />
+          </View>
+        ) : null}
 
         {details.requestedExtras.length > 0 && (
           <View style={s.section} wrap={false}>

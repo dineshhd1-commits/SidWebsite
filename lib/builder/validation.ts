@@ -10,7 +10,7 @@ export type StepStatus = 'not_started' | 'in_progress' | 'completed' | 'pending'
  * the input's value via devtools or any other client-side manipulation. */
 export const MAX_GUEST_COUNT = 5000;
 
-interface FieldCheck {
+export interface FieldCheck {
   key: string;
   label: string;
   filled: boolean;
@@ -31,19 +31,32 @@ export function isValidCustomerEmail(email: string): boolean {
  * the step-confirmation modal and the step-status dot for step 0. */
 export function getEventDetailsFieldChecks(state: EventBuilderState): { required: FieldCheck[]; optional: FieldCheck[] } {
   const { eventDetails, eventTypeId } = state;
+  const required: FieldCheck[] = [
+    { key: 'eventType', label: 'Event Type', filled: !!eventTypeId },
+  ];
+
+  if (eventTypeId === 'anniversary') {
+    required.push({
+      key: 'anniversaryType',
+      label: 'Anniversary Type',
+      filled: !!eventDetails.anniversaryType && eventDetails.anniversaryType.trim().length > 0,
+    });
+  }
+
+  required.push(
+    { key: 'date', label: 'Event Date', filled: !!eventDetails.date },
+    {
+      key: 'guestCount',
+      label: 'Number of Guests',
+      filled: eventDetails.guestCount > 0 && eventDetails.guestCount <= MAX_GUEST_COUNT,
+    },
+    { key: 'location', label: 'Event Location', filled: !!eventDetails.location.trim() },
+    { key: 'customerName', label: 'Your Name', filled: !!eventDetails.customerName.trim() },
+    { key: 'customerPhone', label: 'Phone Number', filled: /^\d{10}$/.test(eventDetails.customerPhone.trim()) }
+  );
+
   return {
-    required: [
-      { key: 'eventType', label: 'Event Type', filled: !!eventTypeId },
-      { key: 'date', label: 'Event Date', filled: !!eventDetails.date },
-      {
-        key: 'guestCount',
-        label: 'Number of Guests',
-        filled: eventDetails.guestCount > 0 && eventDetails.guestCount <= MAX_GUEST_COUNT,
-      },
-      { key: 'location', label: 'Event Location', filled: !!eventDetails.location.trim() },
-      { key: 'customerName', label: 'Your Name', filled: !!eventDetails.customerName.trim() },
-      { key: 'customerPhone', label: 'Phone Number', filled: /^\d{10}$/.test(eventDetails.customerPhone.trim()) },
-    ],
+    required,
     optional: [
       { key: 'customerEmail', label: 'Email Address', filled: !!eventDetails.customerEmail.trim() },
       { key: 'specialRequirements', label: 'Special Requirements', filled: !!eventDetails.specialRequirements.trim() },
@@ -64,6 +77,7 @@ export function canSubmitEnquiry(state: EventBuilderState): boolean {
 export function getFriendlyMissingFieldMessage(fieldKey: string): string {
   const messages: Record<string, string> = {
     eventType: "We still need to know what type of event you're planning.",
+    anniversaryType: 'Please select an Anniversary Type before proceeding.',
     date: 'Please choose a valid event date before submitting.',
     guestCount: `Let us know roughly how many guests to expect. Maximum guest capacity is ${MAX_GUEST_COUNT.toLocaleString('en-IN')}.`,
     location: 'We still need your event location before submitting your enquiry.',
@@ -101,6 +115,10 @@ export function getStepStatus(state: EventBuilderState, stepIndex: number, lastI
 
   const categoryKey = STEP_CATEGORY_KEYS[stepIndex];
   if (!categoryKey) return 'not_started';
+
+  if (categoryKey === 'catering' && state.cateringSkipped) {
+    return 'completed';
+  }
 
   const hasItemsInCategory = getCartLines(state).some((line) => line.categoryKey === categoryKey);
   const hasCateringSelections = categoryKey === 'catering' && Object.keys(state.cateringSelections).length > 0;

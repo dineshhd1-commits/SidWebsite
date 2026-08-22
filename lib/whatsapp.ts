@@ -34,6 +34,10 @@ function buildSelectionsBlock(state: EventBuilderState): string {
 }
 
 function buildCateringMenuBlock(state: EventBuilderState): string {
+  if (state.cateringSkipped) {
+    return '\n*Catering:* Skipped by customer\n';
+  }
+
   const selections = Object.values(state.cateringSelections);
   if (selections.length === 0) return '';
 
@@ -63,15 +67,22 @@ function buildCateringMenuBlock(state: EventBuilderState): string {
   return `\n--- *Catering Menu* ---\n${menuBlocks}\n`;
 }
 
-export function getWhatsAppShareUrl(quoteId: string, state: EventBuilderState, phone: string = '918095408404'): string {
+export function getWhatsAppShareUrl(
+  quoteId: string,
+  state: EventBuilderState,
+  phone: string = '918095408404',
+  pdfUrl?: string | null
+): string {
   const requestedExtras = getRequestedExtraLines(state);
+  const pdfLine = pdfUrl ? `\n*Event Summary PDF:* ${pdfUrl}` : '';
+  const annTypeLine = state.eventDetails.anniversaryType ? `\n*Anniversary Type:* ${state.eventDetails.anniversaryType}` : '';
   const message = `
 Namaste! I built a Custom Event Package on *SID Events*.
 
-*Quote Reference:* #${quoteId}
-*Guest Count:* ${state.eventDetails.guestCount} Guests
+*Quote Reference:* #${quoteId}${annTypeLine}
+*Guest Count:* ${state.eventDetails.guestCount ? `${state.eventDetails.guestCount} Guests` : 'Not specified'}
 ${buildSelectionsBlock(state)}
-${buildCateringMenuBlock(state)}${requestedExtras.length > 0 ? `\n*Pending Approval Requests:* ${requestedExtras.map((l) => l.name).join(', ')}` : ''}
+${buildCateringMenuBlock(state)}${requestedExtras.length > 0 ? `\n*Pending Approval Requests:* ${requestedExtras.map((l) => l.name).join(', ')}` : ''}${pdfLine}
 
 I would like to receive a detailed quote for this package and check date availability. Please guide me with the next steps!
   `.trim();

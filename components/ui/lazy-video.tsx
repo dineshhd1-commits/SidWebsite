@@ -54,6 +54,12 @@ export function LazyVideo({ src, className, style, muted = true, loop = true, pl
       preload="none"
       className={className}
       style={style}
+      controlsList="nodownload noplaybackrate"
+      disablePictureInPicture
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
     />
   );
 }

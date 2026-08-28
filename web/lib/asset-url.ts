@@ -17,5 +17,15 @@ export function toAssetUrl(localPath: string): string {
   if (process.env.NEXT_PUBLIC_USE_SUPABASE_ASSETS !== 'true') return localPath;
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!base) return localPath;
-  return `${base}/storage/v1/object/public/${SITE_ASSETS_BUCKET}${localPath}`;
+  // Many filenames in /public contain spaces, parentheses, and commas (e.g.
+  // "Haldi decortion  (9).jpg", "ChatGPT Image Jul 28, 2026, 04_57_21 PM.jpg")
+  // - each path segment must be percent-encoded or the resulting URL is
+  // invalid and both the browser and next/image's optimizer reject it with
+  // a 400. encodeURIComponent per-segment (not the whole path, which would
+  // also encode the "/" separators).
+  const encodedPath = localPath
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  return `${base}/storage/v1/object/public/${SITE_ASSETS_BUCKET}${encodedPath}`;
 }

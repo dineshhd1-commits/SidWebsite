@@ -5,7 +5,11 @@ import Image from 'next/image';
 import { Check, ZoomIn, ChevronDown } from 'lucide-react';
 import { CatalogItem } from '@/lib/types/catalog';
 import { QuantityStepper } from '@/components/builder/QuantityStepper';
-import { getDecorationPhotosForItem, getWatermarkedDecorationSrc } from '@/lib/data/decoration-inspiration';
+import {
+  getDecorationPhotosForItem,
+  getWatermarkedDecorationSrc,
+  getMaxDecorationSelections,
+} from '@/lib/data/decoration-inspiration';
 import { SharedImageLightbox } from '@/components/ui/shared-image-lightbox';
 
 export interface CatalogChecklistRowProps {
@@ -39,63 +43,100 @@ export function CatalogChecklistRow({
 }: CatalogChecklistRowProps) {
   const isDecoration = item.categoryKey === 'decoration';
   const isStepper = item.quantityMode === 'stepper';
-  const photos = isDecoration && isExpanded ? getDecorationPhotosForItem(item) : [];
+  const photos = isDecoration ? getDecorationPhotosForItem(item) : [];
+  const hasDropdown = isDecoration && photos.length > 0;
+  const maxSelections = isDecoration ? getMaxDecorationSelections(item) : 1;
+
+  // Selected images parsed from comma-separated string
+  const selectedUrls = selectedImageUrl
+    ? selectedImageUrl
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isSelected) {
+      onRemove();
+    } else {
+      if (hasDropdown) {
+        if (!isExpanded) onToggleExpand();
+      } else {
+        onSelectNonDecoration();
+      }
+    }
+  };
 
   const handleRowClick = () => {
-    if (!isDecoration) {
+    if (hasDropdown) {
+      // Toggling the row expands or collapses the photo gallery without losing selections
+      onToggleExpand();
+    } else {
       if (isStepper && isSelected) return;
       if (isSelected) {
         onRemove();
       } else {
         onSelectNonDecoration();
       }
-      return;
-    }
-
-    // Decoration interaction rule:
-    // If the service is currently selected (meaning an image was chosen):
-    // Clicking the row or checkbox deselects the service and clears the image.
-    if (isSelected) {
-      onRemove();
-    } else {
-      // If not selected: clicking the row expands/collapses the dropdown.
-      // Checkbox remains UNCHECKED until an image is chosen inside the dropdown.
-      onToggleExpand();
     }
   };
 
   return (
-    <div className={`transition-colors border-b border-gold-200/60 last:border-b-0 ${isSelected ? 'bg-gold-50/70' : isExpanded ? 'bg-silk-50/80' : 'hover:bg-gold-50/30'}`}>
+    <div
+      className={`transition-colors border-b border-gold-200/60 last:border-b-0 ${
+        isSelected ? 'bg-gold-50/70' : isExpanded ? 'bg-silk-50/80' : 'hover:bg-gold-50/30'
+      }`}
+    >
       <div className="flex items-center gap-3 sm:gap-4 px-4 py-3.5">
+        {/* Checkbox Button */}
+        <button
+          type="button"
+          onClick={handleCheckboxClick}
+          className="shrink-0 p-1 -m-1 cursor-pointer select-none group focus:outline-none"
+          title={isSelected ? 'Click to deselect service' : 'Click to select service'}
+          aria-label={isSelected ? `Deselect ${item.name}` : `Select ${item.name}`}
+        >
+          <span
+            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+              isSelected ? 'bg-maroon-800 border-maroon-800 shadow-xs' : 'border-gold-400 bg-white group-hover:border-gold-600'
+            }`}
+          >
+            {isSelected && <Check className="w-3.5 h-3.5 text-gold-200" />}
+          </span>
+        </button>
+
+        {/* Row Content (Toggles expand/collapse) */}
         <button
           type="button"
           onClick={handleRowClick}
           className="flex-1 min-w-0 flex items-center gap-3.5 text-left cursor-pointer select-none"
         >
-          {/* Checkbox: Checked ONLY if an image/item is actually selected */}
-          <span
-            className={`shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
-              isSelected ? 'bg-maroon-800 border-maroon-800 shadow-xs' : 'border-gold-400 bg-white'
-            }`}
-          >
-            {isSelected && <Check className="w-3.5 h-3.5 text-gold-200" />}
-          </span>
-
           <span className="flex-1 min-w-0">
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 flex-wrap">
               <span className="block text-sm font-bold text-maroon-900">{item.name}</span>
-              {isDecoration && (
+              {hasDropdown && (
                 <span className="text-[10px] uppercase font-bold text-gold-700/80 tracking-wider">
-                  {isSelected ? '(1 Design Chosen)' : '(Select 1 Design)'}
+                  {maxSelections === 2
+                    ? selectedUrls.length === 2
+                      ? '(2 of 2 Designs Chosen)'
+                      : selectedUrls.length === 1
+                      ? '(1 of 2 Designs Chosen)'
+                      : '(Select up to 2 Designs)'
+                    : isSelected
+                    ? '(1 Design Chosen)'
+                    : '(Select 1 Design)'}
                 </span>
               )}
             </span>
             <span className="block text-xs text-maroon-700/70 line-clamp-1">{item.description}</span>
           </span>
 
-          {isDecoration && (
+          {hasDropdown && (
             <span className="shrink-0 p-1 text-gold-600 hover:text-maroon-900 transition-transform">
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+              />
             </span>
           )}
         </button>
@@ -111,36 +152,47 @@ export function CatalogChecklistRow({
       </div>
 
       {/* Expanded Decoration Images Dropdown */}
-      {isDecoration && isExpanded && photos.length > 0 && (
+      {hasDropdown && isExpanded && photos.length > 0 && (
         <div className="px-4 pb-4 pt-2 bg-gold-50/90 border-t border-gold-200/50 space-y-2.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-gold-200/60 pb-2">
             <div>
               <p className="text-xs font-bold text-maroon-950 uppercase tracking-wider">
-                {item.name} &mdash; Choose Exactly 1 Design ({photos.length} Designs Available)
+                {item.name} &mdash; Choose {maxSelections === 2 ? 'Up to 2 Designs' : 'Exactly 1 Design'} ({photos.length} Designs Available)
               </p>
               <p className="text-[11px] text-maroon-700/85 font-medium">
-                {isSelected
+                {maxSelections === 2
+                  ? selectedUrls.length === 2
+                    ? '2 designs selected. Click a selected photo to remove it or replace.'
+                    : selectedUrls.length === 1
+                    ? '1 design selected. Click another design to select 2, or click the chosen photo to remove it.'
+                    : 'Click any design to select it. You can pick up to 2 designs for this stage setup.'
+                  : isSelected
                   ? 'Active design selected. Click the selected photo again to deselect or choose another.'
                   : 'Click any design to select it for this service. Service checkbox will activate.'}
               </p>
             </div>
-            {isSelected && (
-              <span className="self-start sm:self-auto text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300 inline-flex items-center gap-1 shrink-0">
-                <Check className="w-3 h-3" /> 1 Design Selected
-              </span>
-            )}
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              {isSelected && (
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300 inline-flex items-center gap-1 shrink-0">
+                  <Check className="w-3 h-3" />
+                  {selectedUrls.length > 1 ? `${selectedUrls.length} Designs Selected` : '1 Design Selected'}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={onToggleExpand}
+                className="text-[11px] font-bold text-maroon-900 hover:text-maroon-950 bg-gold-200/80 hover:bg-gold-300 px-2.5 py-0.5 rounded-md border border-gold-400/60 transition-colors cursor-pointer"
+              >
+                Done (Close)
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {photos.map((photo, idx) => {
-              const photoSrc = getWatermarkedDecorationSrc(photo.src);
-              // Matches exact URL or un-watermarked prefix fallback
-              const isPhotoSelected =
-                isSelected &&
-                (selectedImageUrl === photoSrc ||
-                  selectedImageUrl === photo.src ||
-                  (selectedImageUrl && photoSrc.endsWith(selectedImageUrl.replace('/decotion-watermarked/', '/decotion/'))));
-              const isOtherPhotoSelected = isSelected && !isPhotoSelected;
+              const photoSrc = photo.src;
+              const isPhotoSelected = selectedUrls.includes(photoSrc);
+              const isOtherPhotoDisabled = !isPhotoSelected && selectedUrls.length >= maxSelections;
 
               return (
                 <div
@@ -148,29 +200,39 @@ export function CatalogChecklistRow({
                   className={`group relative rounded-xl overflow-hidden transition-all flex flex-col bg-black/10 border ${
                     isPhotoSelected
                       ? 'border-2 border-gold-500 ring-2 ring-gold-400/80 shadow-md bg-gold-100/30'
-                      : isOtherPhotoSelected
+                      : isOtherPhotoDisabled
                       ? 'opacity-30 grayscale pointer-events-none cursor-not-allowed border-gray-300'
                       : 'border-gold-300 hover:border-gold-500 hover:shadow-md cursor-pointer'
                   }`}
                 >
                   <button
                     type="button"
-                    disabled={isOtherPhotoSelected}
+                    disabled={isOtherPhotoDisabled}
                     onClick={() => {
                       if (isPhotoSelected) {
-                        onDeselectImage();
+                        const remaining = selectedUrls.filter((u) => u !== photoSrc);
+                        if (remaining.length === 0) {
+                          onDeselectImage();
+                        } else {
+                          onSelectImage(remaining.join(','));
+                        }
                       } else {
-                        onSelectImage(photoSrc);
+                        if (maxSelections === 1) {
+                          onSelectImage(photoSrc);
+                        } else {
+                          const nextUrls = [...selectedUrls, photoSrc];
+                          onSelectImage(nextUrls.join(','));
+                        }
                       }
                     }}
                     className={`relative h-28 sm:h-32 w-full text-left cursor-pointer ${
-                      isOtherPhotoSelected ? 'cursor-not-allowed' : ''
+                      isOtherPhotoDisabled ? 'cursor-not-allowed' : ''
                     }`}
                     title={
                       isPhotoSelected
                         ? 'Click to deselect this design'
-                        : isOtherPhotoSelected
-                        ? 'Deselect the active design first to choose another'
+                        : isOtherPhotoDisabled
+                        ? `Maximum ${maxSelections} designs selected. Deselect one first to choose another`
                         : `Click to select ${photo.categoryLabel || item.name} (Design #${idx + 1})`
                     }
                   >
@@ -180,7 +242,7 @@ export function CatalogChecklistRow({
                       fill
                       sizes="(min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
                       className={`object-cover transition-transform duration-300 ${
-                        !isOtherPhotoSelected ? 'group-hover:scale-105' : ''
+                        !isOtherPhotoDisabled ? 'group-hover:scale-105' : ''
                       }`}
                       draggable={false}
                       onContextMenu={(e) => e.preventDefault()}
@@ -190,13 +252,16 @@ export function CatalogChecklistRow({
                     {isPhotoSelected && (
                       <div className="absolute top-2 left-2 z-10">
                         <span className="px-2 py-0.5 rounded-full bg-maroon-900/90 text-gold-300 text-[10px] font-bold uppercase tracking-wider border border-gold-400 shadow-md flex items-center gap-1 backdrop-blur-xs">
-                          <Check className="w-3 h-3 text-gold-300" /> Selected
+                          <Check className="w-3 h-3 text-gold-300" />
+                          {maxSelections > 1 && selectedUrls.length > 1
+                            ? `Design #${selectedUrls.indexOf(photoSrc) + 1}`
+                            : 'Selected'}
                         </span>
                       </div>
                     )}
 
                     {/* Hover Overlay */}
-                    {!isOtherPhotoSelected && !isPhotoSelected && (
+                    {!isOtherPhotoDisabled && !isPhotoSelected && (
                       <div className="absolute inset-0 bg-maroon-950/20 group-hover:bg-maroon-950/40 transition-colors flex items-center justify-center">
                         <span className="px-2.5 py-1 rounded-full bg-maroon-950/90 text-gold-300 text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity border border-gold-400/50 shadow-md">
                           Click to Select
@@ -212,7 +277,7 @@ export function CatalogChecklistRow({
                       e.stopPropagation();
                       onOpenLightbox &&
                         onOpenLightbox(
-                          photos.map((p) => getWatermarkedDecorationSrc(p.src)),
+                          photos.map((p) => p.src),
                           idx,
                           `${item.name} - Design #${idx + 1}`
                         );
@@ -247,7 +312,7 @@ export function CatalogChecklist({
   items: CatalogItem[];
   /** Which catalog item ids currently have a cart line. */
   selectedIds: Set<string>;
-  /** Map of item ID -> single selected imageUrl in cart */
+  /** Map of item ID -> single or comma-separated selected imageUrl in cart */
   selectedImageUrls?: Record<string, string>;
   /** Quantity for stepper-mode items - looked up by item id. */
   quantities: Record<string, number>;
@@ -301,12 +366,12 @@ export function CatalogChecklist({
               quantity={quantities[item.id] ?? 1}
               onToggleExpand={() => setActiveId(isExpanded ? null : item.id)}
               onSelectImage={(imageUrl) => {
-                // When an image is selected, add to cart with this exact image and mark active
+                // When images are selected, add/update in cart with imageUrl (single or comma-separated)
                 onAddToCart({ ...item, imageUrl });
                 setActiveId(item.id);
               }}
               onDeselectImage={() => {
-                // When the active image is clicked again, deselect it and remove from cart
+                // When all images are deselected, remove from cart
                 onRemoveFromCart(item.id);
               }}
               onSelectNonDecoration={() => {

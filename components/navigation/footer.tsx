@@ -62,7 +62,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-xs text-silk-200/80 font-sans">
               <li><Link href="/packages" className="hover:text-gold-300 transition-colors">Events We Plan</Link></li>
               <li><Link href="/custom-builder" className="hover:text-gold-300 transition-colors">Custom Package Builder</Link></li>
-              <li><Link href="/gallery" className="hover:text-gold-300 transition-colors">Portfolio & Gallery</Link></li>
+              <li><Link href="/gallery" className="hover:text-gold-300 transition-colors">Gallery</Link></li>
               <li><Link href="/testimonials" className="hover:text-gold-300 transition-colors">Client Reviews</Link></li>
               <li><Link href="/about" className="hover:text-gold-300 transition-colors">About Us</Link></li>
               <li><Link href="/terms-and-conditions" className="hover:text-gold-300 transition-colors">Terms &amp; Conditions</Link></li>
@@ -97,7 +97,7 @@ export const Footer: React.FC = () => {
             </ul>
 
             {/* Embedded Interactive Google Map */}
-            <div className="w-full h-36 rounded-xl overflow-hidden border border-gold-400/40 shadow-md relative">
+            <div className="w-full h-36 rounded-xl overflow-hidden border border-gold-400/40 shadow-md relative group">
               <iframe
                 title="SID Events Google Map Location"
                 src={`https://maps.google.com/maps?q=${encodeURIComponent('S I D Events, 3434/1B1, 1st main, 6th Cross Road, MCC B Block, Davangere, Karnataka 577004')}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
@@ -108,6 +108,14 @@ export const Footer: React.FC = () => {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
+              <a
+                href={`https://maps.google.com/?q=${encodeURIComponent(SITE.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute bottom-1 right-1 bg-maroon-950/90 text-gold-300 text-[10px] font-bold px-2 py-0.5 rounded border border-gold-400/50 hover:bg-gold-500 hover:text-maroon-950 transition-colors"
+              >
+                Open in Maps ↗
+              </a>
             </div>
           </div>
         </div>
@@ -130,7 +138,6 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-6">
             <Link href="#" className="hover:underline">Privacy Policy</Link>
             <Link href="/terms-and-conditions" className="hover:underline">Terms &amp; Conditions</Link>
-            <Link href="#" className="hover:underline">Cancellation Policy</Link>
           </div>
         </div>
       </div>

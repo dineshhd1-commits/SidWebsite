@@ -28,6 +28,7 @@ import {
   PenTool,
   PartyPopper,
   Phone,
+  Sparkles,
   ChevronLeft,
   ChevronRight,
   Quote,
@@ -100,14 +101,7 @@ export default function HomePage() {
       img: '/photography-videography-collage.jpg',
       badge: 'PHOTOGRAPHY',
       href: '/gallery',
-      cta: 'Explore Portfolio',
-      galleryImages: [
-        '/photography-videography-collage.jpg',
-        '/sid-party9.jpeg',
-        '/sid-party10.jpeg',
-        '/sid-party11.jpeg',
-        '/sid-party12.jpeg',
-      ],
+      cta: 'Explore Gallery',
     },
     {
       id: 'decoration',
@@ -116,15 +110,8 @@ export default function HomePage() {
       desc: 'Stage, manthapa, entrance and home decor in Silver, Gold and Platinum tiers with floral and lighting design.',
       img: '/sid-party29.jpeg',
       badge: 'DECORATION',
-      href: '/custom-builder',
-      cta: 'Customize Item',
-      galleryImages: [
-        '/sid-party29.jpeg',
-        '/sid-party25.jpeg',
-        '/sid-party22.jpeg',
-        '/sid-party32.jpeg',
-        '/sid-party15.jpeg',
-      ],
+      href: '/gallery',
+      cta: 'Explore Gallery',
     },
     {
       id: 'catering',
@@ -133,14 +120,8 @@ export default function HomePage() {
       desc: 'Full South Indian menus for breakfast, lunch and dinner - from welcome drinks and starters to desserts and paan.',
       img: '/onam-sadhya-lunch-menu-1.webp',
       badge: 'CATERING',
-      href: '/custom-builder',
-      cta: 'Customize Item',
-      galleryImages: [
-        '/onam-sadhya-lunch-menu-1.webp',
-        '/sid-party19.jpeg',
-        '/sid-party20.jpeg',
-        'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80',
-      ],
+      href: '/gallery',
+      cta: 'Explore Gallery',
     },
   ];
 
@@ -179,7 +160,7 @@ export default function HomePage() {
       title: 'Live Auspicious Nadaswaram & Thavil Recital',
       category: 'rituals',
       categoryLabel: 'Rituals',
-      url: 'https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?auto=format&fit=crop&w=1200&q=80',
+      url: '/ChatGPT Image Jul 28, 2026, 04_57_21 PM.jpg',
     },
   ];
 
@@ -303,22 +284,12 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pillars.map((p, idx) => (
-            <div
+            <Link
               key={idx}
-              className="group flex flex-col justify-between bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left border border-gold-200/50"
+              href="/gallery"
+              className="group flex flex-col justify-between bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left border border-gold-200/50 cursor-pointer"
             >
-              <div
-                onClick={() =>
-                  setActiveLightbox({
-                    images: p.galleryImages,
-                    index: 0,
-                    title: `${p.title} Showcase`,
-                    subtitle: 'Muhurtham Service',
-                  })
-                }
-                className="relative h-96 sm:h-[440px] lg:h-[500px] w-full overflow-hidden cursor-pointer"
-                title="Tap to preview gallery"
-              >
+              <div className="relative h-96 sm:h-[440px] lg:h-[500px] w-full overflow-hidden">
                 <Image
                   src={p.img}
                   alt={p.title}
@@ -332,12 +303,12 @@ export default function HomePage() {
                 </span>
 
                 <div className="absolute top-4 right-4 bg-maroon-950/80 text-gold-300 p-2 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-gold-400/30">
-                  <ZoomIn className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" />
                 </div>
 
                 <div className="absolute bottom-4 left-4 right-4 text-silk-50">
-                  <span className="text-[10px] font-semibold text-gold-300 bg-maroon-950/80 px-2 py-0.5 rounded border border-gold-400/30 inline-flex items-center gap-1">
-                    <ZoomIn className="w-3 h-3" /> Preview {p.galleryImages.length} Photos
+                  <span className="text-[10px] font-semibold text-gold-300 bg-maroon-950/80 px-2.5 py-1 rounded-full border border-gold-400/30 inline-flex items-center gap-1.5 backdrop-blur-sm">
+                    <Sparkles className="w-3 h-3 text-gold-400" /> View in Gallery ↗
                   </span>
                 </div>
               </div>
@@ -350,30 +321,12 @@ export default function HomePage() {
                 <p className="text-xs text-maroon-800/80 leading-relaxed font-sans">{p.desc}</p>
 
                 <div className="pt-3 flex items-center justify-between gap-3">
-                  <Link
-                    href={p.href}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-maroon-800 hover:text-gold-600 transition-colors"
-                  >
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-maroon-800 group-hover:text-gold-600 transition-colors">
                     {p.cta} <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setActiveLightbox({
-                        images: p.galleryImages,
-                        index: 0,
-                        title: `${p.title} Showcase`,
-                        subtitle: 'Muhurtham Service',
-                      })
-                    }
-                    className="text-[11px] font-bold text-gold-700 hover:text-maroon-950 underline cursor-pointer"
-                  >
-                    View Photos
-                  </button>
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -414,17 +367,10 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
           {filteredGallery.map((item, i) => (
-            <div
+            <Link
               key={i}
-              onClick={() =>
-                setActiveLightbox({
-                  images: filteredGallery.map((g) => g.url),
-                  index: i,
-                  title: item.title,
-                  subtitle: item.categoryLabel || item.category,
-                })
-              }
-              className="group relative h-96 sm:h-[420px] rounded-3xl overflow-hidden shadow-lg cursor-pointer border border-gold-400/30"
+              href="/gallery"
+              className="group relative h-96 sm:h-[420px] rounded-3xl overflow-hidden shadow-lg cursor-pointer border border-gold-400/30 block"
             >
               <Image
                 src={item.url}
@@ -436,16 +382,16 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-maroon-950/60 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity" />
 
               <div className="absolute top-4 right-4 bg-maroon-950/80 text-gold-300 p-2 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-gold-400/30">
-                <ZoomIn className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5" />
               </div>
 
               <div className="absolute bottom-4 left-4 right-4 text-silk-50">
                 <span className="text-[10px] uppercase font-bold text-gold-300 bg-maroon-950/80 px-2.5 py-0.5 rounded border border-gold-400/30">
                   {item.categoryLabel || (item.category === 'manthapa' ? 'Manthapa' : item.category)}
                 </span>
-                <h4 className="font-playfair text-lg font-bold text-silk-50 mt-1">{item.title}</h4>
+                <h4 className="font-playfair text-lg font-bold text-silk-50 mt-1 group-hover:text-gold-300 transition-colors">{item.title}</h4>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

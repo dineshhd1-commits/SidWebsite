@@ -1,14 +1,9 @@
 import React from 'react';
 import { Document, Page, View, Text, Image, StyleSheet, pdf } from '@react-pdf/renderer';
 import { EnquiryDetails, EnquirySelectionLine, formatDate, formatDateTime } from './enquiry';
-import { getWatermarkedDecorationSrc } from '../data/decoration-inspiration';
 import { SITE } from '../site-config';
 
-/** Human labels for the catalog groupIds that show up on decoration and
- * photography cart lines - only used to sub-group a section in the PDF
- * (e.g. "Home Decoration" vs "Venue Decoration", "Pre-Wedding Shoot" vs
- * "Wedding Hall"). Anything not listed here just falls back to its raw
- * groupId, so a new catalog group still renders instead of disappearing. */
+/** Human labels for catalog groupIds */
 const GROUP_LABELS: Record<string, string> = {
   'dec-home': 'House Decoration',
   'dec-venue': 'Venue Decoration',
@@ -26,13 +21,16 @@ const GROUP_LABELS: Record<string, string> = {
   'photo-services': 'Photography & Videography',
 };
 
-/** Decoration photo-gallery cart lines are named "{Category} - Design #{N}"
- * (see decorationPhotoToCartItem) - this recovers just the category part so
- * gallery-picked photos group the same way the client's own category
- * structure does (Stage Decoration, Garlands, Bridal Entry Ideas, ...). */
 function decorationPhotoCategory(name: string): string {
   const idx = name.lastIndexOf(' - Design #');
   return idx === -1 ? name : name.slice(0, idx);
+}
+
+/** Extracts individual image URLs safely from a string without splitting Base64 data URIs on commas. */
+export function extractPhotoUrls(raw: string | undefined | null): string[] {
+  if (!raw) return [];
+  if (raw.startsWith('data:')) return [raw];
+  return raw.split(',').map((u) => u.trim()).filter(Boolean);
 }
 
 interface DecorationGroup {
@@ -43,7 +41,7 @@ interface DecorationGroup {
 
 /** Splits the Decoration section into per-category groups, keeping photo-
  * backed picks separate from text-only checklist items so the PDF renders
- * all decoration images cleanly and gracefully handles items without images. */
+ * all decoration images cleanly. */
 function groupDecorationLines(lines: EnquirySelectionLine[]): DecorationGroup[] {
   const groups = new Map<string, DecorationGroup>();
   for (const line of lines) {
@@ -53,8 +51,22 @@ function groupDecorationLines(lines: EnquirySelectionLine[]): DecorationGroup[] 
       : GROUP_LABELS[line.groupId || ''] || line.groupId || 'Decoration';
     if (!groups.has(label)) groups.set(label, { label, photos: [], textOnly: [] });
     const group = groups.get(label)!;
-    if (isPhotoPick) group.photos.push(line);
-    else group.textOnly.push(line);
+    if (isPhotoPick) {
+      const urls = extractPhotoUrls(line.imageUrl);
+      if (urls.length > 1) {
+        urls.forEach((u, uIdx) => {
+          group.photos.push({
+            ...line,
+            name: line.name.includes('(Design #') ? line.name : `${line.name} (Design #${uIdx + 1})`,
+            imageUrl: u,
+          });
+        });
+      } else {
+        group.photos.push(line);
+      }
+    } else {
+      group.textOnly.push(line);
+    }
   }
   return Array.from(groups.values());
 }
@@ -65,11 +77,6 @@ interface PhotographyGroup {
   items: EnquirySelectionLine[];
 }
 
-/** Pre-Wedding Shoot's duration pick and its service checklist are two
- * separate catalog groups in the data model but one logical section to a
- * reader - merged here into a single "Pre-Wedding Shoot" block with
- * "Duration: 1 Day" as its own line, matching how it's actually presented
- * everywhere else on the site. */
 function groupPhotographyLines(lines: EnquirySelectionLine[]): PhotographyGroup[] {
   const groups = new Map<string, PhotographyGroup>();
   const order: string[] = [];
@@ -90,14 +97,11 @@ function groupPhotographyLines(lines: EnquirySelectionLine[]): PhotographyGroup[
   return order.map((key) => groups.get(key)!);
 }
 
-/** De-duplicates by name (case-insensitive) within a list - a safety net so
- * a stray double-add anywhere upstream never shows the owner the same
- * service twice in the same section. */
 function dedupeByName(lines: EnquirySelectionLine[]): EnquirySelectionLine[] {
   const seen = new Set<string>();
   const result: EnquirySelectionLine[] = [];
   for (const line of lines) {
-    const key = line.name.trim().toLowerCase();
+    const key = `${line.name.trim().toLowerCase()}-${(line.imageUrl || '').slice(0, 40)}`;
     if (seen.has(key)) continue;
     seen.add(key);
     result.push(line);
@@ -106,87 +110,87 @@ function dedupeByName(lines: EnquirySelectionLine[]): EnquirySelectionLine[] {
 }
 
 const s = StyleSheet.create({
-  page: { paddingTop: 70, paddingBottom: 50, paddingHorizontal: 36, fontSize: 10, fontFamily: 'Helvetica', color: '#3a1420' },
+  page: { paddingTop: 60, paddingBottom: 45, paddingHorizontal: 32, fontSize: 9.5, fontFamily: 'Helvetica', color: '#3a1420' },
   fixedHeader: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 46,
-    paddingHorizontal: 36,
-    paddingTop: 14,
+    height: 42,
+    paddingHorizontal: 32,
+    paddingTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 2,
+    borderBottomWidth: 1.5,
     borderBottomColor: '#d4af37',
   },
-  fixedHeaderBrand: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logo: { width: 24, height: 24, borderRadius: 12 },
-  brandName: { fontSize: 12, fontWeight: 700, color: '#5c0a18' },
+  fixedHeaderBrand: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  logo: { width: 22, height: 22, borderRadius: 11 },
+  brandName: { fontSize: 11, fontWeight: 700, color: '#5c0a18' },
   fixedHeaderRight: { fontSize: 8, color: '#7a5540' },
   fixedFooter: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 34,
-    paddingHorizontal: 36,
-    paddingTop: 8,
+    height: 30,
+    paddingHorizontal: 32,
+    paddingTop: 6,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: '#e6d5b8',
   },
-  footerText: { fontSize: 8, color: '#8a6b52' },
+  footerText: { fontSize: 7.5, color: '#8a6b52' },
 
-  titleBlock: { alignItems: 'center', marginBottom: 18 },
-  bigLogo: { width: 60, height: 60, borderRadius: 30, marginBottom: 8 },
-  brandNameBig: { fontSize: 18, fontWeight: 700, color: '#5c0a18', letterSpacing: 1 },
-  docTitle: { fontSize: 13, fontWeight: 700, color: '#8a6d1f', marginTop: 6, letterSpacing: 0.5, textTransform: 'uppercase' },
-  refRow: { flexDirection: 'row', justifyContent: 'center', gap: 18, marginTop: 8 },
-  refText: { fontSize: 9, color: '#7a5540' },
+  titleBlock: { alignItems: 'center', marginBottom: 14 },
+  bigLogo: { width: 48, height: 48, borderRadius: 24, marginBottom: 6 },
+  brandNameBig: { fontSize: 16, fontWeight: 700, color: '#5c0a18', letterSpacing: 1 },
+  docTitle: { fontSize: 12, fontWeight: 700, color: '#8a6d1f', marginTop: 4, letterSpacing: 0.5, textTransform: 'uppercase' },
+  refRow: { flexDirection: 'row', justifyContent: 'center', gap: 14, marginTop: 6 },
+  refText: { fontSize: 8.5, color: '#7a5540' },
 
-  section: { marginBottom: 16 },
+  section: { marginBottom: 14 },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: 700,
     color: '#5c0a18',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 8,
-    paddingBottom: 4,
+    marginBottom: 6,
+    paddingBottom: 3,
     borderBottomWidth: 1,
     borderBottomColor: '#d4af37',
   },
-  subheading: { fontSize: 10, fontWeight: 700, color: '#8a6d1f', marginTop: 8, marginBottom: 5 },
-  row: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 3 },
-  label: { width: 110, color: '#7a5540', fontSize: 9 },
-  value: { flex: 1, fontSize: 9.5, fontWeight: 700, color: '#3a1420' },
-  bullet: { flexDirection: 'row', marginBottom: 2.5 },
-  bulletDot: { width: 10, fontSize: 9.5, color: '#8a6d1f' },
-  bulletText: { fontSize: 9.5, flex: 1, color: '#3a1420' },
+  subheading: { fontSize: 9.5, fontWeight: 700, color: '#8a6d1f', marginTop: 6, marginBottom: 4 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 2.5 },
+  label: { width: 105, color: '#7a5540', fontSize: 8.5 },
+  value: { flex: 1, fontSize: 9, fontWeight: 700, color: '#3a1420' },
+  bullet: { flexDirection: 'row', marginBottom: 2 },
+  bulletDot: { width: 8, fontSize: 9, color: '#8a6d1f' },
+  bulletText: { fontSize: 9, flex: 1, color: '#3a1420' },
 
-  photoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  photoCard: { width: 150, marginBottom: 10 },
-  photoImage: { width: 150, height: 150, objectFit: 'contain', backgroundColor: '#faf2df', borderRadius: 6, borderWidth: 1, borderColor: '#e6d5b8' },
-  photoCaption: { fontSize: 8.5, fontWeight: 700, marginTop: 3, color: '#3a1420', textAlign: 'center' },
+  photoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
+  photoCard: { width: 160, marginBottom: 8, backgroundColor: '#ffffff', borderRadius: 6, padding: 5, borderWidth: 1, borderColor: '#e6d5b8' },
+  photoImage: { width: 148, height: 110, objectFit: 'cover', borderRadius: 4, alignSelf: 'center', backgroundColor: '#f5f0e6' },
+  photoCaption: { fontSize: 8, fontWeight: 700, marginTop: 4, color: '#5c0a18', textAlign: 'center' },
 
   totalBox: {
-    marginTop: 10,
+    marginTop: 8,
     backgroundColor: '#5c0a18',
     borderRadius: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
     alignItems: 'center',
   },
-  totalLabel: { fontSize: 9, color: '#e8c979', textTransform: 'uppercase', letterSpacing: 1 },
-  totalAmount: { fontSize: 20, color: '#f7e8b0', fontWeight: 700, marginTop: 4 },
-  totalNote: { fontSize: 8, color: '#e8c979', marginTop: 4 },
+  totalLabel: { fontSize: 8.5, color: '#e8c979', textTransform: 'uppercase', letterSpacing: 1 },
+  totalAmount: { fontSize: 18, color: '#f7e8b0', fontWeight: 700, marginTop: 3 },
+  totalNote: { fontSize: 7.5, color: '#e8c979', marginTop: 3 },
 
-  refBox: { marginTop: 14, borderWidth: 1, borderColor: '#d4af37', borderRadius: 8, padding: 12 },
-  statusBadge: { fontSize: 8, color: '#5c0a18', backgroundColor: '#f7e8b0', alignSelf: 'flex-start', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4 },
-  contactNote: { fontSize: 9, marginTop: 10, fontStyle: 'italic', color: '#5c0a18' },
+  refBox: { marginTop: 10, borderWidth: 1, borderColor: '#d4af37', borderRadius: 6, padding: 10 },
+  statusBadge: { fontSize: 7.5, color: '#5c0a18', backgroundColor: '#f7e8b0', alignSelf: 'flex-start', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 3, marginTop: 3 },
+  contactNote: { fontSize: 8.5, marginTop: 6, fontStyle: 'italic', color: '#5c0a18' },
 });
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -218,15 +222,10 @@ interface EnquiryPdfDocumentProps {
   details: EnquiryDetails;
   refCode: string;
   submittedAtIso: string;
+  logoDataUri?: string;
 }
 
-/** The full, structured Event Enquiry PDF - a single <Page> whose content
- * react-pdf automatically flows across as many physical pages as needed
- * (fixed header/footer repeat on every one via the `fixed` prop), built
- * entirely from the same EnquiryDetails already used for the WhatsApp
- * message and the admin CRM record, so nothing here can drift out of sync
- * with what the customer actually selected. */
-export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: EnquiryPdfDocumentProps) {
+export function EnquiryPdfDocument({ details, refCode, submittedAtIso, logoDataUri }: EnquiryPdfDocumentProps) {
   const decorationSection = details.sections.find((sec) => sec.categoryKey === 'decoration');
   const photographySection = details.sections.find((sec) => sec.categoryKey === 'photography');
   const otherSections = details.sections.filter((sec) => sec.categoryKey !== 'decoration' && sec.categoryKey !== 'photography');
@@ -234,32 +233,29 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
   const decorationGroups = decorationSection ? groupDecorationLines(decorationSection.lines) : [];
   const photographyGroups = photographySection ? groupPhotographyLines(photographySection.lines) : [];
 
+  const logoSrc = logoDataUri || '/logo-circle.png';
+
   return (
     <Document title={`SID Events Enquiry ${refCode}`} author="SID Events">
       <Page size="A4" style={s.page} wrap>
         {/* Repeats on every physical page */}
         <View style={s.fixedHeader} fixed>
           <View style={s.fixedHeaderBrand}>
-            <Image src="/logo-circle.png" style={s.logo} />
+            <Image src={logoSrc} style={s.logo} />
             <Text style={s.brandName}>SID Events</Text>
           </View>
           <Text style={s.fixedHeaderRight}>Ref #{refCode}</Text>
         </View>
-        <Text
-          style={s.footerText}
-          fixed
-          render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
-        />
         <View style={s.fixedFooter} fixed>
-          <Text style={s.footerText}>{SITE.name} - {SITE.phoneDisplay}</Text>
+          <Text style={s.footerText}>{SITE.name} &bull; {SITE.phoneDisplay}</Text>
           <Text style={s.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
 
-        {/* Title block - once, at the top of the document */}
+        {/* Title block */}
         <View style={s.titleBlock}>
-          <Image src="/logo-circle.png" style={s.bigLogo} />
+          <Image src={logoSrc} style={s.bigLogo} />
           <Text style={s.brandNameBig}>SID EVENTS</Text>
-          <Text style={s.docTitle}>Event Enquiry / Event Requirement Summary</Text>
+          <Text style={s.docTitle}>Event Requirement &amp; Quotation Summary</Text>
           <View style={s.refRow}>
             <Text style={s.refText}>Reference: #{refCode}</Text>
             <Text style={s.refText}>{formatDateTime(submittedAtIso)}</Text>
@@ -285,22 +281,26 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
           {details.specialRequirements && <Field label="Notes" value={details.specialRequirements} />}
         </View>
 
-        {/* Selected Decoration */}
+        {/* Selected Decoration - Displays full photos with captions */}
         {decorationGroups.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Selected Decoration</Text>
+            <Text style={s.sectionTitle}>Selected Decoration Designs</Text>
             {decorationGroups.map((group) => (
-              <View key={group.label} style={{ marginBottom: 10 }}>
+              <View key={group.label} style={{ marginBottom: 8 }}>
                 <Text style={s.subheading}>{group.label}</Text>
                 {group.textOnly.length > 0 && <BulletList lines={group.textOnly} />}
                 {group.photos.length > 0 && (
                   <View style={s.photoGrid}>
-                    {dedupeByName(group.photos).map((photo, i) => (
-                      <View key={`${photo.name}-${i}`} style={s.photoCard} wrap={false}>
-                        <Image src={getWatermarkedDecorationSrc(photo.imageUrl || '')} style={s.photoImage} />
-                        <Text style={s.photoCaption}>{photo.name}</Text>
-                      </View>
-                    ))}
+                    {dedupeByName(group.photos).map((photo, i) => {
+                      const photoUrl = photo.imageUrl || '';
+                      if (!photoUrl) return null;
+                      return (
+                        <View key={`${photo.name}-${i}`} style={s.photoCard} wrap={false}>
+                          <Image src={photoUrl} style={s.photoImage} />
+                          <Text style={s.photoCaption}>{photo.name}</Text>
+                        </View>
+                      );
+                    })}
                   </View>
                 )}
               </View>
@@ -313,7 +313,7 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
           <View style={s.section} wrap>
             <Text style={s.sectionTitle}>Photography &amp; Videography</Text>
             {photographyGroups.map((group) => (
-              <View key={group.label} style={{ marginBottom: 8 }} wrap={false}>
+              <View key={group.label} style={{ marginBottom: 6 }} wrap={false}>
                 <Text style={s.subheading}>{group.label}</Text>
                 {group.duration && (
                   <View style={s.bullet}>
@@ -327,7 +327,7 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
           </View>
         )}
 
-        {/* Additional Services / Venue / anything else generic */}
+        {/* Additional Services & Other Sections */}
         {otherSections.map((section) => (
           <View key={section.categoryKey} style={s.section} wrap={false}>
             <Text style={s.sectionTitle}>{section.label}</Text>
@@ -335,21 +335,18 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
           </View>
         ))}
 
-        {/* Catering Menu - one block per meal (Morning/Afternoon/Evening),
-            each with its own guest count and category breakdown, exactly as
-            selected - same-named categories in different meals are never
-            merged together here. */}
+        {/* Catering Menu */}
         {details.cateringMenus.length > 0 ? (
           <View style={s.section} wrap>
             <Text style={s.sectionTitle}>Catering Menu</Text>
             {details.cateringMenus.map((menu) => (
-              <View key={menu.menuType} style={{ marginBottom: 12 }} wrap>
-                <Text style={{ fontSize: 10, fontWeight: 700, color: '#5c0a18', marginBottom: 4 }}>
+              <View key={menu.menuType} style={{ marginBottom: 10 }} wrap>
+                <Text style={{ fontSize: 9.5, fontWeight: 700, color: '#5c0a18', marginBottom: 3 }}>
                   {menu.menuLabel.toUpperCase()}
                   {menu.guestCount ? `  ·  Guest Count: ${menu.guestCount}` : ''}
                 </Text>
                 {menu.sections.map((section) => (
-                  <View key={`${menu.menuType}-${section.categoryName}`} style={{ marginBottom: 8, marginLeft: 6 }} wrap={false}>
+                  <View key={`${menu.menuType}-${section.categoryName}`} style={{ marginBottom: 6, marginLeft: 4 }} wrap={false}>
                     <Text style={s.subheading}>{section.categoryName}</Text>
                     <BulletList lines={section.lines} />
                   </View>
@@ -375,7 +372,7 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
         <View style={s.totalBox} wrap={false}>
           <Text style={s.totalLabel}>Estimated Total</Text>
           <Text style={s.totalAmount}>{'₹'}{details.estimatedTotal.toLocaleString('en-IN')}</Text>
-          <Text style={s.totalNote}>Final amount to be confirmed after enquiry.</Text>
+          <Text style={s.totalNote}>Final customized quote will be provided upon review.</Text>
         </View>
 
         {/* Reference / status footer block */}
@@ -383,18 +380,192 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso }: Enquiry
           <Field label="Reference Code" value={`#${refCode}`} />
           <Field label="Submitted" value={formatDateTime(submittedAtIso)} />
           <Text style={s.statusBadge}>NEW ENQUIRY</Text>
-          <Text style={s.contactNote}>Please contact the customer to confirm availability and finalize the booking.</Text>
+          <Text style={s.contactNote}>Thank you for choosing SID Events! Our consultants will contact you shortly.</Text>
         </View>
       </Page>
     </Document>
   );
 }
 
-/** Renders the PDF to a Blob, entirely client-side (react-pdf's renderer is
- * isomorphic) - the customer's own browser already has the watermarked
- * decoration images it just rendered in the gallery, so this doesn't need a
- * server round trip or a serverless function fetching images itself. */
-export async function generateEnquiryPdfBlob(details: EnquiryDetails, refCode: string, submittedAtIso: string): Promise<Blob> {
-  const instance = pdf(<EnquiryPdfDocument details={details} refCode={refCode} submittedAtIso={submittedAtIso} />);
+// In-memory cache for fast reuse across multiple calls
+const pdfImageCache = new Map<string, string>();
+const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAA';
+
+function blobToDataUri(blob: Blob): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string' && reader.result.startsWith('data:image/')) {
+        resolve(reader.result);
+      } else {
+        resolve(TRANSPARENT_PIXEL);
+      }
+    };
+    reader.onerror = () => resolve(TRANSPARENT_PIXEL);
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
+ * Optimizes an image for @react-pdf/renderer:
+ * 1. Fetches the image blob safely via window.fetch (works on all local & remote assets).
+ * 2. Creates a local object URL (same-origin blob: URL).
+ * 3. Draws to an offscreen canvas downscaled to 360x270 (photos) or 120x120 (logo).
+ * 4. Converts to a compact base64 JPEG/PNG data URI.
+ * 5. Falls back to FileReader base64 if canvas is unavailable or encounters error.
+ * 6. Uses in-memory cache so images are processed only once.
+ */
+async function getOptimizedPdfImage(src: string, isLogo = false): Promise<string> {
+  if (!src || typeof window === 'undefined') return TRANSPARENT_PIXEL;
+  if (pdfImageCache.has(src)) return pdfImageCache.get(src)!;
+
+  if (src.startsWith('data:image/')) {
+    pdfImageCache.set(src, src);
+    return src;
+  }
+
+  try {
+    const pathname = src.startsWith('/') ? src : `/${src}`;
+    const fullUrl = src.startsWith('http://') || src.startsWith('https://')
+      ? src
+      : `${window.location.origin}${encodeURI(pathname)}`;
+
+    const res = await fetch(fullUrl);
+    if (!res.ok) {
+      console.warn(`[PDF Image] Failed to fetch ${fullUrl} (status: ${res.status})`);
+      return TRANSPARENT_PIXEL;
+    }
+
+    const blob = await res.blob();
+    if (!blob || blob.size === 0) return TRANSPARENT_PIXEL;
+
+    // Try canvas downscaling using local same-origin blob URL (never tainted)
+    const optimizedUri = await new Promise<string>((resolve) => {
+      const blobUrl = URL.createObjectURL(blob);
+      const img = new window.Image();
+      
+      const cleanup = () => {
+        try {
+          URL.revokeObjectURL(blobUrl);
+        } catch {}
+      };
+
+      img.onload = () => {
+        try {
+          const maxW = isLogo ? 120 : 360;
+          const maxH = isLogo ? 120 : 270;
+          let w = img.naturalWidth || img.width || maxW;
+          let h = img.naturalHeight || img.height || maxH;
+
+          if (w > maxW || h > maxH) {
+            const ratio = Math.min(maxW / w, maxH / h);
+            w = Math.max(1, Math.round(w * ratio));
+            h = Math.max(1, Math.round(h * ratio));
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            cleanup();
+            blobToDataUri(blob).then(resolve);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, w, h);
+          const mimeType = isLogo ? 'image/png' : 'image/jpeg';
+          const quality = isLogo ? undefined : 0.85;
+          const result = canvas.toDataURL(mimeType, quality);
+          cleanup();
+          resolve(result);
+        } catch (canvasErr) {
+          console.warn('[PDF Image] Canvas resize fallback to blob:', canvasErr);
+          cleanup();
+          blobToDataUri(blob).then(resolve);
+        }
+      };
+
+      img.onerror = () => {
+        cleanup();
+        blobToDataUri(blob).then(resolve);
+      };
+
+      img.src = blobUrl;
+    });
+
+    pdfImageCache.set(src, optimizedUri);
+    return optimizedUri;
+  } catch (err) {
+    console.warn(`[PDF Image] Error processing image ${src}:`, err);
+    return TRANSPARENT_PIXEL;
+  }
+}
+
+/** Pre-optimizes all image URLs in the enquiry into fast, lightweight Data URIs */
+async function prepareDetailsForPdf(details: EnquiryDetails): Promise<{ details: EnquiryDetails; logoDataUri: string }> {
+  const urlMap = new Map<string, string>();
+  const allUrls = new Set<string>();
+
+  for (const section of details.sections) {
+    for (const line of section.lines) {
+      if (line.imageUrl) {
+        extractPhotoUrls(line.imageUrl).forEach((u) => allUrls.add(u));
+      }
+    }
+  }
+
+  // Optimize all unique images concurrently via fast Canvas downscaling
+  await Promise.all(
+    Array.from(allUrls).map(async (url) => {
+      const optimized = await getOptimizedPdfImage(url, false);
+      urlMap.set(url, optimized);
+    })
+  );
+
+  const logoDataUri = await getOptimizedPdfImage('/logo-circle.png', true);
+
+  // Return cloned details with expanded, single-image lines so commas in base64 never break splitting
+  const clonedSections = details.sections.map((section) => ({
+    ...section,
+    lines: section.lines.flatMap((line) => {
+      if (!line.imageUrl) return [line];
+      const urls = extractPhotoUrls(line.imageUrl);
+      if (urls.length <= 1) {
+        const singleUrl = urls[0] || line.imageUrl;
+        return [{
+          ...line,
+          imageUrl: urlMap.get(singleUrl) || singleUrl,
+        }];
+      }
+      return urls.map((u, uIdx) => ({
+        ...line,
+        name: line.name.includes('(Design #') ? line.name : `${line.name} (Design #${uIdx + 1})`,
+        imageUrl: urlMap.get(u) || u,
+      }));
+    }),
+  }));
+
+  return {
+    details: { ...details, sections: clonedSections },
+    logoDataUri,
+  };
+}
+
+/** Renders the PDF to a Blob with guaranteed fast, crisp image rendering */
+export async function generateEnquiryPdfBlob(
+  details: EnquiryDetails,
+  refCode: string,
+  submittedAtIso: string
+): Promise<Blob> {
+  const { details: optimizedDetails, logoDataUri } = await prepareDetailsForPdf(details);
+  const instance = pdf(
+    <EnquiryPdfDocument
+      details={optimizedDetails}
+      refCode={refCode}
+      submittedAtIso={submittedAtIso}
+      logoDataUri={logoDataUri}
+    />
+  );
   return instance.toBlob();
 }

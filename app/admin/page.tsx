@@ -93,6 +93,14 @@ function slugify(text: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
+function getAdminImageSrc(src: string): string {
+  if (!src) return '';
+  if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) {
+    return src;
+  }
+  return src.startsWith('/') ? src : `/${src}`;
+}
+
 const EMPTY_CATALOG_ITEM_FORM: CatalogItem = {
   id: '',
   supportedEventTypes: ['wedding'],
@@ -314,7 +322,7 @@ function CatalogItemFormFields({
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [quotes, setQuotes] = useState<AdminQuoteRequest[]>([]);
   const [quotesLoading, setQuotesLoading] = useState(true);
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
@@ -381,6 +389,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     setIsAuthenticated(true);
     loadQuotes();
+    loadCatalogData();
     setInquiries(getAdminInquiries());
   }, []);
 
@@ -696,7 +705,11 @@ export default function AdminDashboardPage() {
   };
 
   if (!isAuthenticated) {
-    return <div className="min-h-screen bg-maroon-950 text-white flex items-center justify-center">Verifying Access...</div>;
+    return (
+      <div className="min-h-screen bg-silk-100 text-maroon-900 flex items-center justify-center font-bold text-sm">
+        Verifying Access...
+      </div>
+    );
   }
 
   const filteredQuotes = quotes.filter((q) => {
@@ -977,10 +990,11 @@ export default function AdminDashboardPage() {
                         href={q.pdfUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 rounded-lg bg-maroon-700 text-white hover:bg-maroon-800 transition-colors shadow-sm"
-                        title="View Event Enquiry PDF"
+                        className="px-2.5 py-1.5 rounded-lg bg-maroon-800 text-gold-200 hover:bg-maroon-900 border border-gold-400/50 transition-colors shadow-sm inline-flex items-center gap-1.5 text-xs font-bold"
+                        title="View & Download Event Quotation PDF"
                       >
-                        <FileText className="w-4 h-4" />
+                        <FileText className="w-4 h-4 text-gold-300" />
+                        <span>PDF</span>
                       </a>
                     )}
 
@@ -1029,59 +1043,95 @@ export default function AdminDashboardPage() {
                 </button>
 
                 {expandedQuoteId === q.id && (
-                  <div className="space-y-4 bg-maroon-950 text-silk-100 p-5 rounded-xl border border-gold-400/30">
+                  <div className="space-y-4 bg-amber-50/80 text-maroon-950 p-5 rounded-2xl border-2 border-gold-300 shadow-sm">
                     {!q.fullDetails ? (
-                      <p className="text-xs text-gold-200/70">
+                      <p className="text-xs text-maroon-700/70">
                         This older enquiry was saved before the detailed breakdown existed - only the summary above is available.
                       </p>
                     ) : (
                       <>
                         {q.fullDetails.specialRequirements && (
-                          <p className="text-xs text-gold-100/90">
-                            <span className="font-bold text-gold-300">Special Requirements: </span>
+                          <div className="text-xs bg-amber-100/80 border border-amber-300 text-amber-950 p-3.5 rounded-xl">
+                            <span className="font-bold text-amber-900">Special Requirements: </span>
                             {q.fullDetails.specialRequirements}
-                          </p>
+                          </div>
                         )}
 
                         {q.fullDetails.sections.length === 0 && q.fullDetails.cateringMenus.length === 0 ? (
-                          <p className="text-xs text-gold-200/70">No services were selected for this enquiry.</p>
+                          <p className="text-xs text-maroon-700/70">No services were selected for this enquiry.</p>
                         ) : (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {q.fullDetails.sections.map((section) => (
-                              <div key={section.categoryKey} className="space-y-1.5">
-                                <span className="text-xs font-bold uppercase tracking-wider text-gold-300">
-                                  {section.icon} {section.label}
+                              <div key={section.categoryKey} className="space-y-2 bg-white/80 p-4 rounded-xl border border-gold-200 shadow-xs">
+                                <span className="text-xs font-bold uppercase tracking-wider text-maroon-900 flex items-center gap-1.5 border-b border-gold-200/80 pb-2">
+                                  <span>{section.icon}</span>
+                                  <span>{section.label}</span>
                                 </span>
-                                <ul className="text-xs text-gold-100/90 space-y-1">
-                                  {section.lines.map((line, i) => (
-                                    <li key={i} className="flex items-center gap-2">
-                                      {line.imageUrl && (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img src={line.imageUrl} alt={line.name} className="w-8 h-8 rounded object-cover border border-gold-400/40 shrink-0" />
-                                      )}
-                                      <span>&bull; {line.name}{line.quantity > 1 ? ` x${line.quantity}` : ''}</span>
-                                    </li>
-                                  ))}
+                                <ul className="text-xs text-maroon-900 space-y-2.5">
+                                  {section.lines.map((line, i) => {
+                                    const photos = line.imageUrl
+                                      ? line.imageUrl.startsWith('data:')
+                                        ? [line.imageUrl]
+                                        : line.imageUrl.split(',').map((u) => u.trim()).filter(Boolean)
+                                      : [];
+
+                                    return (
+                                      <li key={i} className="flex items-start gap-2.5 pt-1">
+                                        {photos.length > 0 && (
+                                          <div className="flex items-center gap-1.5 shrink-0 flex-wrap max-w-[150px]">
+                                            {photos.map((pUrl, pIdx) => (
+                                              <img
+                                                key={pIdx}
+                                                src={getAdminImageSrc(pUrl)}
+                                                alt={`${line.name} ${pIdx + 1}`}
+                                                className="w-12 h-12 rounded-lg object-cover border border-gold-300 bg-gold-50 shadow-xs hover:scale-105 transition-transform"
+                                                onError={(e) => {
+                                                  const target = e.currentTarget;
+                                                  if (!target.dataset.triedFallback && target.src.includes('localhost:3001')) {
+                                                    target.dataset.triedFallback = 'true';
+                                                    target.src = target.src.replace('localhost:3001', 'localhost:3000');
+                                                  } else {
+                                                    target.style.display = 'none';
+                                                  }
+                                                }}
+                                              />
+                                            ))}
+                                          </div>
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                          <span className="font-semibold text-maroon-950 block">
+                                            {line.name}
+                                            {line.quantity > 1 ? ` (x${line.quantity})` : ''}
+                                          </span>
+                                          {photos.length > 1 && (
+                                            <span className="text-[11px] text-gold-800 font-bold block">
+                                              {photos.length} Designs Selected
+                                            </span>
+                                          )}
+                                        </div>
+                                      </li>
+                                    );
+                                  })}
                                 </ul>
                               </div>
                             ))}
 
                             {q.fullDetails.cateringMenus.length > 0 && (
-                              <div className="space-y-3 sm:col-span-2">
-                                <span className="text-xs font-bold uppercase tracking-wider text-gold-300">
-                                  {'\u{1F37D}\u{FE0F}'} Catering Menu
+                              <div className="space-y-3 sm:col-span-2 bg-white/90 p-4 rounded-xl border border-gold-200 shadow-xs">
+                                <span className="text-xs font-bold uppercase tracking-wider text-maroon-900 flex items-center gap-1.5 border-b border-gold-200/80 pb-2">
+                                  <span>🍽️</span> Catering Menu Breakdown
                                 </span>
                                 {q.fullDetails.cateringMenus.map((menu) => (
-                                  <div key={menu.menuType} className="space-y-1">
-                                    <p className="text-[11px] font-bold text-gold-200">
+                                  <div key={menu.menuType} className="space-y-1.5 bg-gold-50/50 p-3 rounded-lg border border-gold-200/60">
+                                    <p className="text-xs font-bold text-maroon-900">
                                       {menu.menuLabel}
                                       {menu.guestCount ? ` (${menu.guestCount} guests)` : ''}
                                     </p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-gold-100/90 pl-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-maroon-800 pl-2">
                                       {menu.sections.map((section) => (
                                         <div key={section.categoryName}>
-                                          <span className="font-semibold text-gold-200">{section.categoryName}: </span>
-                                          {section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}
+                                          <span className="font-bold text-maroon-950">{section.categoryName}: </span>
+                                          <span>{section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}</span>
                                         </div>
                                       ))}
                                     </div>
@@ -1093,10 +1143,10 @@ export default function AdminDashboardPage() {
                         )}
 
                         {q.fullDetails.requestedExtras.length > 0 && (
-                          <p className="text-xs text-amber-300">
+                          <div className="text-xs bg-amber-100/90 border border-amber-300 text-amber-950 p-3 rounded-lg">
                             <span className="font-bold">Pending Approval Requests: </span>
                             {q.fullDetails.requestedExtras.map((l) => l.name).join(', ')}
-                          </p>
+                          </div>
                         )}
                       </>
                     )}

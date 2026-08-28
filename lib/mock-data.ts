@@ -5,6 +5,18 @@ import {
   GalleryItem,
   Testimonial,
 } from './types/wedding';
+import { WEDDING_PORTFOLIO_ASSETS } from './data/wedding-portfolio-assets';
+import { RECEPTION_PORTFOLIO_ASSETS } from './data/reception-portfolio-assets';
+import { PREWEDDING_PORTFOLIO_ASSETS } from './data/prewedding-portfolio-assets';
+import { NAMING_PORTFOLIO_ASSETS } from './data/naming-portfolio-assets';
+import { CRADLE_PORTFOLIO_ASSETS } from './data/cradle-portfolio-assets';
+import { GRIHA_PRAVESH_PORTFOLIO_ASSETS } from './data/griha-pravesh-portfolio-assets';
+import { ANNIVERSARY_PORTFOLIO_ASSETS } from './data/anniversary-portfolio-assets';
+import { CORPORATE_PORTFOLIO_ASSETS } from './data/corporate-portfolio-assets';
+import { HALDI_PORTFOLIO_ASSETS } from './data/haldi-portfolio-assets';
+import { PHOTOBOOTH_PORTFOLIO_ASSETS } from './data/photobooth-portfolio-assets';
+import { PASSAGE_PORTFOLIO_ASSETS } from './data/passage-portfolio-assets';
+import { CANDID_PORTFOLIO_ASSETS } from './data/candid-portfolio-assets';
 
 export const MOCK_SERVICES: WeddingService[] = [
   // Step 1 – Decoration (Featured & Entertainment)
@@ -562,231 +574,124 @@ export const DEFAULT_BUILDER_STATE: CustomBuilderState = {
 };
 
 export const MOCK_GALLERY: GalleryItem[] = [
+  // 1. Traditional Wedding & Muhurtham Ceremony (max 30 assets)
   {
-    id: 'gal-9',
-    title: 'Wedding Photography Package Showcase',
-    category: 'photography',
+    id: 'gal-wedding-collection',
+    title: 'Traditional Wedding & Muhurtham Ceremony',
+    category: 'traditional',
     mediaType: 'image',
-    url: '/photography-videography-collage.jpg',
+    url: '/sid-party7.jpeg',
+    images: WEDDING_PORTFOLIO_ASSETS,
   },
 
-  // Real client event photography - decoration & venue setups
+  // 2. Grand Reception & Stage Celebration (max 30 assets)
   {
-    id: 'gal-10',
-    title: '25th Wedding Anniversary Stage',
-    category: 'decoration',
-    mediaType: 'image',
-    url: '/sid-party14.jpeg',
-    rotate: -90,
-  },
-  {
-    id: 'gal-11',
-    title: '50th Anniversary Golden Jubilee Stage',
-    category: 'decoration',
-    mediaType: 'image',
-    url: '/sid-party16.jpeg',
-  },
-  {
-    id: 'gal-12',
-    title: 'Tropical Floral Reception Backdrop',
-    category: 'decoration',
-    mediaType: 'image',
-    url: '/sid-party25.jpeg',
-  },
-  {
-    id: 'gal-13',
-    title: 'Griha Pravesh Floral Wall Art',
-    category: 'decoration',
-    mediaType: 'image',
-    url: '/sid-party22.jpeg',
-  },
-  {
-    id: 'gal-14',
-    title: 'Coconut Leaf Entrance Gate Decoration',
-    category: 'decoration',
-    mediaType: 'image',
-    url: '/sid-party23.jpeg',
-    images: ['/sid-party23.jpeg', '/sid-party28.jpeg'],
-  },
-  {
-    id: 'gal-17',
-    title: 'Vintage Baraat Car Decoration',
-    category: 'decoration',
-    mediaType: 'image',
-    url: '/sid-party38.jpeg',
-    images: ['/sid-party38.jpeg', '/sid-party40.jpeg'],
-  },
-
-  // Real client event photography - wedding ceremonies & receptions
-  {
-    id: 'gal-19',
-    title: 'Traditional Wedding Reception Stage',
+    id: 'gal-reception-collection',
+    title: 'Grand Reception & Stage Decor Collection',
     category: 'reception',
     mediaType: 'image',
     url: '/sid-party15.jpeg',
-  },
-  {
-    id: 'gal-20',
-    title: 'Kerala-Style Wedding Reception Ceremony',
-    category: 'reception',
-    mediaType: 'image',
-    url: '/sid-party18.jpeg',
-  },
-  {
-    id: 'gal-21',
-    title: 'Outdoor Garden Wedding Manthapa',
-    category: 'reception',
-    mediaType: 'image',
-    url: '/sid-party29.jpeg',
+    images: RECEPTION_PORTFOLIO_ASSETS,
   },
 
-  // Real client event photography - naming ceremonies & pooja setups
+  // 3. Real couple photography - pre-wedding shoots (max 30 assets)
   {
-    id: 'gal-22',
-    title: 'Naming Ceremony Lotus Backdrop',
+    id: 'gal-prewedding-collection',
+    title: 'Pre-Wedding Couple Shoot Collection',
+    category: 'photography',
+    mediaType: 'image',
+    url: '/forest-pre-wedding-shoot/forest-shoot-01.jpeg',
+    images: PREWEDDING_PORTFOLIO_ASSETS,
+  },
+
+  // 4. Real client event photography - Naming Ceremony (max 30 assets)
+  {
+    id: 'gal-naming-ceremony-collection',
+    title: 'Naming Ceremony (Namakarana) Collection',
     category: 'traditional',
     mediaType: 'image',
     url: '/sid-party17.jpeg',
+    images: NAMING_PORTFOLIO_ASSETS,
   },
+
+  // 5. Real client event photography - Cradle Ceremony / Thottilu Sastra (max 30 assets)
   {
-    id: 'gal-23',
-    title: 'Krishna-Radha Swing Naming Ceremony',
-    category: 'traditional',
-    mediaType: 'image',
-    url: '/sid-party19.jpeg',
-  },
-  {
-    id: 'gal-24',
-    title: 'Yashoda-Krishna Naming Ceremony Decor',
-    category: 'traditional',
-    mediaType: 'image',
-    url: '/sid-party20.jpeg',
-  },
-  {
-    id: 'gal-25',
-    title: 'Krishna Cradle Ceremony Setup',
+    id: 'gal-cradle-ceremony-collection',
+    title: 'Cradle Ceremony (Thottilu Sastra) Collection',
     category: 'traditional',
     mediaType: 'image',
     url: '/sid-party21.jpeg',
-    images: ['/sid-party21.jpeg', '/sid-party30.jpeg', '/sid-party36.jpeg', '/sid-party37.jpeg'],
-  },
-  {
-    id: 'gal-27',
-    title: 'Griha Pravesh Pooja Backdrop',
-    category: 'traditional',
-    mediaType: 'image',
-    url: '/sid-party32.jpeg',
-  },
-  {
-    id: 'gal-28',
-    title: 'Royal Teal Naming Ceremony Stage',
-    category: 'traditional',
-    mediaType: 'image',
-    url: '/sid-party33.jpeg',
-  },
-  {
-    id: 'gal-29',
-    title: 'Krishna Cradle Ceremony with Floral Drapes',
-    category: 'traditional',
-    mediaType: 'image',
-    url: '/sid-party35.jpeg',
-  },
-  // Real couple photography - pre-wedding & wedding day shoots
-  {
-    id: 'gal-32',
-    title: 'Together - Forest Pre-Wedding Shoot',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party3.jpeg',
-  },
-  {
-    id: 'gal-33',
-    title: 'Happiness - Heritage Temple Pre-Wedding',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party4.jpeg',
-    images: ['/sid-party4.jpeg', '/sid-party5.jpeg', '/sid-party6.jpeg'],
-  },
-  {
-    id: 'gal-36',
-    title: 'Each Other - Traditional Temple Wedding',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party7.jpeg',
-  },
-  {
-    id: 'gal-37',
-    title: 'Heavenly - Pine Forest Couple Shoot',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party8.jpeg',
-  },
-  {
-    id: 'gal-38',
-    title: 'Two Souls One Heart - Reception Portrait',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party9.jpeg',
-  },
-  {
-    id: 'gal-39',
-    title: 'You Are My Everything - 3 Days To Go',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party10.jpeg',
-  },
-  {
-    id: 'gal-40',
-    title: 'Two Days To Go - Lakeside Walk',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party11.jpeg',
-  },
-  {
-    id: 'gal-41',
-    title: 'My Heart - Waterfall Pre-Wedding',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party12.jpeg',
-    images: ['/sid-party12.jpeg', '/sid-party13.jpeg'],
-  },
-  {
-    id: 'gal-43',
-    title: 'Five Days To Go - Shanthkumar & Pruthvi',
-    category: 'photography',
-    mediaType: 'image',
-    url: '/sid-party39.jpeg',
-    images: ['/sid-party39.jpeg', '/sid-party41.jpeg'],
+    images: CRADLE_PORTFOLIO_ASSETS,
   },
 
-  // Real client wedding video footage
+  // 6. Real client event photography - Griha Pravesh & Housewarming (max 30 assets)
   {
-    id: 'gal-45',
-    title: 'Live Nadaswaram & Thavil Ensemble',
+    id: 'gal-grihapravesh-collection',
+    title: 'Griha Pravesh & Housewarming Collection',
     category: 'traditional',
     mediaType: 'image',
-    url: '/ChatGPT Image Jul 28, 2026, 04_57_21 PM.jpg',
+    url: '/sid-party22.jpeg',
+    images: GRIHA_PRAVESH_PORTFOLIO_ASSETS,
   },
+
+  // 7. Real client event photography - Wedding Anniversaries (15 assets)
   {
-    id: 'gal-46',
-    title: 'Wedding Celebration Highlights 2',
-    category: 'reception',
-    mediaType: 'video',
-    url: '/sid-video2.mp4',
+    id: 'gal-anniversary-collection',
+    title: 'Silver & Golden Wedding Anniversary Collection',
+    category: 'decoration',
+    mediaType: 'image',
+    url: '/sid-party16.jpeg',
+    images: ANNIVERSARY_PORTFOLIO_ASSETS,
   },
+
+  // 8. Haldi Function & Yellow Floral Decor (30 assets)
   {
-    id: 'gal-47',
-    title: 'Wedding Celebration Highlights 3',
-    category: 'reception',
-    mediaType: 'video',
-    url: '/sid-video3.mp4',
+    id: 'gal-haldi-collection',
+    title: 'Haldi Function & Floral Decor Collection',
+    category: 'traditional',
+    mediaType: 'image',
+    url: HALDI_PORTFOLIO_ASSETS[0],
+    images: HALDI_PORTFOLIO_ASSETS,
   },
+
+  // 9. Corporate Events & Conference Staging (30 assets)
   {
-    id: 'gal-48',
-    title: 'Wedding Celebration Highlights 4',
-    category: 'reception',
-    mediaType: 'video',
-    url: '/sid-video4.mp4',
+    id: 'gal-corporate-collection',
+    title: 'Corporate Events & Conference Staging',
+    category: 'decoration',
+    mediaType: 'image',
+    url: CORPORATE_PORTFOLIO_ASSETS[0],
+    images: CORPORATE_PORTFOLIO_ASSETS,
+  },
+
+  // 10. Photo Booth & Creative Backdrops (17 assets)
+  {
+    id: 'gal-photobooth-collection',
+    title: 'Photo Booth & Creative Selfie Backdrops',
+    category: 'decoration',
+    mediaType: 'image',
+    url: PHOTOBOOTH_PORTFOLIO_ASSETS[0],
+    images: PHOTOBOOTH_PORTFOLIO_ASSETS,
+  },
+
+  // 11. Grand Entrance Passage & Walkway Decor (30 assets)
+  {
+    id: 'gal-passage-collection',
+    title: 'Grand Entrance Passage & Walkway Decor',
+    category: 'decoration',
+    mediaType: 'image',
+    url: PASSAGE_PORTFOLIO_ASSETS[0],
+    images: PASSAGE_PORTFOLIO_ASSETS,
+  },
+
+  // 12. Candid Wedding Photography (16 assets)
+  {
+    id: 'gal-candid-collection',
+    title: 'Candid Wedding Photography Collection',
+    category: 'photography',
+    mediaType: 'image',
+    url: CANDID_PORTFOLIO_ASSETS[0],
+    images: CANDID_PORTFOLIO_ASSETS,
   },
 ];
 

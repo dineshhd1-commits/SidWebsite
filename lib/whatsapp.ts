@@ -131,20 +131,29 @@ function formatShortEnquiryNotification(
   submittedAtIso: string,
   pdfUrl: string
 ): string {
+  const divider = '---------------------------------';
   const lines: string[] = [];
-  lines.push('\u{1F389} NEW EVENT ENQUIRY – SID EVENTS'); // 🎉 ... –
+  lines.push(divider);
+  lines.push('*NEW EVENT ENQUIRY - SID EVENTS*');
+  lines.push(divider);
   lines.push('');
-  lines.push(`Customer: ${details.customerName || 'Not provided'}`);
-  lines.push(`Event: ${details.eventTypeLabel}`);
-  lines.push(`Date: ${details.eventDate ? new Date(details.eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Not set'}`);
-  lines.push(`Location: ${details.location || 'Not provided'}`);
-  lines.push(`Guests: ${details.guestCount || 'Not specified'}`);
-  lines.push(`Reference: #${refCode}`);
+  lines.push(`*Customer:* ${details.customerName || 'Not provided'}`);
+  lines.push(`*Phone:* ${details.customerPhone || 'Not provided'}`);
+  lines.push(`*Event Type:* ${details.eventTypeLabel}`);
+  if (details.anniversaryType) {
+    lines.push(`*Anniversary Type:* ${details.anniversaryType}`);
+  }
+  lines.push(`*Date:* ${details.eventDate ? new Date(details.eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Not set'}`);
+  lines.push(`*Location:* ${details.location || 'Not provided'}`);
+  lines.push(`*Guests:* ${details.guestCount ? `${details.guestCount} Guests` : 'Not specified'}`);
+  lines.push(`*Reference:* #${refCode}`);
   lines.push('');
-  lines.push('\u{1F4CE} Event Enquiry PDF'); // 📎
-  lines.push(`View/Download: ${pdfUrl}`);
+  lines.push('*VIEW / DOWNLOAD QUOTATION PDF:*');
+  lines.push(pdfUrl);
   lines.push('');
-  lines.push('Please contact the customer to confirm availability and finalize the booking.');
+  lines.push(`*Estimated Total:* Rs. ${details.estimatedTotal.toLocaleString('en-IN')}`);
+  lines.push('');
+  lines.push('Please review the attached event quotation PDF and contact the customer.');
   return lines.join('\n');
 }
 

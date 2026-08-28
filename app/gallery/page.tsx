@@ -7,31 +7,20 @@ import { getGalleryItems } from '@/lib/data/gallery';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { LazyVideo } from '@/components/ui/lazy-video';
 import { LoadingState } from '@/components/builder/EmptyState';
-import { ZoomIn, PlayCircle } from 'lucide-react';
+import { ZoomIn, PlayCircle, Grid } from 'lucide-react';
 import { SharedImageLightbox, LightboxMediaItem } from '@/components/ui/shared-image-lightbox';
+import { PortfolioAlbumModal } from '@/components/gallery/PortfolioAlbumModal';
 
 export default function GalleryPage() {
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+  const [selectedAlbumIndex, setSelectedAlbumIndex] = useState<number | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [items, setItems] = useState<GalleryItem[] | null>(null);
 
   useEffect(() => {
     getGalleryItems().then(setItems);
   }, []);
 
-  const categories = [
-    { id: 'all', label: 'All Showcase' },
-    { id: 'decoration', label: 'Manthapa Decor' },
-    { id: 'traditional', label: 'Traditional Rituals' },
-    { id: 'reception', label: 'Feast & Reception' },
-    { id: 'photography', label: 'Bridal Photography' },
-  ];
-
-  const baseItems = !items
-    ? []
-    : activeCategory === 'all'
-    ? items
-    : items.filter((item) => item.category === activeCategory);
+  const baseItems = !items ? [] : items;
 
   const filteredItems = [...baseItems].sort((a, b) => {
     if (a.mediaType === 'video' && b.mediaType !== 'video') return -1;
@@ -39,15 +28,25 @@ export default function GalleryPage() {
     return 0;
   });
 
-  const lightboxMediaItems: LightboxMediaItem[] = filteredItems.map((item) => ({
-    src: item.url,
-    alt: item.title,
-    title: item.title,
-    category: item.category,
-    categoryLabel: item.category === 'decoration' ? 'Manthapa Decor' : item.category,
-    mediaType: item.mediaType,
-    rotate: item.rotate,
-  }));
+  const selectedAlbum = selectedAlbumIndex !== null && filteredItems[selectedAlbumIndex] ? filteredItems[selectedAlbumIndex] : null;
+
+  const activeAlbumMediaList: LightboxMediaItem[] = selectedAlbum
+    ? (selectedAlbum.images && selectedAlbum.images.length > 0
+        ? selectedAlbum.images
+        : [selectedAlbum.url]
+      ).map((imgUrl, i) => {
+        const isVideo = imgUrl.endsWith('.mp4') || imgUrl.endsWith('.webm');
+        return {
+          src: imgUrl,
+          alt: `${selectedAlbum.title} - ${i + 1}`,
+          title: selectedAlbum.title,
+          category: selectedAlbum.category,
+          categoryLabel: selectedAlbum.category === 'decoration' ? 'Manthapa Decor' : (selectedAlbum.category === 'traditional' ? 'Traditional Rituals & Functions' : selectedAlbum.category),
+          mediaType: isVideo ? 'video' : selectedAlbum.mediaType,
+          rotate: selectedAlbum.rotate,
+        };
+      })
+    : [];
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10 sm:space-y-12">
@@ -63,27 +62,6 @@ export default function GalleryPage() {
         <TraditionalBorder />
       </div>
 
-      {/* Category Filter Pills */}
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => {
-              setActiveCategory(cat.id);
-              setSelectedItemIndex(null);
-            }}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeCategory === cat.id
-                ? 'bg-maroon-800 text-gold-300 shadow-md border border-gold-400'
-                : 'bg-ivory text-maroon-900 border border-gold-300 hover:bg-gold-50'
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
-
       {/* Gallery Grid */}
       {items === null ? (
         <LoadingState label="Loading gallery..." />
@@ -92,8 +70,11 @@ export default function GalleryPage() {
           {filteredItems.map((item, idx) => (
             <div
               key={item.id}
-              onClick={() => setSelectedItemIndex(idx)}
-              className="group relative h-96 sm:h-[420px] rounded-2xl overflow-hidden shadow-lg cursor-pointer border border-gold-300/40"
+              onClick={() => {
+                setSelectedAlbumIndex(idx);
+                setLightboxIndex(null);
+              }}
+              className="group relative h-96 sm:h-[420px] rounded-2xl overflow-hidden shadow-lg cursor-pointer border border-gold-300/40 hover:border-gold-400 transition-all hover:-translate-y-1"
             >
               {item.mediaType === 'video' ? (
                 <LazyVideo
@@ -119,23 +100,42 @@ export default function GalleryPage() {
               </div>
 
               <div className="absolute bottom-4 left-4 right-4 text-silk-50">
-                <span className="text-[10px] uppercase font-bold text-gold-300 bg-maroon-900/70 px-2 py-0.5 rounded">
-                  {item.category === 'decoration' ? 'Manthapa Decor' : item.category}
-                </span>
-                <h4 className="font-playfair text-lg font-bold text-gold-100 mt-1">{item.title}</h4>
+                {item.images && item.images.length > 1 && (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold text-gold-300 bg-maroon-900/85 px-2.5 py-0.5 rounded-full border border-gold-400/30 mb-1.5 backdrop-blur-sm shadow">
+                    <Grid className="w-3 h-3" /> {item.images.length} Photos & Clips
+                  </span>
+                )}
+                <h4 className="font-playfair text-lg font-bold text-gold-100 mt-0.5 group-hover:text-gold-300 transition-colors">{item.title}</h4>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Unified Media Lightbox with Scoped Navigation (Images + Videos) */}
-      {selectedItemIndex !== null && (
+      {/* Catering-style Portfolio Album Modal */}
+      {selectedAlbum !== null && (
+        <PortfolioAlbumModal
+          isOpen={selectedAlbumIndex !== null}
+          onClose={() => {
+            setSelectedAlbumIndex(null);
+            setLightboxIndex(null);
+          }}
+          title={selectedAlbum.title}
+          categoryLabel={selectedAlbum.category === 'decoration' ? 'Manthapa Decor' : (selectedAlbum.category === 'traditional' ? 'Traditional Rituals & Pooja' : selectedAlbum.category)}
+          items={activeAlbumMediaList}
+          onSelectMedia={(idx) => setLightboxIndex(idx)}
+        />
+      )}
+
+      {/* Full-Screen Lightbox View for inspecting individual photos/videos */}
+      {selectedAlbum !== null && lightboxIndex !== null && (
         <SharedImageLightbox
-          items={lightboxMediaItems}
-          initialIndex={selectedItemIndex}
+          items={activeAlbumMediaList}
+          initialIndex={lightboxIndex}
           isOpen={true}
-          onClose={() => setSelectedItemIndex(null)}
+          onClose={() => setLightboxIndex(null)}
+          title={selectedAlbum.title}
+          subtitle={selectedAlbum.category === 'decoration' ? 'Manthapa Decor' : selectedAlbum.category}
         />
       )}
     </div>

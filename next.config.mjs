@@ -42,11 +42,12 @@ const nextConfig = {
       // anywhere in this app (no Google Maps JS SDK, no analytics tag), so
       // both remain scoped to 'self' otherwise.
       "script-src 'self' 'unsafe-inline'" + (process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''),
+      "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://plus.unsplash.com",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co",
-      "frame-src 'none'",
+      "connect-src 'self' blob: data: https://*.supabase.co",
+      "frame-src 'self' https://maps.google.com https://www.google.com https://maps.googleapis.com",
       "frame-ancestors 'none'",
       "object-src 'none'",
       "base-uri 'self'",

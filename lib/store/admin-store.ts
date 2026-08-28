@@ -158,14 +158,18 @@ function mapSupabaseQuoteRow(row: any): AdminQuoteRequest {
  * fails, so the dashboard never just shows a blank screen. */
 export async function getAdminQuotesFromBackend(): Promise<AdminQuoteRequest[]> {
   try {
-    // Routed through the authenticated /api/admin/quotes endpoint (service-role
-    // key, admin session required) rather than a direct anon-key Supabase
-    // query - the anon key is public by design, and quotations contain
-    // customer PII (name, phone, email, event details) that must never be
-    // readable by an unauthenticated visitor who simply has the anon key.
-    const res = await fetch('/api/admin/quotes');
-    if (res.status === 401) throw new Error('Not authenticated as admin.');
-    if (!res.ok) throw new Error('Failed to load quotes.');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const res = await fetch('/api/admin/quotes', { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (res.status === 401) {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/admin/login';
+      }
+      throw new Error('Not authenticated as admin.');
+    }
+    if (!res.ok) throw new Error(`Failed to load quotes: ${res.status}`);
     const { items } = await res.json();
     return (items || []).map(mapSupabaseQuoteRow);
   } catch (e) {
@@ -312,28 +316,23 @@ export async function saveCorporateDecorationEnquiry(
  * so the caller can fall back to the existing full-text WhatsApp message -
  * this must never throw and block the actual enquiry submission. */
 export async function uploadEnquiryPdf(pdfBlob: Blob, refCode: string): Promise<string | null> {
-  if (!isSupabaseConfigured()) return null;
   try {
-    const randomSuffix = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const objectPath = `${refCode}/${randomSuffix}.pdf`;
+    const formData = new FormData();
+    formData.append('file', pdfBlob, `SID-Events-Quotation-${refCode}.pdf`);
+    formData.append('refCode', refCode);
 
-    const { error: uploadError } = await supabase.storage.from('enquiry-pdfs').upload(objectPath, pdfBlob, {
-      contentType: 'application/pdf',
-      upsert: false,
+    const res = await fetch('/api/enquiry/upload-pdf', {
+      method: 'POST',
+      body: formData,
     });
-    if (uploadError) {
-      console.error('Supabase PDF upload error:', uploadError);
+
+    if (!res.ok) {
+      console.warn('PDF upload API returned status:', res.status);
       return null;
     }
 
-    // 7-day signed URL on a private bucket - long enough for the owner to
-    // action the enquiry, without making the file permanently public.
-    const { data, error: signError } = await supabase.storage.from('enquiry-pdfs').createSignedUrl(objectPath, 60 * 60 * 24 * 7);
-    if (signError || !data?.signedUrl) {
-      console.error('Supabase PDF signed URL error:', signError);
-      return null;
-    }
-    return data.signedUrl;
+    const data = await res.json();
+    return data.pdfUrl || null;
   } catch (e) {
     console.error('Failed to upload enquiry PDF:', e);
     return null;

@@ -15,6 +15,14 @@ interface CartLineItemRowProps {
 }
 
 export function CartLineItemRow({ line, onRemove, onViewDetails, compact, highlighted }: CartLineItemRowProps) {
+  const imgUrls = line.imageUrl
+    ? line.imageUrl
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+  const hasMultipleDesigns = imgUrls.length > 1;
+
   return (
     <div
       data-line-id={line.id}
@@ -25,11 +33,16 @@ export function CartLineItemRow({ line, onRemove, onViewDetails, compact, highli
       <button
         type="button"
         onClick={() => onViewDetails?.(line)}
-        className="flex-1 min-w-0 text-left"
+        className="flex-1 min-w-0 text-left cursor-pointer"
         disabled={!onViewDetails}
       >
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-bold text-gold-100 truncate">{line.name}</span>
+          {hasMultipleDesigns && (
+            <span className="text-[9px] font-bold text-gold-300 bg-maroon-800/80 px-1.5 py-0.5 rounded border border-gold-400/30">
+              {imgUrls.length} Designs
+            </span>
+          )}
           {line.quantity > 1 && <span className="text-[10px] text-gold-300/80">x{line.quantity}</span>}
           {line.origin === 'paid_extra' && (
             <span className="text-[9px] uppercase font-bold text-gold-400 bg-maroon-900/60 px-1.5 py-0.5 rounded">Paid Extra</span>
@@ -44,7 +57,7 @@ export function CartLineItemRow({ line, onRemove, onViewDetails, compact, highli
       <button
         type="button"
         onClick={() => onRemove(line.id)}
-        className="p-1 text-gold-300/60 hover:text-gold-100 shrink-0"
+        className="p-1 text-gold-300/60 hover:text-gold-100 shrink-0 cursor-pointer"
         aria-label={`Remove ${line.name}`}
       >
         <X className="w-3.5 h-3.5" />

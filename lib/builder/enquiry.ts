@@ -211,33 +211,32 @@ export function formatDateTime(iso: string): string {
  * total, timestamp) as plain text - used for the WhatsApp message body and
  * reusable anywhere else plain-text is needed. */
 export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, submittedAtIso: string): string {
-  const divider = '━━━━━━━━━━━━━━━━━━━━'; // ━×20
+  const divider = '---------------------------------';
 
   const lines: string[] = [];
   lines.push(divider);
-  lines.push('\u{1F389} NEW EVENT ENQUIRY'); // 🎉
-  lines.push('SID EVENTS');
+  lines.push('*NEW EVENT ENQUIRY - SID EVENTS*');
   lines.push(divider);
   lines.push('');
-  lines.push('\u{1F464} CUSTOMER DETAILS'); // 👤
-  lines.push(`Name: ${details.customerName || 'Not provided'}`);
-  lines.push(`Phone: ${details.customerPhone || 'Not provided'}`);
-  lines.push(`Email: ${details.customerEmail || 'Not provided'}`);
+  lines.push('*CUSTOMER DETAILS*');
+  lines.push(`*Name:* ${details.customerName || 'Not provided'}`);
+  lines.push(`*Phone:* ${details.customerPhone || 'Not provided'}`);
+  if (details.customerEmail) lines.push(`*Email:* ${details.customerEmail}`);
   lines.push('');
-  lines.push('\u{1F4C5} EVENT DETAILS'); // 📅
-  lines.push(`Event Type: ${details.eventTypeLabel}`);
+  lines.push('*EVENT DETAILS*');
+  lines.push(`*Event Type:* ${details.eventTypeLabel}`);
   if (details.anniversaryType) {
-    lines.push(`Anniversary Type: ${details.anniversaryType}`);
+    lines.push(`*Anniversary Type:* ${details.anniversaryType}`);
   }
-  lines.push(`Date: ${formatDate(details.eventDate)}`);
-  lines.push(`Location: ${details.location || 'Not provided'}`);
-  lines.push(`Guests: ${details.guestCount || 'Not specified'}`);
+  lines.push(`*Date:* ${formatDate(details.eventDate)}`);
+  lines.push(`*Location:* ${details.location || 'Not provided'}`);
+  lines.push(`*Guests:* ${details.guestCount ? `${details.guestCount} Guests` : 'Not specified'}`);
   if (details.specialRequirements) {
-    lines.push(`Notes: ${details.specialRequirements}`);
+    lines.push(`*Notes:* ${details.specialRequirements}`);
   }
   lines.push('');
   lines.push(divider);
-  lines.push('\u{1F4E6} SELECTED SERVICES'); // 📦
+  lines.push('*SELECTED SERVICES*');
   lines.push(divider);
 
   if (details.sections.length === 0 && details.cateringMenus.length === 0 && !details.cateringSkipped) {
@@ -247,30 +246,32 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
 
   for (const section of details.sections) {
     lines.push('');
-    lines.push(`${section.icon} ${section.label.toUpperCase()}`);
+    lines.push(`*${section.label.toUpperCase()}*`);
     for (const item of section.lines) {
-      lines.push(`• ${item.name}${item.quantity > 1 ? ` x${item.quantity}` : ''}`);
+      const designCount = item.imageUrl ? item.imageUrl.split(',').filter(Boolean).length : 0;
+      const designNote = designCount > 1 ? ` (${designCount} designs selected)` : '';
+      lines.push(`• ${item.name}${designNote}${item.quantity > 1 ? ` x${item.quantity}` : ''}`);
     }
   }
 
   if (details.cateringMenus.length > 0) {
     lines.push('');
-    lines.push(`${CATEGORY_ICONS.catering} CATERING MENU`);
+    lines.push('*CATERING MENU*');
     for (const menu of details.cateringMenus) {
       lines.push('');
-      lines.push(`${menu.menuLabel.toUpperCase()}${menu.guestCount ? ` (${menu.guestCount} guests)` : ''}`);
+      lines.push(`*${menu.menuLabel.toUpperCase()}*${menu.guestCount ? ` (${menu.guestCount} guests)` : ''}`);
       for (const section of menu.sections) {
-        lines.push(`• ${section.categoryName}: ${section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}`);
+        lines.push(`• *${section.categoryName}:* ${section.lines.map((l) => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}`);
       }
     }
   } else if (details.cateringSkipped) {
     lines.push('');
-    lines.push(`${CATEGORY_ICONS.catering} CATERING: Skipped by customer`);
+    lines.push('*CATERING:* Skipped by customer');
   }
 
   if (details.requestedExtras.length > 0) {
     lines.push('');
-    lines.push('\u{23F3} PENDING APPROVAL REQUESTS'); // ⏳
+    lines.push('*PENDING APPROVAL REQUESTS*');
     for (const item of details.requestedExtras) {
       lines.push(`• ${item.name}`);
     }
@@ -278,13 +279,13 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
 
   lines.push('');
   lines.push(divider);
-  lines.push('\u{1F4B0} ESTIMATED TOTAL'); // 💰
-  lines.push(`₹${details.estimatedTotal.toLocaleString('en-IN')} (confirmed after enquiry)`);
+  lines.push(`*ESTIMATED TOTAL:* Rs. ${details.estimatedTotal.toLocaleString('en-IN')}`);
+  lines.push('(Final pricing confirmed after review)');
   lines.push(divider);
 
   lines.push('');
-  lines.push(`Reference Code: #${refCode}`);
-  lines.push(`Submitted: ${formatDateTime(submittedAtIso)}`);
+  lines.push(`*Reference Code:* #${refCode}`);
+  lines.push(`*Submitted:* ${formatDateTime(submittedAtIso)}`);
   lines.push('');
   lines.push('Please contact the customer to confirm availability and finalize the booking.');
 

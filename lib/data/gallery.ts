@@ -10,6 +10,8 @@ function mapRow(row: any): GalleryItem {
     mediaType: row.media_type || 'image',
     url: row.url,
     thumbnailUrl: row.thumbnail_url || undefined,
+    images: row.images || undefined,
+    rotate: row.rotate || undefined,
   };
 }
 

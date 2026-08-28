@@ -1,9 +1,15 @@
 export const ADMIN_SESSION_COOKIE = 'sid_admin_session';
-const SESSION_MAX_AGE_SECONDS = 8 * 60 * 60; // 8 hours
+
+export const ADMIN_SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: 'lax' as const,
+  path: '/',
+  maxAge: 60 * 60 * 24 * 7, // 7 days
+};
 
 async function sha256Hex(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input);
-  const digest = await crypto.subtle.digest('SHA-256', data);
+  const bytes = new TextEncoder().encode(input);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
   return Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
@@ -52,11 +58,3 @@ export async function requireAdminSession(request: Request): Promise<boolean> {
   }
   return diff === 0;
 }
-
-export const ADMIN_SESSION_COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
-  path: '/',
-  maxAge: SESSION_MAX_AGE_SECONDS,
-};

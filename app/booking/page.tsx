@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEventBuilder } from '@/lib/store/event-builder-context';
 import { GlassCard } from '@/components/ui/glass-card';
@@ -53,10 +53,12 @@ export default function BookingPage() {
   // a duplicate enquiry once the first one has already gone through.
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [friendlyErrors, setFriendlyErrors] = useState<string[]>([]);
-  // Separate from isSubmitting so the button can show a specific message
-  // during the (occasionally slower, image-heavy) PDF generation step
-  // instead of just a generic "Submitting..." that reads as a freeze.
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  useEffect(() => {
+    // Preload the PDF generator module in the background while user fills the form
+    import('@/lib/builder/enquiry-pdf').catch(() => {});
+  }, []);
 
   const validate = (): string[] => {
     const errors: string[] = [];
@@ -144,38 +146,37 @@ export default function BookingPage() {
       console.warn('Enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
     }
 
-    // Generate the professional Event Enquiry PDF and attempt to upload it
-    // before opening WhatsApp, so the notification link (when available) is
-    // ready immediately. Wrapped so a PDF failure never blocks the actual
-    // enquiry from going through - the full-text WhatsApp fallback still
-    // carries every detail either way.
+    // Generate the professional Event Enquiry PDF and store it in the CRM
     const submittedAtIso = new Date().toISOString();
     let pdfUrl: string | null = null;
     setIsGeneratingPdf(true);
     try {
       const { generateEnquiryPdfBlob } = await import('@/lib/builder/enquiry-pdf');
       const pdfBlob = await generateEnquiryPdfBlob(fullDetails, refCode, submittedAtIso);
-      pdfUrl = await uploadEnquiryPdf(pdfBlob, refCode);
-      if (pdfUrl) {
-        fetch('/api/enquiry', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refCode, pdfUrl }),
-        }).catch(() => {});
+      
+      try {
+        const uploadPromise = uploadEnquiryPdf(pdfBlob, refCode);
+        const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000));
+        pdfUrl = await Promise.race([uploadPromise, timeoutPromise]);
+        if (pdfUrl) {
+          await fetch('/api/enquiry', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refCode, pdfUrl }),
+          }).catch(() => {});
+        }
+      } catch (uploadErr) {
+        console.warn('PDF upload to CRM storage skipped or timed out:', uploadErr);
       }
     } catch (err) {
-      console.error('Enquiry PDF generation failed; falling back to full-text WhatsApp notification.', err);
+      console.error('Enquiry PDF generation failed:', err);
     }
     setIsGeneratingPdf(false);
 
-    const waUrl = getWhatsAppBookingRequestUrl(formData, state, refCode, SITE.whatsappNumber, pdfUrl);
-
     setHasSubmitted(true);
     setIsSubmitting(false);
-    window.open(waUrl, '_blank');
-    // Reset the whole builder (cart, catering picks, event details) only now
-    // that submission has actually succeeded, so re-visiting the builder
-    // starts a fresh request instead of re-showing an already-sent one.
+
+    // Reset the builder and navigate straight to the confirmation page
     resetBuilder();
     router.push(`/request-received?ref=${refCode}`);
   };

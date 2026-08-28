@@ -27,14 +27,7 @@ function photoDesignNumber(photoId: string): string {
   return match ? match[1] : photoId;
 }
 
-/** Turns a selected inspiration photo into a cart-compatible CatalogItem.
- * There's no real catalog group/pricing behind these - decoration selection
- * here is purely "this is the look I want", so price is 0 (pricing isn't
- * shown anywhere on the site) and groupId is a fixed local id rather than a
- * real Supabase catalog_groups row. The name embeds both the category and
- * the specific design number so "Your Selections" and the final owner
- * enquiry both show exactly which decoration/image was picked, not just
- * which category. */
+/** Turns a selected inspiration photo into a cart-compatible CatalogItem. */
 export function decorationPhotoToCartItem(photo: DecorationPhoto): CatalogItem {
   return {
     id: decorationCartItemId(photo.id),
@@ -62,40 +55,57 @@ export const DECORATION_CATEGORIES: { slug: string; label: string }[] = [
   { slug: 'stage-decoration', label: 'Stage Decoration' },
   { slug: 'mantap-decoration', label: 'Manthapa Decoration' },
   { slug: 'chapra-with-flowers', label: 'Chapra With Flowers' },
+  { slug: 'door-decoration', label: 'Door & Entrance Decoration' },
+  { slug: 'entrance-gatename-decoration', label: 'Gate Name Plate' },
+  { slug: 'haldi-decoration', label: 'Haldi & Mehndi Decoration' },
   { slug: 'garlands', label: 'Garlands' },
   { slug: 'passage-decoration', label: 'Passage Decoration' },
-  { slug: 'door-decoration', label: 'Door & Entrance Decoration' },
+  { slug: 'saptapadi', label: 'Saptapadi & Deepa Alankara' },
+  { slug: 'magina-jadi', label: 'Mogina Jade' },
+  { slug: 'harani-basing', label: 'Harini Bashinge' },
+  { slug: 'photo-booth', label: 'Photo Booth' },
   { slug: 'bridal-entry', label: 'Bridal Entry Ideas' },
-  { slug: 'saptapadi', label: 'Saptapadi Setup' },
+  { slug: 'couple-entry', label: 'Couple Entry Concept' },
   { slug: 'cold-fire-entry', label: 'Cold Fire Entry' },
+  { slug: 'welcome-bouquet', label: 'Welcome Bouquet' },
+  { slug: 'welcome-girls', label: 'Welcome Girls' },
+  { slug: 'house-lighting', label: 'House Lighting' },
+  { slug: 'birthday-decoration', label: 'Birthday Decoration' },
+  { slug: 'balloon-decoration', label: 'Balloon Decoration' },
+  { slug: 'anniversary-decoration', label: 'Anniversary Decoration' },
+  { slug: 'housewarming-decoration', label: 'Housewarming Decoration' },
+  { slug: 'naming-ceremony', label: 'Naming Ceremony' },
+  { slug: 'corporate-events', label: 'Corporate Events' },
 ];
 
-/** Which event types each decoration category is relevant to. Wedding itself
- * doesn't use this photo gallery any more (it has its own checklist), so this
- * only matters for every other event type.
- *
- * Engagement, Reception, Haldi Function, Traditional Home Function,
- * Housewarming, Shrimantha Karya and Half-Saree Function follow the client's
- * exact category list per event (see the Decoration section spec) - every
- * other event type (Birthday, Anniversary, Get Together, Bachelor Party,
- * Corporate Event, Other Events) keeps the broader, unspecified mapping.
- * Saptapadi is never included for any of these - it's a strictly wedding
- * ritual (rule: Saptapadi must not appear under any non-Wedding event). */
+/** Which event types each decoration category is relevant to. */
 const CATEGORY_EVENT_TYPES: Record<string, string[]> = {
-  'stage-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'corporate_event', 'haldi_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
-  'mantap-decoration': ['engagement', 'traditional_home_function', 'housewarming', 'shrimantha_karya'],
-  'chapra-with-flowers': ['engagement', 'reception', 'haldi_function', 'traditional_home_function', 'housewarming', 'shrimantha_karya', 'half_saree_function'],
-  garlands: ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
-  'passage-decoration': ['engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
-  'door-decoration': ['reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
-  'bridal-entry': ['engagement', 'reception', 'haldi_function', 'half_saree_function'],
-  saptapadi: [], // strictly a wedding ritual - not relevant to any other event type
-  'cold-fire-entry': ['engagement', 'reception', 'birthday', 'anniversary', 'half_saree_function'],
+  'stage-decoration': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'corporate_event', 'haldi_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'mantap-decoration': ['wedding', 'engagement', 'traditional_home_function', 'housewarming', 'shrimantha_karya'],
+  'chapra-with-flowers': ['wedding', 'engagement', 'reception', 'haldi_function', 'traditional_home_function', 'housewarming', 'shrimantha_karya', 'half_saree_function'],
+  'door-decoration': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'entrance-gatename-decoration': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary'],
+  'haldi-decoration': ['wedding', 'haldi_function', 'half_saree_function'],
+  garlands: ['wedding', 'engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  'passage-decoration': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary', 'get_together', 'bachelor_party', 'housewarming', 'haldi_function', 'corporate_event', 'traditional_home_function', 'shrimantha_karya', 'half_saree_function', 'other_events'],
+  saptapadi: ['wedding'],
+  'magina-jadi': ['wedding', 'half_saree_function'],
+  'harani-basing': ['wedding'],
+  'photo-booth': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary'],
+  'bridal-entry': ['wedding', 'engagement', 'reception', 'haldi_function', 'half_saree_function'],
+  'couple-entry': ['wedding', 'engagement', 'reception'],
+  'cold-fire-entry': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary', 'half_saree_function'],
+  'welcome-bouquet': ['wedding', 'engagement', 'reception', 'birthday'],
+  'welcome-girls': ['wedding'],
+  'house-lighting': ['wedding', 'housewarming', 'traditional_home_function'],
+  'birthday-decoration': ['birthday'],
+  'balloon-decoration': ['birthday', 'get_together', 'anniversary'],
+  'anniversary-decoration': ['anniversary'],
+  'housewarming-decoration': ['housewarming'],
+  'naming-ceremony': ['traditional_home_function'],
+  'corporate-events': ['corporate_event'],
 };
 
-/** Category filter chips scoped to a given (non-wedding) event type, in the
- * same order as DECORATION_CATEGORIES. Wedding isn't looked up here - it uses
- * its own decoration checklist instead of this photo gallery. */
 export function getDecorationCategoriesForEventType(eventTypeId: string): { slug: string; label: string }[] {
   return DECORATION_CATEGORIES.filter((c) => (CATEGORY_EVENT_TYPES[c.slug] || []).includes(eventTypeId));
 }
@@ -113,80 +123,198 @@ export function getDecorationPhotoById(id: string): DecorationPhoto | undefined 
   return ALL_PHOTOS.find((p) => p.id === id);
 }
 
-/** Every decoration photo has a pre-generated, permanently-watermarked
- * counterpart under /decotion-watermarked (same relative path/extension,
- * built once via a one-off sharp script - see the "Add Client Logo to Every
- * Decoration Photo" change) with the client's logo composited into the
- * bottom-right corner of the actual image bytes. The gallery always displays
- * this version, never the raw /decotion/ original, so the branding survives
- * even if someone saves/copies the displayed photo - and since it's a static
- * pre-built file, there's no runtime image-processing cost per view. */
+/** Returns the image source for rendering. All updated photos are served directly from /decotion/. */
 export function getWatermarkedDecorationSrc(src: string): string {
-  return src.startsWith('/decotion/') ? `/decotion-watermarked/${src.slice('/decotion/'.length)}` : src;
+  return src;
+}
+
+/**
+ * Checks whether an item should have NO photo dropdown.
+ * Explicit rule: No dropdown for Music Arrangement, Choreography, Punjabi Dole / Dhol,
+ * Kashi Yatra, Normal Garlands, Homa Gunda, Nadaswara, Dancers, Crackers, Security.
+ */
+export function isNoDropdownDecorationItem(item: { id?: string; name?: string; groupId?: string | null }): boolean {
+  const id = (item.id || '').toLowerCase();
+  const name = (item.name || '').toLowerCase();
+  const groupId = (item.groupId || '').toLowerCase();
+
+  // Nadaswara / Nadaswaram
+  if (id.includes('nadaswara') || name.includes('nadaswara') || id.includes('nadaswaram') || name.includes('nadaswaram')) return true;
+
+  // Normal garlands (note: Special Garlands has a dropdown; Normal Garlands does NOT)
+  if ((id.includes('normal-garland') || name.includes('normal garland') || name.includes('normal garlands')) && !name.includes('special')) return true;
+
+  // Music arrangement / Music system
+  if (id.includes('music') || name.includes('music')) return true;
+
+  // Choreography
+  if (id.includes('choreography') || name.includes('choreography')) return true;
+
+  // Punjabi dole / Punjabi dhol
+  if (id.includes('punjabi') || id.includes('dhol') || id.includes('dole') || name.includes('punjabi') || name.includes('dhol') || name.includes('dole')) return true;
+
+  // Kashi yatra / Kashi yatri
+  if (id.includes('kashi') || name.includes('kashi')) return true;
+
+  // Homa gunda
+  if (id.includes('homa') || id.includes('gunda') || name.includes('homa gunda')) return true;
+
+  // Dancers & Crackers
+  if (id.includes('dancer') || name.includes('dancer') || id.includes('cracker') || name.includes('cracker')) return true;
+
+  // Body guards and security
+  if (
+    groupId.includes('security') ||
+    id.includes('security') ||
+    id.includes('bouncer') ||
+    id.includes('guard') ||
+    name.includes('security') ||
+    name.includes('bouncer') ||
+    name.includes('body guard') ||
+    name.includes('bodyguard') ||
+    name.includes('guard')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Returns the maximum number of designs a customer can select for a decoration item.
+ * Explicit rule: In Stage Decoration, there should be 2 selectables from the dropdown.
+ * All other items allow 1 selectable.
+ */
+export function getMaxDecorationSelections(item: { id?: string; name?: string }): number {
+  const id = (item.id || '').toLowerCase();
+  const name = (item.name || '').toLowerCase();
+  if (id.includes('stage') || name.includes('stage')) {
+    return 2;
+  }
+  return 1;
 }
 
 /**
  * Returns the related photos for any decoration checklist option/item.
- * Maps the item's id or name to its curated photo collection from decoration-inspiration.
+ * Maps each service directly to its designated folder in /decotion/ without collisions.
  */
 export function getDecorationPhotosForItem(item: CatalogItem | { id: string; name?: string; groupId?: string | null }): DecorationPhoto[] {
+  // If this item is designated to have no dropdown, return empty array
+  if (isNoDropdownDecorationItem(item)) {
+    return [];
+  }
+
   const id = item.id.toLowerCase();
   const name = (item.name || '').toLowerCase();
   const groupId = (item.groupId || '').toLowerCase();
 
-  // Stage Decoration
+  // 1. Special Garlands -> /decotion/Garlands/
+  if (id.includes('special-garland') || name.includes('special garland') || name.includes('special garlands')) {
+    return getDecorationPhotosByCategory('garlands');
+  }
+
+  // 2. Mogina Jade -> /decotion/MAGINA JADI/
+  if (id.includes('mogina') || id.includes('jade') || id.includes('magina') || name.includes('mogina') || name.includes('jade') || name.includes('magina')) {
+    return getDecorationPhotosByCategory('magina-jadi');
+  }
+
+  // 3. Harini Bashinge / Harani Bashige -> /decotion/harani basing/
+  if (id.includes('harani') || id.includes('harini') || id.includes('bashinge') || id.includes('bashige') || id.includes('basing') || name.includes('harani') || name.includes('harini') || name.includes('bashinge') || name.includes('bashige') || name.includes('basing')) {
+    return getDecorationPhotosByCategory('harani-basing');
+  }
+
+  // 4. Muhurtha Manthapa Decoration -> /decotion/muhurtha mantapa decortion/ & /decotion/mantap decotion/
+  if (id.includes('muhurtha') || name.includes('muhurtha') || id.includes('mantap') || name.includes('mantap') || name.includes('manthapa')) {
+    return getDecorationPhotosByCategory('mantap-decoration');
+  }
+
+  // 5. Stage Decoration -> /decotion/stage decortion/ (Allows up to 2 selectables)
   if (id.includes('stage') || name.includes('stage')) {
     return getDecorationPhotosByCategory('stage-decoration');
   }
-  // Muhurtha Manthapa
-  if (id.includes('mantap') || name.includes('mantap') || name.includes('manthapa')) {
-    return getDecorationPhotosByCategory('mantap-decoration');
-  }
-  // Chappara / Flowers
+
+  // 6. Chapra Decoration / Chapra With Flowers -> /decotion/chapra with flower/
   if (id.includes('chappara') || name.includes('chappara') || id.includes('chapra') || name.includes('chapra')) {
     return getDecorationPhotosByCategory('chapra-with-flowers');
   }
-  // Door / Entrance
-  if (id.includes('door') || name.includes('door') || id.includes('gate') || name.includes('name plate')) {
+
+  // 7. House Lighting / LED Par Light -> /decotion/house-lighting/
+  if (id.includes('lighting') || name.includes('lighting') || id.includes('par-light') || name.includes('par light')) {
+    return getDecorationPhotosByCategory('house-lighting');
+  }
+
+  // 8. Entrance Gate Name Plate Decoration / Entrance Name Board -> /decotion/entersed gate name decortion/
+  if (id.includes('name-plate') || name.includes('name plate') || id.includes('name-board') || name.includes('name board') || id.includes('gate') || name.includes('gate name')) {
+    return getDecorationPhotosByCategory('entrance-gatename-decoration');
+  }
+
+  // 9. Front Door Decoration / Pooja Door / Venue Entrance Door -> /decotion/entersnce door decortion/ & /decotion/door decation/
+  if (id.includes('door') || name.includes('door') || id.includes('pooja') || name.includes('pooja')) {
     return getDecorationPhotosByCategory('door-decoration');
   }
-  // Passage
-  if (id.includes('passage') || name.includes('passage') || name.includes('walkway')) {
+
+  // 10. Entrance Passage Decoration / Pathway / Walkway / Staircase & Railings -> /decotion/pasage/
+  if (id.includes('passage') || name.includes('passage') || id.includes('pathway') || name.includes('pathway') || name.includes('walkway') || id.includes('staircase') || name.includes('staircase') || name.includes('railing')) {
     return getDecorationPhotosByCategory('passage-decoration');
   }
-  // Garlands
-  if (id.includes('garland') || name.includes('garland')) {
-    return getDecorationPhotosByCategory('garlands');
+
+  // 11. Haldi Decoration / Mehndi Decoration / Yellow Decoration -> /decotion/haldi decortion/
+  if (id.includes('mehndi') || name.includes('mehndi') || id.includes('mehendi') || name.includes('mehendi') || id.includes('haldi') || name.includes('haldi') || id.includes('yellow') || name.includes('yellow')) {
+    return getDecorationPhotosByCategory('haldi-decoration');
   }
-  // Saptapadi
-  if (id.includes('saptapadi') || name.includes('saptapadi')) {
+
+  // 12. Photo Booth / Phonebooth -> /decotion/photo both/
+  if (id.includes('photo-booth') || name.includes('photo booth') || id.includes('photobooth') || name.includes('photobooth') || id.includes('phonebooth') || name.includes('phonebooth')) {
+    return getDecorationPhotosByCategory('photo-booth');
+  }
+
+  // 13. Saptapadi / Sapthapadi & Deepa Alankara -> /decotion/sapthathi/ & /decotion/saptapadi/
+  if (id.includes('saptapadi') || name.includes('saptapadi') || id.includes('sapthapadi') || name.includes('sapthapadi') || id.includes('deepa') || name.includes('deepa')) {
     return getDecorationPhotosByCategory('saptapadi');
   }
-  // Cold fire / pyros / fireworks
-  if (id.includes('cold') || id.includes('pyro') || id.includes('smoke') || id.includes('firework') || name.includes('pyro') || name.includes('sparkler') || name.includes('smoke') || name.includes('firework')) {
+
+  // 14. Welcome Bouquet -> /decotion/welcome bouquet/
+  if (id.includes('bouquet') || name.includes('bouquet')) {
+    return getDecorationPhotosByCategory('welcome-bouquet');
+  }
+
+  // 15. Welcome Girls -> /decotion/welcome girls/
+  if (id.includes('welcome-girls') || name.includes('welcome girls')) {
+    return getDecorationPhotosByCategory('welcome-girls');
+  }
+
+  // 16. Cold Fair / Cold Pyros / Sparklers -> /decotion/cold fire/
+  if (id.includes('cold') || id.includes('pyro') || name.includes('pyro') || name.includes('sparkler') || id.includes('cold-fair')) {
     return getDecorationPhotosByCategory('cold-fire-entry');
   }
-  // Couple Entry Concept / Bridal entry / Vintage car / Carriage
-  if (groupId.includes('entry') || id.includes('entry') || name.includes('entry') || id.includes('vintage') || id.includes('carriage') || id.includes('canopy') || id.includes('cloud') || name.includes('cloud') || name.includes('canopy')) {
+
+  // 17. Couple Entry Concepts (Cloud Fog, Fireworks, Smoke Bombs, Vintage Car, Carriage, Floral Canopy) -> /decotion/couple-entry/ & /decotion/bridal entry idea/
+  if (
+    groupId.includes('entry') ||
+    id.includes('entry') ||
+    name.includes('entry') ||
+    id.includes('vintage') ||
+    id.includes('carriage') ||
+    id.includes('canopy') ||
+    id.includes('cloud') ||
+    id.includes('smoke') ||
+    id.includes('firework') ||
+    id.includes('fog') ||
+    name.includes('cloud') ||
+    name.includes('canopy') ||
+    name.includes('smoke') ||
+    name.includes('firework') ||
+    name.includes('carriage') ||
+    name.includes('vintage') ||
+    name.includes('fog')
+  ) {
     const bridal = getDecorationPhotosByCategory('bridal-entry');
+    const couple = getDecorationPhotosByCategory('couple-entry');
     const cold = getDecorationPhotosByCategory('cold-fire-entry');
-    return [...bridal, ...cold];
+    return [...bridal, ...couple, ...cold];
   }
-  // Bouncers & Security
-  if (groupId.includes('security') || id.includes('security') || name.includes('security') || name.includes('bouncer')) {
-    return [
-      { id: 'security-1', src: '/sid-party28.jpeg', category: 'security', categoryLabel: 'Bouncers & Security' },
-      { id: 'security-2', src: '/sid-party35.jpeg', category: 'security', categoryLabel: 'Bouncers & Security' },
-    ];
-  }
-  // Photo Booth / Haldi / Mehndi
-  if (id.includes('photo-booth') || name.includes('photo booth')) {
-    return [
-      { id: 'booth-1', src: '/sid-party25.jpeg', category: 'photo-booth', categoryLabel: 'Photo Booth' },
-      { id: 'booth-2', src: '/sid-party22.jpeg', category: 'photo-booth', categoryLabel: 'Photo Booth' },
-    ];
-  }
-  // Fallback to item images if present or stage photos
+
+  // Fallback to item images if present on catalog item
   if ('images' in item && item.images && item.images.length > 0) {
     return item.images.map((src, idx) => ({
       id: `${item.id}-${idx + 1}`,
@@ -196,5 +324,5 @@ export function getDecorationPhotosForItem(item: CatalogItem | { id: string; nam
     }));
   }
 
-  return getDecorationPhotosByCategory('stage-decoration').slice(0, 4);
+  return [];
 }

@@ -52,6 +52,7 @@ const nextConfig = {
       "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://plus.unsplash.com",
+      "media-src 'self' blob: data: https://*.supabase.co https://uidgthafelsbxusyxffd.supabase.co",
       "font-src 'self' data:",
       "connect-src 'self' blob: data: https://*.supabase.co",
       "frame-src 'self' https://maps.google.com https://www.google.com https://maps.googleapis.com",

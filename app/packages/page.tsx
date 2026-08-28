@@ -10,6 +10,7 @@ import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { LoadingState, EmptyState } from '@/components/builder/EmptyState';
 import { getEventTypes } from '@/lib/data/event-types';
 import { EventType } from '@/lib/types/catalog';
+import { SITE } from '@/lib/site-config';
 
 export default function PackagesPage() {
   const [eventTypes, setEventTypes] = useState<EventType[] | null>(null);
@@ -24,11 +25,19 @@ export default function PackagesPage() {
     };
   }, []);
 
-  return (
-    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16">
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Packages', item: `${SITE.siteUrl}/packages` },
+    ],
+  };
 
+  return (
+    <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16">
       {/* Header Banner */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
+      <section className="text-center space-y-4 max-w-3xl mx-auto">
         <span className="text-gold-600 font-semibold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300">
           Events We Plan
         </span>
@@ -40,7 +49,7 @@ export default function PackagesPage() {
           catering and more. Our team confirms pricing and availability after you send your enquiry.
         </p>
         <TraditionalBorder />
-      </div>
+      </section>
 
       {/* Event Types Grid */}
       {eventTypes === null ? (
@@ -53,7 +62,7 @@ export default function PackagesPage() {
           onAction={() => (window.location.href = '/custom-builder')}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
           {eventTypes.map((eventType) => (
             <GlassCard
               key={eventType.id}
@@ -80,7 +89,7 @@ export default function PackagesPage() {
                 </div>
 
                 <div className="px-6 pt-5">
-                  <h3 className="font-playfair text-xl font-bold text-maroon-900">{eventType.name}</h3>
+                  <h2 className="font-playfair text-xl font-bold text-maroon-900">{eventType.name}</h2>
                   <p className="text-xs text-maroon-700/80 leading-relaxed mt-1.5">{eventType.shortDescription}</p>
                 </div>
               </div>
@@ -94,8 +103,13 @@ export default function PackagesPage() {
               </div>
             </GlassCard>
           ))}
-        </div>
+        </section>
       )}
-    </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

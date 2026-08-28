@@ -55,6 +55,8 @@ export const metadata: Metadata = {
         url: '/logo.png',
         width: 1200,
         height: 1200,
+        alt: 'SID Events - Event Management in Davanagere, Karnataka',
+        type: 'image/png',
       },
     ],
     locale: 'en_IN',
@@ -69,15 +71,16 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true },
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
 };
 
 const localBusinessJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'EventPlanningBusiness',
+  '@id': `${SITE.siteUrl}/#organization`,
   name: SITE.name,
-  alternateName: SITE.legalName,
+  legalName: SITE.legalName,
   description: 'SID Events plans and manages weddings, engagements, receptions, traditional home functions, housewarmings and corporate events in Davanagere, Karnataka, including decoration, photography, videography and catering.',
   url: SITE.siteUrl,
   logo: `${SITE.siteUrl}/logo.png`,
@@ -93,12 +96,17 @@ const localBusinessJsonLd = {
     postalCode: '577004',
     addressCountry: 'IN',
   },
-  areaServed: ['Davanagere', 'Karnataka'],
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 14.4644,
+    longitude: 75.9218,
+  },
+  areaServed: [
+    { '@type': 'City', name: 'Davanagere' },
+    { '@type': 'AdministrativeArea', name: 'Karnataka' },
+  ],
   foundingDate: String(SITE.foundedYear),
   sameAs: [SITE.instagramUrl, SITE.facebookUrl],
-  // Mirrors the actual service categories built out elsewhere on the site
-  // (custom-builder catalog, /services) - not an exhaustive price list, just
-  // a factual list of what the business offers, matching visible content.
   makesOffer: [
     'Wedding Event Management',
     'Engagement & Reception Events',
@@ -114,8 +122,12 @@ const localBusinessJsonLd = {
 const websiteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
+  '@id': `${SITE.siteUrl}/#website`,
   name: SITE.name,
   url: SITE.siteUrl,
+  publisher: {
+    '@id': `${SITE.siteUrl}/#organization`,
+  },
 };
 
 export default function RootLayout({

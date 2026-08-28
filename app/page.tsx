@@ -169,7 +169,7 @@ export default function HomePage() {
     : galleryShowcase.filter((g) => g.category === galleryCategory);
 
   return (
-    <div className="bg-silk-100 text-maroon-900 min-h-screen relative pb-12 font-sans">
+    <main className="bg-silk-100 text-maroon-900 min-h-screen relative pb-12 font-sans">
       
       {/* 1. CINEMATIC HERO SECTION ("Royal South Indian Sanctum") */}
       <section className="relative min-h-screen-dvh flex items-center justify-center bg-maroon-950 text-silk-50 px-5 sm:px-8 overflow-hidden pt-16 pb-12 sm:pt-20 sm:pb-16">
@@ -604,6 +604,6 @@ export default function HomePage() {
           subtitle={activeLightbox.subtitle}
         />
       )}
-    </div>
+    </main>
   );
 }

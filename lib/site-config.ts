@@ -20,7 +20,7 @@ export const SITE = {
   // http://localhost:3000, which is what was actually being served in
   // production's sitemap.xml, robots.txt, and every page's canonical tag.
   // NEXT_PUBLIC_SITE_URL still overrides this (e.g. for preview deployments).
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sideventsmanagement.com',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://sideventsmanagement.com',
 } as const;
 
 export const SITE_STATS = [

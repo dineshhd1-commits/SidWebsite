@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import Image from 'next/image';
 import { GlassCard } from '@/components/ui/glass-card';
@@ -8,9 +6,28 @@ import { Award, ShieldCheck } from 'lucide-react';
 import { SITE } from '@/lib/site-config';
 
 export default function AboutPage() {
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `${SITE.siteUrl}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'About',
+        item: `${SITE.siteUrl}/about`,
+      },
+    ],
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+      <section className="text-center space-y-4 max-w-3xl mx-auto">
         <span className="font-script-sm text-gold-600 block">
           Our Story
         </span>
@@ -21,9 +38,9 @@ export default function AboutPage() {
           SID Events started in {SITE.foundedYear} as a small decor outfit in {SITE.city}. Over 10+ years we&apos;ve grown into a full-service event company &mdash; weddings, corporate events, birthdays and more &mdash; while still planning every event the same way: itemized, transparent, and true to what the client actually asked for.
         </p>
         <TraditionalBorder />
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="relative h-[450px] rounded-3xl overflow-hidden shadow-2xl border-4 border-gold-400">
           <Image
             src="/Sid2.jpg"
@@ -44,18 +61,23 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 gap-4 pt-4">
             <GlassCard variant="warm" className="p-4 space-y-2">
               <Award className="w-6 h-6 text-maroon-800" />
-              <h4 className="font-bold text-sm text-maroon-900">500+ Events Managed</h4>
+              <h3 className="font-bold text-sm text-maroon-900">500+ Events Managed</h3>
               <p className="text-xs text-maroon-700">Weddings, corporate events and celebrations across Karnataka since {SITE.foundedYear}.</p>
             </GlassCard>
 
             <GlassCard variant="warm" className="p-4 space-y-2">
               <ShieldCheck className="w-6 h-6 text-maroon-800" />
-              <h4 className="font-bold text-sm text-maroon-900">Line-Item Quotes</h4>
+              <h3 className="font-bold text-sm text-maroon-900">Line-Item Quotes</h3>
               <p className="text-xs text-maroon-700">Every quote shows individual service costs, not a bundled number.</p>
             </GlassCard>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

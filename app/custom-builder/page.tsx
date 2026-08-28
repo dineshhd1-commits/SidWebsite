@@ -342,9 +342,18 @@ function CustomBuilderPageInner() {
   const isPhotographyStep = currentStepIndex === PHOTOGRAPHY_STEP_INDEX;
   const hasPhotographySelections = Object.values(state.cart).some((line) => line.categoryKey === 'photography');
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sideventsmanagement.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Custom Package Builder', item: 'https://sideventsmanagement.com/custom-builder' },
+    ],
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 pb-24 lg:pb-10">
-      <div ref={stepContentRef} className="text-center space-y-3 scroll-mt-24">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 pb-24 lg:pb-10">
+      <section ref={stepContentRef} className="text-center space-y-3 scroll-mt-24">
         <span className="text-gold-600 font-semibold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300">
           Plan Your Event
         </span>
@@ -354,7 +363,7 @@ function CustomBuilderPageInner() {
         {selectedEventType && currentStepIndex > 0 && STEP_WELCOME_MESSAGES[currentStepIndex] && (
           <p className="text-maroon-700/80 text-sm max-w-xl mx-auto">{STEP_WELCOME_MESSAGES[currentStepIndex]}</p>
         )}
-      </div>
+      </section>
 
       {selectedEventType && (
         <div className="flex items-center justify-center gap-3 text-xs">
@@ -485,6 +494,11 @@ function CustomBuilderPageInner() {
           onEditDetails={() => setShowStepConfirmation(false)}
         />
       )}
-    </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

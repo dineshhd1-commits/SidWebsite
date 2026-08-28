@@ -84,10 +84,19 @@ export default function TermsAndConditionsPage() {
 
   const isKn = lang === 'kn';
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sideventsmanagement.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Terms & Conditions', item: 'https://sideventsmanagement.com/terms-and-conditions' },
+    ],
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       {/* Header & Language Toggle */}
-      <div className="text-center space-y-4 max-w-2xl mx-auto">
+      <section className="text-center space-y-4 max-w-2xl mx-auto">
         <div className="flex items-center justify-center gap-3">
           <span className="text-gold-600 font-semibold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300 inline-flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5" /> {isKn ? 'ಓದಲೇಬೇಕಾದ ನಿಯಮಗಳು' : 'Must Read'}
@@ -131,7 +140,7 @@ export default function TermsAndConditionsPage() {
             : 'Please read these terms carefully before confirming your booking with SID Events. Numbering follows the agreement exactly as issued.'}
         </p>
         <TraditionalBorder />
-      </div>
+      </section>
 
       {isKn ? (
         /* KANNADA TRANSLATIONS */
@@ -538,6 +547,11 @@ export default function TermsAndConditionsPage() {
           </GlassCard>
         </>
       )}
-    </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

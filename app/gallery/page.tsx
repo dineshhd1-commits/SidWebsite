@@ -10,6 +10,7 @@ import { LoadingState } from '@/components/builder/EmptyState';
 import { ZoomIn, PlayCircle, Grid } from 'lucide-react';
 import { SharedImageLightbox, LightboxMediaItem } from '@/components/ui/shared-image-lightbox';
 import { PortfolioAlbumModal } from '@/components/gallery/PortfolioAlbumModal';
+import { SITE } from '@/lib/site-config';
 
 export default function GalleryPage() {
   const [selectedAlbumIndex, setSelectedAlbumIndex] = useState<number | null>(null);
@@ -48,10 +49,19 @@ export default function GalleryPage() {
       })
     : [];
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Gallery', item: `${SITE.siteUrl}/gallery` },
+    ],
+  };
+
   return (
-    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10 sm:space-y-12">
+    <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10 sm:space-y-12">
       {/* Header */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
+      <section className="text-center space-y-4 max-w-3xl mx-auto">
         <span className="font-script-sm text-gold-600 block">Visual Heritage</span>
         <h1 className="font-playfair text-3xl sm:text-5xl lg:text-6xl font-bold text-maroon-900">
           Wedding <span className="font-script text-gold-500 font-normal">Gallery</span>
@@ -60,15 +70,15 @@ export default function GalleryPage() {
           Photos and clips from weddings we&apos;ve set up and shot over the last few seasons.
         </p>
         <TraditionalBorder />
-      </div>
+      </section>
 
       {/* Gallery Grid */}
       {items === null ? (
         <LoadingState label="Loading gallery..." />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
           {filteredItems.map((item, idx) => (
-            <div
+            <article
               key={item.id}
               onClick={() => {
                 setSelectedAlbumIndex(idx);
@@ -99,45 +109,55 @@ export default function GalleryPage() {
                 {item.mediaType === 'video' ? <PlayCircle className="w-5 h-5" /> : <ZoomIn className="w-5 h-5" />}
               </div>
 
+              {/* Album Multi-Photo Indicator Badge */}
+              {item.images && item.images.length > 1 && (
+                <div className="absolute top-4 left-4 bg-maroon-950/85 text-gold-300 px-3 py-1 rounded-full border border-gold-400/50 backdrop-blur-md text-[11px] font-bold flex items-center gap-1.5 shadow-md">
+                  <Grid className="w-3.5 h-3.5 text-gold-400" />
+                  <span>{item.images.length} Photos</span>
+                </div>
+              )}
+
               <div className="absolute bottom-4 left-4 right-4 text-silk-50">
-                {item.images && item.images.length > 1 && (
-                  <span className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold text-gold-300 bg-maroon-900/85 px-2.5 py-0.5 rounded-full border border-gold-400/30 mb-1.5 backdrop-blur-sm shadow">
-                    <Grid className="w-3 h-3" /> {item.images.length} Photos & Clips
-                  </span>
-                )}
-                <h4 className="font-playfair text-lg font-bold text-gold-100 mt-0.5 group-hover:text-gold-300 transition-colors">{item.title}</h4>
+                <span className="text-[10px] uppercase font-bold text-gold-300 bg-maroon-950/80 px-2.5 py-0.5 rounded border border-gold-400/30">
+                  {item.category === 'decoration' ? 'Decoration' : (item.category === 'traditional' ? 'Traditional Functions' : item.category)}
+                </span>
+                <h2 className="font-playfair text-lg font-bold text-silk-50 mt-1">{item.title}</h2>
               </div>
-            </div>
+            </article>
           ))}
-        </div>
+        </section>
       )}
 
-      {/* Catering-style Portfolio Album Modal */}
-      {selectedAlbum !== null && (
+      {/* Portfolio Album Grid Modal */}
+      {selectedAlbum && (
         <PortfolioAlbumModal
-          isOpen={selectedAlbumIndex !== null}
-          onClose={() => {
-            setSelectedAlbumIndex(null);
-            setLightboxIndex(null);
-          }}
           title={selectedAlbum.title}
-          categoryLabel={selectedAlbum.category === 'decoration' ? 'Manthapa Decor' : (selectedAlbum.category === 'traditional' ? 'Traditional Rituals & Pooja' : selectedAlbum.category)}
+          categoryLabel={selectedAlbum.category === 'decoration' ? 'Manthapa Decor' : (selectedAlbum.category === 'traditional' ? 'Traditional Rituals & Functions' : selectedAlbum.category)}
           items={activeAlbumMediaList}
-          onSelectMedia={(idx) => setLightboxIndex(idx)}
+          isOpen={true}
+          onClose={() => setSelectedAlbumIndex(null)}
+          onSelectMedia={(mediaIdx: number) => {
+            setLightboxIndex(mediaIdx);
+          }}
         />
       )}
 
-      {/* Full-Screen Lightbox View for inspecting individual photos/videos */}
-      {selectedAlbum !== null && lightboxIndex !== null && (
+      {/* Shared Lightbox Component */}
+      {selectedAlbum && lightboxIndex !== null && activeAlbumMediaList.length > 0 && (
         <SharedImageLightbox
           items={activeAlbumMediaList}
           initialIndex={lightboxIndex}
           isOpen={true}
           onClose={() => setLightboxIndex(null)}
           title={selectedAlbum.title}
-          subtitle={selectedAlbum.category === 'decoration' ? 'Manthapa Decor' : selectedAlbum.category}
+          subtitle={selectedAlbum.category === 'decoration' ? 'Manthapa Decor' : (selectedAlbum.category === 'traditional' ? 'Traditional Rituals & Functions' : selectedAlbum.category)}
         />
       )}
-    </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

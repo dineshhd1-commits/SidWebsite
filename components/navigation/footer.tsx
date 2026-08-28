@@ -136,7 +136,7 @@ export const Footer: React.FC = () => {
             </a>
           </div>
           <div className="flex items-center gap-6">
-            <Link href="#" className="hover:underline">Privacy Policy</Link>
+            <Link href="/terms-and-conditions" className="hover:underline">Privacy Policy</Link>
             <Link href="/terms-and-conditions" className="hover:underline">Terms &amp; Conditions</Link>
           </div>
         </div>

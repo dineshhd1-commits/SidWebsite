@@ -113,17 +113,17 @@ function ContactFormInner() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* General Contact Form (7 cols) */}
       <div className="lg:col-span-7">
         <GlassCard className="space-y-6">
-          <h3 className="font-playfair text-xl font-bold text-maroon-900 border-b border-gold-300 pb-3">
+          <h2 className="font-playfair text-xl font-bold text-maroon-900 border-b border-gold-300 pb-3">
             {contactData.anniversaryType
               ? `${contactData.anniversaryType} Inquiry`
               : contactData.eventType === 'birthday'
               ? 'Birthday Celebration Inquiry'
               : 'Direct Event Inquiry & Consultation'}
-          </h3>
+          </h2>
           <p className="text-xs text-maroon-700/70 -mt-3">
             {contactData.anniversaryType
               ? `We have received your basic event details for ${contactData.anniversaryType}. Fill in any additional notes below to consult with our specialist team.`
@@ -132,7 +132,7 @@ function ContactFormInner() {
 
           {submitted ? (
             <div className="p-6 bg-emerald-100 border border-emerald-300 rounded-2xl text-emerald-900 text-center space-y-2">
-              <h4 className="font-bold text-lg">Thank You! Message Received.</h4>
+              <h3 className="font-bold text-lg">Thank You! Message Received.</h3>
               <p className="text-xs">Our team will get back to you shortly.</p>
             </div>
           ) : (
@@ -230,9 +230,9 @@ function ContactFormInner() {
         </div>
 
         <GlassCard variant="dark" className="border-2 border-gold-400 space-y-6">
-          <h3 className="font-playfair text-xl font-bold text-gold-300 border-b border-gold-400/40 pb-3">
+          <h2 className="font-playfair text-xl font-bold text-gold-300 border-b border-gold-400/40 pb-3">
             Studio Location &amp; Helpline
-          </h3>
+          </h2>
 
           <div className="space-y-4 text-xs text-gold-100">
             <div className="flex items-start gap-3">
@@ -277,14 +277,23 @@ function ContactFormInner() {
           </div>
         </GlassCard>
       </div>
-    </div>
+    </section>
   );
 }
 
 export default function ContactPage() {
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Contact', item: `${SITE.siteUrl}/contact` },
+    ],
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+      <section className="text-center space-y-4 max-w-3xl mx-auto">
         <span className="text-gold-600 font-semibold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300">
           Get In Touch
         </span>
@@ -303,11 +312,16 @@ export default function ContactPage() {
             </GoldButton>
           </Link>
         </div>
-      </div>
+      </section>
 
       <Suspense fallback={<div className="text-center py-10 text-maroon-800">Loading inquiry form...</div>}>
         <ContactFormInner />
       </Suspense>
-    </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

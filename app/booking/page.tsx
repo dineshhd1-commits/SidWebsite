@@ -181,11 +181,20 @@ export default function BookingPage() {
     router.push(`/request-received?ref=${refCode}`);
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Booking', item: `${SITE.siteUrl}/booking` },
+    ],
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+    <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
 
       {/* Page Header */}
-      <div className="text-center space-y-3">
+      <section className="text-center space-y-3">
         <span className="text-gold-600 font-semibold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300">
           Request A Quote
         </span>
@@ -195,16 +204,16 @@ export default function BookingPage() {
         <p className="text-maroon-700/80 text-sm max-w-xl mx-auto">
           No payment or fixed price here &mdash; share your details and our team will follow up with a custom quote.
         </p>
-      </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
         {/* Customer Details Form (7 cols) */}
         <div className="lg:col-span-7">
           <GlassCard className="space-y-6">
-            <h3 className="font-playfair text-xl font-bold text-maroon-900 border-b border-gold-300 pb-3">
+            <h2 className="font-playfair text-xl font-bold text-maroon-900 border-b border-gold-300 pb-3">
               Event & Customer Contact Information
-            </h3>
+            </h2>
 
             {friendlyErrors.length > 0 && (
               <div className="flex items-start gap-2 text-xs bg-amber-50 border border-amber-300 text-amber-900 rounded-xl px-4 py-3">
@@ -344,9 +353,9 @@ export default function BookingPage() {
         {/* Selections Summary (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           <GlassCard variant="dark" className="border-2 border-gold-400 space-y-6">
-            <h3 className="font-playfair text-lg font-bold text-gold-300 border-b border-gold-400/40 pb-3">
+            <h2 className="font-playfair text-lg font-bold text-gold-300 border-b border-gold-400/40 pb-3">
               Your Custom Package Selections
-            </h3>
+            </h2>
 
             <div className="space-y-2 text-xs text-gold-100/90">
               <div className="flex justify-between">
@@ -374,6 +383,11 @@ export default function BookingPage() {
           </GlassCard>
         </div>
       </div>
-    </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

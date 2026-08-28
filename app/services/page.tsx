@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -64,8 +62,48 @@ const ICONS: Record<BusinessOffering['iconKey'], React.ReactNode> = {
 };
 
 export default function ServicesPage() {
+  const serviceItemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: BUSINESS_OFFERINGS.map((offering, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      item: {
+        '@type': 'Service',
+        name: offering.title,
+        description: offering.description,
+        provider: {
+          '@id': `${SITE.siteUrl}/#organization`,
+        },
+        areaServed: [
+          { '@type': 'City', name: 'Davanagere' },
+          { '@type': 'AdministrativeArea', name: 'Karnataka' },
+        ],
+      },
+    })),
+  };
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: SERVICE_FAQS.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Services', item: `${SITE.siteUrl}/services` },
+    ],
+  };
+
   return (
-    <div className="space-y-12 sm:space-y-16 pb-16">
+    <main className="space-y-12 sm:space-y-16 pb-16">
       {/* Full-Width Full-Screen Hero Banner Section */}
       <section className="relative w-full min-h-screen-dvh sm:min-h-[100dvh] flex items-center justify-center overflow-hidden border-b-2 border-gold-400/40 bg-maroon-950 pt-20 sm:pt-24">
         <Image
@@ -102,9 +140,9 @@ export default function ServicesPage() {
           <span className="text-maroon-900">Services</span>
         </nav>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
           {BUSINESS_OFFERINGS.map((offering) => (
-            <div
+            <article
               key={offering.id}
               className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
@@ -119,18 +157,18 @@ export default function ServicesPage() {
               </div>
               <div className="p-6 space-y-2 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="font-playfair text-lg font-bold text-maroon-900">{offering.title}</h3>
+                  <h2 className="font-playfair text-lg font-bold text-maroon-900">{offering.title}</h2>
                   <p className="text-xs text-maroon-700/80 leading-relaxed mt-1">{offering.description}</p>
                 </div>
                 <Link href="/contact" className="inline-flex items-center gap-1.5 text-xs font-bold text-gold-700 hover:text-maroon-900 mt-4">
                   Enquire About This <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-            </div>
+            </article>
           ))}
-        </div>
+        </section>
 
-        <div className="bg-maroon-950 rounded-3xl p-10 text-center space-y-5 border border-gold-400/30">
+        <section className="bg-maroon-950 rounded-3xl p-10 text-center space-y-5 border border-gold-400/30">
           <h2 className="font-playfair text-2xl sm:text-3xl font-bold text-silk-50">
             Planning a wedding specifically? Try our live package builder.
           </h2>
@@ -145,11 +183,11 @@ export default function ServicesPage() {
               <GoldButton variant="dark" size="md">Chat on WhatsApp</GoldButton>
             </a>
           </div>
-        </div>
+        </section>
 
         {/* FAQ - answers the questions customers (and AI search assistants
             summarizing this page) actually ask before enquiring. */}
-        <div className="space-y-6">
+        <section className="space-y-6">
           <h2 className="font-playfair text-2xl sm:text-3xl font-bold text-maroon-900 text-center">
             Frequently Asked Questions
           </h2>
@@ -161,46 +199,37 @@ export default function ServicesPage() {
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
         {/* Related pages - keeps every important page reachable through a
             crawlable link and gives readers (human and AI) a clear next step. */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-bold text-gold-700">
-          <Link href="/packages" className="hover:text-maroon-900 hover:underline">Wedding & Event Packages</Link>
+        <nav aria-label="Related Pages" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-bold text-gold-700">
+          <Link href="/packages" className="hover:text-maroon-900 hover:underline">Wedding &amp; Event Packages</Link>
           <Link href="/gallery" className="hover:text-maroon-900 hover:underline">Decoration Gallery</Link>
           <Link href="/testimonials" className="hover:text-maroon-900 hover:underline">Client Reviews</Link>
           <Link href="/about" className="hover:text-maroon-900 hover:underline">About SID Events</Link>
           <Link href="/contact" className="hover:text-maroon-900 hover:underline">Contact Us</Link>
-        </div>
+        </nav>
       </div>
 
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: SERVICE_FAQS.map((faq) => ({
-              '@type': 'Question',
-              name: faq.question,
-              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-            })),
-          }),
+          __html: JSON.stringify(serviceItemListJsonLd),
         }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.siteUrl}/` },
-              { '@type': 'ListItem', position: 2, name: 'Services', item: `${SITE.siteUrl}/services` },
-            ],
-          }),
+          __html: JSON.stringify(faqJsonLd),
         }}
       />
-    </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd),
+        }}
+      />
+    </main>
   );
 }

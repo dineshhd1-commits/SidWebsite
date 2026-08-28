@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { LoadingState } from '@/components/builder/EmptyState';
 import { Star, Quote, CheckCircle2 } from 'lucide-react';
+import { SITE } from '@/lib/site-config';
 
 function getInitials(name: string): string {
   if (!name) return 'S';
@@ -21,11 +22,19 @@ export default function TestimonialsPage() {
     getTestimonials().then(setTestimonials);
   }, []);
 
-  return (
-    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16">
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Testimonials', item: `${SITE.siteUrl}/testimonials` },
+    ],
+  };
 
+  return (
+    <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16">
       {/* Header */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
+      <section className="text-center space-y-4 max-w-3xl mx-auto">
         <span className="text-gold-600 font-semibold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300">
           Verified Google Reviews
         </span>
@@ -36,13 +45,13 @@ export default function TestimonialsPage() {
           Authentic client feedback and reviews from Google for SID Events.
         </p>
         <TraditionalBorder />
-      </div>
+      </section>
 
       {/* Reviews Grid */}
       {testimonials === null ? (
         <LoadingState label="Loading reviews..." />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8">
           {testimonials.map((t) => (
             <GlassCard key={t.id} variant="warm" className="flex flex-col justify-between space-y-6 relative p-8">
               <Quote className="absolute top-4 right-4 w-10 h-10 text-gold-400/30" />
@@ -68,7 +77,7 @@ export default function TestimonialsPage() {
                   {getInitials(t.coupleNames)}
                 </div>
                 <div>
-                  <h4 className="font-playfair text-base font-bold text-maroon-900">{t.coupleNames}</h4>
+                  <h2 className="font-playfair text-base font-bold text-maroon-900">{t.coupleNames}</h2>
                   <p className="text-xs text-maroon-700">{t.location}</p>
                   {t.isGoogleVerified && (
                     <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 font-bold mt-0.5">
@@ -79,8 +88,13 @@ export default function TestimonialsPage() {
               </div>
             </GlassCard>
           ))}
-        </div>
+        </section>
       )}
-    </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+    </main>
   );
 }

@@ -4,6 +4,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { Award, ShieldCheck } from 'lucide-react';
 import { SITE } from '@/lib/site-config';
+import { toAssetUrl } from '@/lib/asset-url';
 
 export default function AboutPage() {
   const breadcrumbJsonLd = {
@@ -43,7 +44,7 @@ export default function AboutPage() {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="relative h-[450px] rounded-3xl overflow-hidden shadow-2xl border-4 border-gold-400">
           <Image
-            src="/Sid2.jpg"
+            src={toAssetUrl('/Sid2.jpg')}
             alt="The SID Events studio in Davanagere - Planning, Design, Perfection"
             fill
             sizes="(min-width: 768px) 50vw, 100vw"

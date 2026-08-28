@@ -99,7 +99,6 @@ export function CorporateDecorationEnquiryModal({ eventTypeId, eventTypeLabel, s
     setErrors([]);
     setIsSubmitting(true);
 
-    const code = `CDE-${Math.floor(1000 + Math.random() * 9000)}`;
     const details: CorporateDecorationEnquiryDetails = {
       eventTypeId,
       eventTypeLabel,
@@ -115,7 +114,10 @@ export function CorporateDecorationEnquiryModal({ eventTypeId, eventTypeLabel, s
       selectedOptions,
     };
 
-    const { savedToBackend } = await saveCorporateDecorationEnquiry(details, code);
+    // The reference code is now server-generated (see saveAdminQuote/
+    // /api/enquiry) rather than a client-guessable 4-digit number, so the
+    // WhatsApp message and on-screen confirmation both wait for it here.
+    const { refCode: code, savedToBackend } = await saveCorporateDecorationEnquiry(details);
     if (!savedToBackend) {
       // The admin CRM record didn't save - don't silently pretend this
       // reached the owner. WhatsApp (opened below) still gets it to them

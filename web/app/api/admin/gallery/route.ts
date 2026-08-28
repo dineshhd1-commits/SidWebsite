@@ -14,7 +14,10 @@ const gallerySchema = z.object({
   displayOrder: z.number().default(0),
 });
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const admin = getSupabaseAdminClient();
   const { data, error } = await admin.from('gallery_items').select('*').order('display_order', { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

@@ -26,6 +26,13 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'plus.unsplash.com',
       },
+      {
+        // The project's own Supabase Storage host - serves catalog images
+        // (existing) and, since lib/asset-url.ts's toAssetUrl(), the site's
+        // own gallery/hero assets uploaded by scripts/upload-site-assets.mjs.
+        protocol: 'https',
+        hostname: 'uidgthafelsbxusyxffd.supabase.co',
+      },
     ],
   },
   // Fonts are self-hosted via next/font/google (built at compile time, no

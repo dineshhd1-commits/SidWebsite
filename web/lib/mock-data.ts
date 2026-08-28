@@ -5,20 +5,61 @@ import {
   GalleryItem,
   Testimonial,
 } from './types/wedding';
-import { WEDDING_PORTFOLIO_ASSETS } from './data/wedding-portfolio-assets';
-import { RECEPTION_PORTFOLIO_ASSETS } from './data/reception-portfolio-assets';
-import { PREWEDDING_PORTFOLIO_ASSETS } from './data/prewedding-portfolio-assets';
-import { NAMING_PORTFOLIO_ASSETS } from './data/naming-portfolio-assets';
-import { CRADLE_PORTFOLIO_ASSETS } from './data/cradle-portfolio-assets';
-import { GRIHA_PRAVESH_PORTFOLIO_ASSETS } from './data/griha-pravesh-portfolio-assets';
-import { ANNIVERSARY_PORTFOLIO_ASSETS } from './data/anniversary-portfolio-assets';
-import { CORPORATE_PORTFOLIO_ASSETS } from './data/corporate-portfolio-assets';
-import { HALDI_PORTFOLIO_ASSETS } from './data/haldi-portfolio-assets';
-import { PHOTOBOOTH_PORTFOLIO_ASSETS } from './data/photobooth-portfolio-assets';
-import { PASSAGE_PORTFOLIO_ASSETS } from './data/passage-portfolio-assets';
-import { CANDID_PORTFOLIO_ASSETS } from './data/candid-portfolio-assets';
+import { toAssetUrl } from './asset-url';
+import { WEDDING_PORTFOLIO_ASSETS as WEDDING_PORTFOLIO_ASSETS_LOCAL } from './data/wedding-portfolio-assets';
+import { RECEPTION_PORTFOLIO_ASSETS as RECEPTION_PORTFOLIO_ASSETS_LOCAL } from './data/reception-portfolio-assets';
+import { PREWEDDING_PORTFOLIO_ASSETS as PREWEDDING_PORTFOLIO_ASSETS_LOCAL } from './data/prewedding-portfolio-assets';
+import { NAMING_PORTFOLIO_ASSETS as NAMING_PORTFOLIO_ASSETS_LOCAL } from './data/naming-portfolio-assets';
+import { CRADLE_PORTFOLIO_ASSETS as CRADLE_PORTFOLIO_ASSETS_LOCAL } from './data/cradle-portfolio-assets';
+import { GRIHA_PRAVESH_PORTFOLIO_ASSETS as GRIHA_PRAVESH_PORTFOLIO_ASSETS_LOCAL } from './data/griha-pravesh-portfolio-assets';
+import { ANNIVERSARY_PORTFOLIO_ASSETS as ANNIVERSARY_PORTFOLIO_ASSETS_LOCAL } from './data/anniversary-portfolio-assets';
+import { CORPORATE_PORTFOLIO_ASSETS as CORPORATE_PORTFOLIO_ASSETS_LOCAL } from './data/corporate-portfolio-assets';
+import { HALDI_PORTFOLIO_ASSETS as HALDI_PORTFOLIO_ASSETS_LOCAL } from './data/haldi-portfolio-assets';
+import { PHOTOBOOTH_PORTFOLIO_ASSETS as PHOTOBOOTH_PORTFOLIO_ASSETS_LOCAL } from './data/photobooth-portfolio-assets';
+import { PASSAGE_PORTFOLIO_ASSETS as PASSAGE_PORTFOLIO_ASSETS_LOCAL } from './data/passage-portfolio-assets';
+import { CANDID_PORTFOLIO_ASSETS as CANDID_PORTFOLIO_ASSETS_LOCAL } from './data/candid-portfolio-assets';
 
-export const MOCK_SERVICES: WeddingService[] = [
+// These 13 arrays hold local /public paths (see lib/data/*-portfolio-assets.ts).
+// Mapped once here through toAssetUrl() so every consumer below gets the
+// Supabase Storage URL (once scripts/upload-site-assets.mjs has uploaded
+// them there) without touching ~2000 lines of filenames or every render site.
+const WEDDING_PORTFOLIO_ASSETS = WEDDING_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const RECEPTION_PORTFOLIO_ASSETS = RECEPTION_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const PREWEDDING_PORTFOLIO_ASSETS = PREWEDDING_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const NAMING_PORTFOLIO_ASSETS = NAMING_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const CRADLE_PORTFOLIO_ASSETS = CRADLE_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const GRIHA_PRAVESH_PORTFOLIO_ASSETS = GRIHA_PRAVESH_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const ANNIVERSARY_PORTFOLIO_ASSETS = ANNIVERSARY_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const CORPORATE_PORTFOLIO_ASSETS = CORPORATE_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const HALDI_PORTFOLIO_ASSETS = HALDI_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const PHOTOBOOTH_PORTFOLIO_ASSETS = PHOTOBOOTH_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const PASSAGE_PORTFOLIO_ASSETS = PASSAGE_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+const CANDID_PORTFOLIO_ASSETS = CANDID_PORTFOLIO_ASSETS_LOCAL.map(toAssetUrl);
+
+/** Generic deep-walk fallback for the handful of literal /public paths
+ * scattered directly in MOCK_SERVICES/MOCK_STANDARD_PACKAGES/MOCK_GALLERY
+ * below (hero images, service thumbnails, etc) that aren't already covered
+ * by the portfolio-asset arrays above - converts any string field matching
+ * a local asset path to its Supabase Storage URL, recursively, regardless
+ * of field name. */
+function deepToAssetUrl<T>(value: T): T {
+  if (typeof value === 'string') {
+    return (/^\/.+\.(jpg|jpeg|png|webp|avif|svg|gif|mp4)$/i.test(value) ? toAssetUrl(value) : value) as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((v) => deepToAssetUrl(v)) as T;
+  }
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const k of Object.keys(value as Record<string, unknown>)) {
+      out[k] = deepToAssetUrl((value as Record<string, unknown>)[k]);
+    }
+    return out as T;
+  }
+  return value;
+}
+
+const MOCK_SERVICES_LOCAL: WeddingService[] = [
   // Step 1 – Decoration (Featured & Entertainment)
   {
     id: 'dec-fog-machine',
@@ -368,7 +409,7 @@ export interface BusinessOffering {
   imageUrl?: string;
 }
 
-export const BUSINESS_OFFERINGS: BusinessOffering[] = [
+const BUSINESS_OFFERINGS_LOCAL: BusinessOffering[] = [
   {
     id: 'photography',
     title: 'Photography',
@@ -412,8 +453,10 @@ export const BUSINESS_OFFERINGS: BusinessOffering[] = [
     imageUrl: '/services/sound-and-music.jpg',
   },
 ];
+export const BUSINESS_OFFERINGS: BusinessOffering[] = deepToAssetUrl(BUSINESS_OFFERINGS_LOCAL);
+export const MOCK_SERVICES: WeddingService[] = deepToAssetUrl(MOCK_SERVICES_LOCAL);
 
-export const MOCK_STANDARD_PACKAGES: StandardPackage[] = [
+const MOCK_STANDARD_PACKAGES_LOCAL: StandardPackage[] = [
   {
     id: 'pkg-silver',
     name: 'Silver Wedding Package',
@@ -519,6 +562,7 @@ export const MOCK_STANDARD_PACKAGES: StandardPackage[] = [
     ],
   },
 ];
+export const MOCK_STANDARD_PACKAGES: StandardPackage[] = deepToAssetUrl(MOCK_STANDARD_PACKAGES_LOCAL);
 
 export const DEFAULT_BUILDER_STATE: CustomBuilderState = {
   currentStep: 1,
@@ -573,7 +617,7 @@ export const DEFAULT_BUILDER_STATE: CustomBuilderState = {
   },
 };
 
-export const MOCK_GALLERY: GalleryItem[] = [
+const MOCK_GALLERY_LOCAL: GalleryItem[] = [
   // 1. Traditional Wedding & Muhurtham Ceremony (max 30 assets)
   {
     id: 'gal-wedding-collection',
@@ -694,6 +738,7 @@ export const MOCK_GALLERY: GalleryItem[] = [
     images: CANDID_PORTFOLIO_ASSETS,
   },
 ];
+export const MOCK_GALLERY: GalleryItem[] = deepToAssetUrl(MOCK_GALLERY_LOCAL);
 
 export const MOCK_TESTIMONIALS: Testimonial[] = [
   {

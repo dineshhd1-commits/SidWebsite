@@ -25,3 +25,23 @@ export function sanitizeAlphanumericOnly(value: string): string {
 export function isAlphanumericOnly(value: string): boolean {
   return ALPHANUMERIC_PATTERN.test(value);
 }
+
+/** Free-text pattern for fields like "Special Requirements"/booking notes:
+ * letters, numbers, spaces, and common sentence punctuation. There's no
+ * injection risk here (the value is only ever stored in a JSON column and
+ * displayed as plain text in the CRM/PDF/WhatsApp message), so this exists
+ * purely to let customers write an actual sentence - unlike
+ * ALPHANUMERIC_PATTERN, which strips spaces and made multi-word input
+ * impossible. Still rejects control characters and anything outside this
+ * printable set. */
+const FREE_TEXT_PATTERN = /^[a-zA-Z0-9\s.,'"!?()\-:;&]*$/;
+
+/** Strips anything outside the free-text set above - used on every keystroke
+ * so invalid characters never actually appear in the field. */
+export function sanitizeFreeText(value: string): string {
+  return value.replace(/[^a-zA-Z0-9\s.,'"!?()\-:;&]/g, '');
+}
+
+export function isFreeText(value: string): boolean {
+  return FREE_TEXT_PATTERN.test(value);
+}

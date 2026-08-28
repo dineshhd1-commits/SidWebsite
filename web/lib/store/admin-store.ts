@@ -178,16 +178,58 @@ export async function getAdminQuotesFromBackend(): Promise<AdminQuoteRequest[]> 
   }
 }
 
-/** Saves a newly-submitted enquiry. Always writes an optimistic local copy
- * immediately; when Supabase is configured, awaits the real insert so the
- * caller can confirm the owner's CRM actually received it before telling
- * the customer their request went through. */
+/** Saves a newly-submitted enquiry. POSTs to the server-side /api/enquiry
+ * trust boundary (service-role key, full validation, rate limiting) rather
+ * than writing to Supabase directly with the anon key - the anon key has no
+ * write access to `quotations` at all now (see
+ * supabase/migrations/20260828000000_lockdown_rls.sql), and letting the
+ * browser assert its own reference code/fields defeated the entire point of
+ * that trust boundary. Falls back to a local-only record (with a
+ * client-generated placeholder id) if the request fails, so the caller can
+ * still show the customer something and fall back to the WhatsApp channel,
+ * matching the main booking flow's existing failure behaviour. */
 export async function saveAdminQuote(
-  quote: Omit<AdminQuoteRequest, 'id' | 'createdAt' | 'status'>
+  quote: Omit<AdminQuoteRequest, 'id' | 'refCode' | 'createdAt' | 'status'>
 ): Promise<{ record: AdminQuoteRequest; savedToBackend: boolean }> {
+  let refCode = `local-${Date.now()}`;
+  let savedToBackend = false;
+
+  try {
+    const res = await fetch('/api/enquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerName: quote.customerName,
+        customerPhone: quote.customerPhone,
+        customerEmail: quote.customerEmail,
+        weddingDate: quote.weddingDate,
+        venueCity: quote.venueCity,
+        venueAddress: quote.venueAddress,
+        guestCount: quote.guestCount,
+        cateringTier: quote.cateringTier,
+        photographyTier: quote.photographyTier,
+        purohitTier: quote.purohitTier,
+        selectedServicesCount: quote.selectedServicesCount,
+        estimatedCost: quote.estimatedCost,
+        notes: quote.notes || '',
+        fullDetails: quote.fullDetails,
+      }),
+    });
+    const body = await res.json().catch(() => null);
+    if (res.ok && body?.refCode) {
+      refCode = body.refCode;
+      savedToBackend = !!body.savedToBackend;
+    } else {
+      console.error('Enquiry submission failed:', res.status, body?.error);
+    }
+  } catch (e) {
+    console.error('Enquiry submission error:', e);
+  }
+
   const newRecord: AdminQuoteRequest = {
     ...quote,
     id: `quote-${Date.now()}`,
+    refCode,
     status: 'New',
     createdAt: new Date().toISOString(),
   };
@@ -195,38 +237,6 @@ export async function saveAdminQuote(
   if (typeof window !== 'undefined') {
     const current = getAdminQuotes();
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify([newRecord, ...current]));
-  }
-
-  let savedToBackend = false;
-  if (isSupabaseConfigured()) {
-    const { error } = await supabase.from('quotations').insert([
-      {
-        id: newRecord.refCode,
-        customer_name: newRecord.customerName,
-        customer_email: newRecord.customerEmail,
-        customer_phone: newRecord.customerPhone,
-        wedding_date: newRecord.weddingDate || null,
-        venue_city: newRecord.venueCity,
-        builder_state: {
-          venueAddress: newRecord.venueAddress,
-          guestCount: newRecord.guestCount,
-          notes: newRecord.notes || '',
-          cateringTier: newRecord.cateringTier,
-          photographyTier: newRecord.photographyTier,
-          purohitTier: newRecord.purohitTier,
-          selectedServicesCount: newRecord.selectedServicesCount,
-          fullDetails: newRecord.fullDetails,
-          pdfUrl: newRecord.pdfUrl || null,
-        },
-        price_breakdown: { estimatedCost: newRecord.estimatedCost },
-        status: newRecord.status,
-      },
-    ]);
-    if (error) {
-      console.error('Supabase quote sync error:', error);
-    } else {
-      savedToBackend = true;
-    }
   }
 
   return { record: newRecord, savedToBackend };
@@ -243,9 +253,8 @@ export async function saveAdminQuote(
  * is lost. Reuses saveAdminQuote - same Supabase `quotations` table, same
  * localStorage fallback, same everything. */
 export async function saveCorporateDecorationEnquiry(
-  details: CorporateDecorationEnquiryDetails,
-  refCode: string
-): Promise<{ savedToBackend: boolean }> {
+  details: CorporateDecorationEnquiryDetails
+): Promise<{ refCode: string; savedToBackend: boolean }> {
   const isCorporate = details.eventTypeId === 'corporate_event';
 
   const fullDetails: EnquiryDetails = {
@@ -285,8 +294,7 @@ export async function saveCorporateDecorationEnquiry(
     .filter(Boolean)
     .join('\n');
 
-  const { savedToBackend } = await saveAdminQuote({
-    refCode,
+  const { record, savedToBackend } = await saveAdminQuote({
     customerName: details.customerName,
     customerPhone: details.phone,
     customerEmail: details.email,
@@ -303,7 +311,7 @@ export async function saveCorporateDecorationEnquiry(
     fullDetails,
   });
 
-  return { savedToBackend };
+  return { refCode: record.refCode, savedToBackend };
 }
 
 /** Uploads a generated Event Enquiry PDF to Supabase Storage under a
@@ -345,13 +353,19 @@ export async function uploadEnquiryPdf(pdfBlob: Blob, refCode: string): Promise<
 // an anonymous visitor must never be able to edit, re-status, or delete
 // another customer's enquiry record just by having the public anon key.
 
-export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteRequest[] {
+// All three mutations below now `await` the real backend call and throw on
+// failure instead of firing-and-forgetting it - the caller (the admin
+// dashboard's optimistic UI) needs to know when the write didn't actually
+// happen so it can resync from the backend instead of showing a status/edit
+// that only exists in the browser tab that made it.
+
+export async function updateAdminQuote(updatedQuote: AdminQuoteRequest): Promise<AdminQuoteRequest[]> {
   const current = getAdminQuotes();
   const updated = current.map((q) => (q.id === updatedQuote.id ? updatedQuote : q));
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  fetch('/api/admin/quotes', {
+  const res = await fetch('/api/admin/quotes', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -361,37 +375,34 @@ export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteReq
       customerPhone: updatedQuote.customerPhone,
       status: updatedQuote.status,
     }),
-  }).then((res) => {
-    if (!res.ok) console.error('Admin quote update failed:', res.status);
   });
+  if (!res.ok) throw new Error(`Admin quote update failed: ${res.status}`);
   return updated;
 }
 
-export function updateQuoteStatus(id: string, refCode: string, status: AdminQuoteStatus): AdminQuoteRequest[] {
+export async function updateQuoteStatus(id: string, refCode: string, status: AdminQuoteStatus): Promise<AdminQuoteRequest[]> {
   const current = getAdminQuotes();
   const updated = current.map((q) => (q.id === id ? { ...q, status } : q));
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  fetch('/api/admin/quotes', {
+  const res = await fetch('/api/admin/quotes', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refCode, status }),
-  }).then((res) => {
-    if (!res.ok) console.error('Admin quote status update failed:', res.status);
   });
+  if (!res.ok) throw new Error(`Admin quote status update failed: ${res.status}`);
   return updated;
 }
 
-export function deleteAdminQuote(id: string, refCode: string): AdminQuoteRequest[] {
+export async function deleteAdminQuote(id: string, refCode: string): Promise<AdminQuoteRequest[]> {
   const current = getAdminQuotes();
   const updated = current.filter((q) => q.id !== id);
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  fetch(`/api/admin/quotes?refCode=${encodeURIComponent(refCode)}`, { method: 'DELETE' }).then((res) => {
-    if (!res.ok) console.error('Admin quote delete failed:', res.status);
-  });
+  const res = await fetch(`/api/admin/quotes?refCode=${encodeURIComponent(refCode)}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Admin quote delete failed: ${res.status}`);
   return updated;
 }
 

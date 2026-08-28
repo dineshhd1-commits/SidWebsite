@@ -20,12 +20,77 @@ const CATEGORY_LABELS: Record<string, string> = {
   additional_services: 'Additional Services',
 };
 
+interface RemoteQuotationLine {
+  name: string;
+  quantity: number;
+}
+interface RemoteQuotationSection {
+  categoryKey: string;
+  label: string;
+  lines: RemoteQuotationLine[];
+}
+interface RemoteQuotation {
+  guestCount: number;
+  sections: RemoteQuotationSection[];
+  requestedExtras: RemoteQuotationLine[];
+}
+
 export default function QuotationViewPage() {
   const params = useParams();
   const quoteId = (params?.id as string) || 'SID-2026-992';
   const { state } = useEventBuilder();
-  const cartLines = getCartLines(state);
-  const requestedExtras = getRequestedExtraLines(state);
+
+  // A shared /quotation/<refCode> link needs to show the actual saved quote
+  // - not whatever happens to be in *this* browser's local builder draft -
+  // so try the server first. Falls back to today's local-draft rendering
+  // (the "review before submit" flow, reached from the builder itself, where
+  // no refCode/server record exists yet) when the lookup 404s or fails.
+  const [remote, setRemote] = React.useState<RemoteQuotation | null>(null);
+  const [remoteChecked, setRemoteChecked] = React.useState(false);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    if (!quoteId) {
+      setRemoteChecked(true);
+      return;
+    }
+    fetch(`/api/quotation/${encodeURIComponent(quoteId)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled) setRemote(data);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setRemoteChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [quoteId]);
+
+  const localCartLines = getCartLines(state);
+  const localRequestedExtras = getRequestedExtraLines(state);
+
+  const guestCount = remote ? remote.guestCount : state.eventDetails.guestCount;
+  const requestedExtraNames = remote ? remote.requestedExtras.map((l) => l.name) : localRequestedExtras.map((l) => l.name);
+
+  const displayRows: { key: string; categoryLabel: string; name: string; quantity: number }[] = remote
+    ? remote.sections.flatMap((section) =>
+        section.lines.map((line, i) => ({
+          key: `${section.categoryKey}-${i}`,
+          categoryLabel: section.label || CATEGORY_LABELS[section.categoryKey] || section.categoryKey,
+          name: line.name,
+          quantity: line.quantity,
+        }))
+      )
+    : localCartLines
+        .filter((l) => l.origin !== 'requested_extra')
+        .map((line) => ({
+          key: line.id,
+          categoryLabel: CATEGORY_LABELS[line.categoryKey] || line.categoryKey,
+          name: line.name,
+          quantity: line.quantity,
+        }));
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
@@ -65,7 +130,7 @@ export default function QuotationViewPage() {
           <div className="text-left sm:text-right text-xs text-maroon-800 space-y-1">
             <div className="font-bold text-sm text-maroon-900">Reference #: {quoteId}</div>
             <div>Date: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-            <div>Guests: {state.eventDetails.guestCount}</div>
+            <div>Guests: {guestCount}</div>
           </div>
         </div>
 
@@ -84,26 +149,27 @@ export default function QuotationViewPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gold-200">
-                {cartLines.length === 0 ? (
+                {!remoteChecked ? (
+                  <tr>
+                    <td className="p-3 text-maroon-800" colSpan={2}>Loading...</td>
+                  </tr>
+                ) : displayRows.length === 0 ? (
                   <tr>
                     <td className="p-3 text-maroon-800" colSpan={2}>No items selected yet.</td>
                   </tr>
                 ) : (
-                  cartLines
-                    .filter((l) => l.origin !== 'requested_extra')
-                    .map((line) => (
-                      <tr key={line.id}>
-                        <td className="p-3 font-bold text-maroon-900">{CATEGORY_LABELS[line.categoryKey] || line.categoryKey}</td>
-                        <td className="p-3 text-maroon-800">
-                          {line.name}{line.quantity > 1 ? ` x${line.quantity}` : ''}
-                          {line.origin === 'paid_extra' && <span className="ml-2 text-[10px] uppercase font-bold text-gold-700">Paid Extra</span>}
-                        </td>
-                      </tr>
-                    ))
+                  displayRows.map((row) => (
+                    <tr key={row.key}>
+                      <td className="p-3 font-bold text-maroon-900">{row.categoryLabel}</td>
+                      <td className="p-3 text-maroon-800">
+                        {row.name}{row.quantity > 1 ? ` x${row.quantity}` : ''}
+                      </td>
+                    </tr>
+                  ))
                 )}
-                {requestedExtras.map((line) => (
-                  <tr key={line.id}>
-                    <td className="p-3 font-bold text-maroon-900" colSpan={2}>{line.name} <span className="text-[10px] uppercase font-bold text-amber-700">Pending Vendor Approval</span></td>
+                {requestedExtraNames.map((name, i) => (
+                  <tr key={`extra-${i}`}>
+                    <td className="p-3 font-bold text-maroon-900" colSpan={2}>{name} <span className="text-[10px] uppercase font-bold text-amber-700">Pending Vendor Approval</span></td>
                   </tr>
                 ))}
               </tbody>

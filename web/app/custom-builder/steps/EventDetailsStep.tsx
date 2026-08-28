@@ -7,7 +7,7 @@ import { EventType } from '@/lib/types/catalog';
 import { EventTypeSelectField } from '@/components/builder/EventTypeSelectField';
 import { LocationAutocompleteField } from '@/components/builder/LocationAutocompleteField';
 import { isValidCustomerEmail, MAX_GUEST_COUNT } from '@/lib/builder/validation';
-import { sanitizeAlphanumericOnly } from '@/lib/text-validation';
+import { sanitizeFreeText } from '@/lib/text-validation';
 
 import { ANNIVERSARY_TYPES } from '@/lib/builder/event-rules';
 
@@ -166,17 +166,17 @@ export function EventDetailsStep({ eventTypes, selectedEventTypeId, onEventTypeC
         {/* Row 6: Special Requirements */}
         <div>
           <label className="block text-xs font-bold text-maroon-900 mb-1">
-            Special Requirements <span className="text-[10px] text-maroon-700/60 font-normal">(Alphanumeric only)</span>
+            Special Requirements
           </label>
           <textarea
             rows={3}
-            placeholder="Anything specific we should know (letters and numbers only)..."
+            placeholder="Anything specific we should know..."
             value={eventDetails.specialRequirements}
-            onChange={(e) => onChange({ specialRequirements: sanitizeAlphanumericOnly(e.target.value) })}
+            onChange={(e) => onChange({ specialRequirements: sanitizeFreeText(e.target.value) })}
             onPaste={(e) => {
               e.preventDefault();
               const pasted = e.clipboardData.getData('text');
-              onChange({ specialRequirements: sanitizeAlphanumericOnly(eventDetails.specialRequirements + pasted) });
+              onChange({ specialRequirements: sanitizeFreeText(eventDetails.specialRequirements + pasted) });
             }}
             className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
           />

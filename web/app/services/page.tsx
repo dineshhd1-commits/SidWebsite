@@ -6,6 +6,7 @@ import { TraditionalBorder } from '@/components/ui/traditional-border';
 import { GoldButton } from '@/components/ui/gold-button';
 import { BUSINESS_OFFERINGS, BusinessOffering } from '@/lib/mock-data';
 import { getWhatsAppUrl, SITE } from '@/lib/site-config';
+import { toAssetUrl } from '@/lib/asset-url';
 
 /** Genuine, factual answers to what customers actually ask before enquiring
  * - written for both human readers and AI answer engines (ChatGPT Search,
@@ -107,7 +108,7 @@ export default function ServicesPage() {
       {/* Full-Width Full-Screen Hero Banner Section */}
       <section className="relative w-full min-h-screen-dvh sm:min-h-[100dvh] flex items-center justify-center overflow-hidden border-b-2 border-gold-400/40 bg-maroon-950 pt-20 sm:pt-24">
         <Image
-          src="/Sid1.jpg"
+          src={toAssetUrl('/Sid1.jpg')}
           alt="Dream. Plan. Create. Celebrate. - SID Events"
           fill
           sizes="100vw"

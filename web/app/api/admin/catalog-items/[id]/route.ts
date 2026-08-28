@@ -12,7 +12,7 @@ const catalogItemPatchSchema = z
     description: z.string().optional(),
     imageUrl: z.string().optional(),
     images: z.array(z.string()).optional(),
-    packageLevel: z.enum(['normal', 'standard', 'silver', 'gold', 'premium', 'luxury']).optional(),
+    packageLevel: z.enum(['normal', 'standard', 'silver', 'gold', 'premium', 'luxury', 'platinum']).optional(),
     price: z.number().min(0).optional(),
     unit: z.string().optional(),
     quantityMode: z.enum(['single', 'stepper', 'team_size']).optional(),

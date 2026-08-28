@@ -39,7 +39,7 @@ const enquirySchema = z.object({
   // generous sanity ceiling rather than a server-recomputed value is
   // sufficient here; it is never treated as a binding price anywhere.
   estimatedCost: z.number().min(0).max(100_000_000).optional().default(0),
-  notes: z.string().trim().regex(/^[a-zA-Z0-9]*$/, 'Special requirements must contain only letters and numbers (no spaces or special characters).').max(2000).optional().default(''),
+  notes: z.string().trim().regex(/^[a-zA-Z0-9\s.,'"!?()\-:;&]*$/, 'Special requirements contains unsupported characters.').max(2000).optional().default(''),
   // Free-form breakdown used for the PDF/owner view - validated for shape/size
   // only (not every nested field), capped so a malicious payload can't bloat
   // the database or the generated PDF.

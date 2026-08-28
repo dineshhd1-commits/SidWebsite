@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ADMIN_SESSION_COOKIE, getExpectedAdminToken } from '@/lib/admin-auth';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,9 +13,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const expectedToken = await getExpectedAdminToken();
-  const cookieToken = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-  const isAuthenticated = !!expectedToken && cookieToken === expectedToken;
+  const isAuthenticated = await requireAdminSession(request);
 
   if (isAuthenticated) {
     return NextResponse.next();

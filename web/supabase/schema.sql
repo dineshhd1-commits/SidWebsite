@@ -100,26 +100,15 @@ ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE gallery_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access to catalog data
+-- Allow public read access to catalog data. This is the only access the
+-- anon key gets on any table below: quotations/inquiries/bookings contain
+-- customer PII and are read/written exclusively through Next.js API routes
+-- using the service-role key (which bypasses RLS), and services/packages
+-- writes go through those same authenticated routes - see
+-- supabase/migrations/20260828000000_lockdown_rls.sql for the follow-up
+-- migration that removed the public write/quotations-read policies this
+-- file used to define.
 CREATE POLICY "Public read services" ON services FOR SELECT USING (true);
 CREATE POLICY "Public read packages" ON wedding_packages FOR SELECT USING (true);
 CREATE POLICY "Public read gallery" ON gallery_items FOR SELECT USING (true);
 CREATE POLICY "Public read testimonials" ON testimonials FOR SELECT USING (true);
-
--- Allow public insert and read/update/delete access to quotations, inquiries and bookings
-CREATE POLICY "Public insert quotations" ON quotations FOR INSERT WITH CHECK (true);
-CREATE POLICY "Public read quotations" ON quotations FOR SELECT USING (true);
-CREATE POLICY "Allow update quotations" ON quotations FOR UPDATE USING (true);
-CREATE POLICY "Allow delete quotations" ON quotations FOR DELETE USING (true);
-
-CREATE POLICY "Public insert inquiries" ON inquiries FOR INSERT WITH CHECK (true);
-CREATE POLICY "Public read inquiries" ON inquiries FOR SELECT USING (true);
-CREATE POLICY "Allow update inquiries" ON inquiries FOR UPDATE USING (true);
-CREATE POLICY "Allow delete inquiries" ON inquiries FOR DELETE USING (true);
-
-CREATE POLICY "Public insert bookings" ON bookings FOR INSERT WITH CHECK (true);
-CREATE POLICY "Public read bookings" ON bookings FOR SELECT USING (true);
-
--- Allow admin full CRUD on services and packages
-CREATE POLICY "Allow write services" ON services FOR ALL USING (true);
-CREATE POLICY "Allow write packages" ON wedding_packages FOR ALL USING (true);

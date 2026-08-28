@@ -324,6 +324,7 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [quotes, setQuotes] = useState<AdminQuoteRequest[]>([]);
+  const [quotesActionError, setQuotesActionError] = useState<string | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(true);
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([]);
@@ -667,27 +668,48 @@ export default function AdminDashboardPage() {
   };
 
   // --- Quote Operations ---
-  const handleUpdateQuoteStatus = (id: string, refCode: string, status: AdminQuoteStatus) => {
-    // Optimistic UI update first (the on-screen list is Supabase-sourced, so
-    // updateQuoteStatus's own local-cache return value isn't what's shown);
-    // it also fires the real Supabase update in the background.
+  // Each handler applies the optimistic UI update first (the on-screen list
+  // is Supabase-sourced, so the store function's own local-cache return
+  // value isn't what's shown), then awaits the real backend write; if that
+  // write fails, it re-syncs from the backend via loadQuotes() instead of
+  // leaving the UI showing a change that never actually persisted, and
+  // surfaces the failure so the admin knows to retry.
+  const handleUpdateQuoteStatus = async (id: string, refCode: string, status: AdminQuoteStatus) => {
     setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
-    updateQuoteStatus(id, refCode, status);
-  };
-
-  const handleDeleteQuote = (id: string, refCode: string) => {
-    if (confirm('Are you sure you want to delete this quote request?')) {
-      setQuotes((prev) => prev.filter((q) => q.id !== id));
-      deleteAdminQuote(id, refCode);
+    try {
+      await updateQuoteStatus(id, refCode, status);
+    } catch (e) {
+      console.error(e);
+      setQuotesActionError('Failed to update status - please try again.');
+      await loadQuotes();
     }
   };
 
-  const handleSaveQuoteEdit = (e: React.FormEvent) => {
+  const handleDeleteQuote = async (id: string, refCode: string) => {
+    if (confirm('Are you sure you want to delete this quote request?')) {
+      setQuotes((prev) => prev.filter((q) => q.id !== id));
+      try {
+        await deleteAdminQuote(id, refCode);
+      } catch (e) {
+        console.error(e);
+        setQuotesActionError('Failed to delete quote - please try again.');
+        await loadQuotes();
+      }
+    }
+  };
+
+  const handleSaveQuoteEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editQuoteModal) {
       setQuotes((prev) => prev.map((q) => (q.id === editQuoteModal.id ? editQuoteModal : q)));
-      updateAdminQuote(editQuoteModal);
       setEditQuoteModal(null);
+      try {
+        await updateAdminQuote(editQuoteModal);
+      } catch (e) {
+        console.error(e);
+        setQuotesActionError('Failed to save changes - please try again.');
+        await loadQuotes();
+      }
     }
   };
 
@@ -917,6 +939,13 @@ export default function AdminDashboardPage() {
               </button>
             </div>
           </div>
+
+          {quotesActionError && (
+            <div className="text-xs bg-rose-50 border border-rose-300 text-rose-800 rounded-xl px-4 py-3 mb-4 flex items-center justify-between gap-3">
+              <span>{quotesActionError}</span>
+              <button type="button" onClick={() => setQuotesActionError(null)} className="text-rose-600 hover:text-rose-800 font-bold">Dismiss</button>
+            </div>
+          )}
 
           {quotesLoading && quotes.length === 0 ? (
             <div className="text-center py-16 text-maroon-700/70 text-sm">Loading enquiries...</div>

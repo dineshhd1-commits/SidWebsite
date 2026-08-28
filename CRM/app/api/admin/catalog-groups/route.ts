@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdminClient } from '@/lib/supabase-admin';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const eventTypeId = request.nextUrl.searchParams.get('eventTypeId');
   const categoryKey = request.nextUrl.searchParams.get('categoryKey');
   const admin = getSupabaseAdminClient();

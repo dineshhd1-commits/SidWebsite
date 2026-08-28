@@ -8,8 +8,8 @@ export function getSupabaseAdminClient(): SupabaseClient {
   }
   if (cachedAdminClient) return cachedAdminClient;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://uidgthafelsbxusyxffd.supabase.co';
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || 'sb_secret_nnM41';
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || '';
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error(

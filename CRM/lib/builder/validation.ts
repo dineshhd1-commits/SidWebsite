@@ -17,8 +17,8 @@ interface FieldCheck {
 }
 
 /** Accepted email shape for the event-details form: letters and/or digits only
- * before the @, and the gmail.com domain - e.g. aditya100@gmail.com. */
-const CUSTOMER_EMAIL_PATTERN = /^[a-zA-Z0-9]+@gmail\.com$/;
+ * standard, permissive email pattern (not restricted to any one provider). */
+const CUSTOMER_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** The email field is optional, so an empty value is fine; anything actually
  * typed has to match the accepted shape. */

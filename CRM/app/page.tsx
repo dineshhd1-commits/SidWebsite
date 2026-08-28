@@ -324,6 +324,7 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [quotes, setQuotes] = useState<AdminQuoteRequest[]>([]);
+  const [quotesActionError, setQuotesActionError] = useState<string | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(true);
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([]);
@@ -670,15 +671,25 @@ export default function AdminDashboardPage() {
   const handleUpdateQuoteStatus = (id: string, refCode: string, status: AdminQuoteStatus) => {
     // Optimistic UI update first (the on-screen list is Supabase-sourced, so
     // updateQuoteStatus's own local-cache return value isn't what's shown);
-    // it also fires the real Supabase update in the background.
+    // it also awaits the real backend update and resyncs from the backend
+    // (loadQuotes) if that write fails, instead of leaving the UI showing a
+    // change that never actually persisted.
     setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
-    updateQuoteStatus(id, refCode, status);
+    updateQuoteStatus(id, refCode, status).catch(async (e) => {
+      console.error(e);
+      setQuotesActionError('Failed to update status - please try again.');
+      await loadQuotes();
+    });
   };
 
   const handleDeleteQuote = (id: string, refCode: string) => {
     if (confirm('Are you sure you want to delete this quote request?')) {
       setQuotes((prev) => prev.filter((q) => q.id !== id));
-      deleteAdminQuote(id, refCode);
+      deleteAdminQuote(id, refCode).catch(async (e) => {
+        console.error(e);
+        setQuotesActionError('Failed to delete quote - please try again.');
+        await loadQuotes();
+      });
     }
   };
 
@@ -686,8 +697,12 @@ export default function AdminDashboardPage() {
     e.preventDefault();
     if (editQuoteModal) {
       setQuotes((prev) => prev.map((q) => (q.id === editQuoteModal.id ? editQuoteModal : q)));
-      updateAdminQuote(editQuoteModal);
       setEditQuoteModal(null);
+      updateAdminQuote(editQuoteModal).catch(async (e) => {
+        console.error(e);
+        setQuotesActionError('Failed to save changes - please try again.');
+        await loadQuotes();
+      });
     }
   };
 
@@ -917,6 +932,13 @@ export default function AdminDashboardPage() {
               </button>
             </div>
           </div>
+
+          {quotesActionError && (
+            <div className="text-xs bg-rose-50 border border-rose-300 text-rose-800 rounded-xl px-4 py-3 mb-4 flex items-center justify-between gap-3">
+              <span>{quotesActionError}</span>
+              <button type="button" onClick={() => setQuotesActionError(null)} className="text-rose-600 hover:text-rose-800 font-bold">Dismiss</button>
+            </div>
+          )}
 
           {quotesLoading && quotes.length === 0 ? (
             <div className="text-center py-16 text-maroon-700/70 text-sm">Loading enquiries...</div>
@@ -1890,7 +1912,7 @@ export default function AdminDashboardPage() {
 
             <div className="space-y-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-gold-700">Category Limits</h4>
-              {['cat-starters'].map((groupId) => {
+              {catalogGroups.map((g) => g.id).map((groupId) => {
                 const limit = editPackageDetail.groupLimits.find((l) => l.groupId === groupId);
                 const groupName = catalogGroups.find((g) => g.id === groupId)?.name || groupId;
                 return (

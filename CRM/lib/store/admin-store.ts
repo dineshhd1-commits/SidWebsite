@@ -350,13 +350,19 @@ export async function uploadEnquiryPdf(pdfBlob: Blob, refCode: string): Promise<
 // an anonymous visitor must never be able to edit, re-status, or delete
 // another customer's enquiry record just by having the public anon key.
 
-export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteRequest[] {
+// All three mutations below now `await` the real backend call and throw on
+// failure instead of firing-and-forgetting it - the caller (the CRM's
+// optimistic UI) needs to know when the write didn't actually happen so it
+// can resync from the backend instead of showing a status/edit that only
+// exists in the browser tab that made it.
+
+export async function updateAdminQuote(updatedQuote: AdminQuoteRequest): Promise<AdminQuoteRequest[]> {
   const current = getAdminQuotes();
   const updated = current.map((q) => (q.id === updatedQuote.id ? updatedQuote : q));
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  fetch('/api/admin/quotes', {
+  const res = await fetch('/api/admin/quotes', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -366,37 +372,34 @@ export function updateAdminQuote(updatedQuote: AdminQuoteRequest): AdminQuoteReq
       customerPhone: updatedQuote.customerPhone,
       status: updatedQuote.status,
     }),
-  }).then((res) => {
-    if (!res.ok) console.error('Admin quote update failed:', res.status);
   });
+  if (!res.ok) throw new Error(`Admin quote update failed: ${res.status}`);
   return updated;
 }
 
-export function updateQuoteStatus(id: string, refCode: string, status: AdminQuoteStatus): AdminQuoteRequest[] {
+export async function updateQuoteStatus(id: string, refCode: string, status: AdminQuoteStatus): Promise<AdminQuoteRequest[]> {
   const current = getAdminQuotes();
   const updated = current.map((q) => (q.id === id ? { ...q, status } : q));
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  fetch('/api/admin/quotes', {
+  const res = await fetch('/api/admin/quotes', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refCode, status }),
-  }).then((res) => {
-    if (!res.ok) console.error('Admin quote status update failed:', res.status);
   });
+  if (!res.ok) throw new Error(`Admin quote status update failed: ${res.status}`);
   return updated;
 }
 
-export function deleteAdminQuote(id: string, refCode: string): AdminQuoteRequest[] {
+export async function deleteAdminQuote(id: string, refCode: string): Promise<AdminQuoteRequest[]> {
   const current = getAdminQuotes();
   const updated = current.filter((q) => q.id !== id);
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
   }
-  fetch(`/api/admin/quotes?refCode=${encodeURIComponent(refCode)}`, { method: 'DELETE' }).then((res) => {
-    if (!res.ok) console.error('Admin quote delete failed:', res.status);
-  });
+  const res = await fetch(`/api/admin/quotes?refCode=${encodeURIComponent(refCode)}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Admin quote delete failed: ${res.status}`);
   return updated;
 }
 
@@ -428,20 +431,15 @@ export function saveAdminInquiry(inquiry: Omit<AdminInquiry, 'id' | 'createdAt' 
     localStorage.setItem(STORAGE_KEY_INQUIRIES, JSON.stringify(updated));
   }
 
-  // Routed through /api/contact (validated + rate-limited server-side) rather
-  // than an anon-key insert straight from the browser - same reasoning as
-  // the enquiry submission flow: an unauthenticated write endpoint should
-  // still validate its input and not be trivially spammable.
-  fetch('/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      fullName: newRecord.fullName,
-      phone: newRecord.phone,
-      weddingDate: newRecord.weddingDate || '',
-      notes: newRecord.notes || '',
-    }),
-  }).catch((e) => console.error('Contact inquiry sync error:', e));
+  // NOTE: unlike quotes, inquiries in the CRM are local-only (no Supabase
+  // table sync and no `/api/admin/inquiries` route exist in this app, and
+  // nothing in the CRM UI currently calls this function to create one). This
+  // used to POST to `/api/contact`, a route that only exists in the
+  // sibling `web` app and was carried over unmodified during the monorepo
+  // split - every call 404'd silently. Removed rather than pointed at a new
+  // endpoint since there's no reachable caller to verify one against; add a
+  // real `/api/admin/inquiries` route (mirroring `/api/admin/quotes`) if a
+  // "create inquiry" UI is added to the CRM later.
 
   return newRecord;
 }

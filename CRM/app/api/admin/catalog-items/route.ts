@@ -12,7 +12,7 @@ const catalogItemSchema = z.object({
   description: z.string().default(''),
   imageUrl: z.string().default(''),
   images: z.array(z.string()).default([]),
-  packageLevel: z.enum(['normal', 'standard', 'silver', 'gold', 'premium', 'luxury']),
+  packageLevel: z.enum(['normal', 'standard', 'silver', 'gold', 'premium', 'luxury', 'platinum']),
   price: z.number().min(0),
   unit: z.string().default('item'),
   quantityMode: z.enum(['single', 'stepper', 'team_size']).default('single'),
@@ -46,6 +46,9 @@ function toRow(input: z.infer<typeof catalogItemSchema>) {
 }
 
 export async function GET(request: NextRequest) {
+  if (!(await requireAdminSession(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const eventTypeId = request.nextUrl.searchParams.get('eventTypeId');
   const admin = getSupabaseAdminClient();
   let query = admin.from('catalog_items').select('*').order('display_order', { ascending: true });

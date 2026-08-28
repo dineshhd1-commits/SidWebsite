@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ADMIN_SESSION_COOKIE, getExpectedAdminToken } from '@/lib/admin-auth';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isLoginPage = pathname === '/login';
   const isLoginApi = pathname === '/api/admin/login';
+  // Any static file under /public (images, PDFs used by the CRM's own PDF
+  // generation, etc.) - not just _next's own assets - must stay reachable
+  // without a session cookie, or server-side consumers (e.g. the enquiry PDF
+  // renderer loading the logo) get redirected/401'd instead of the asset.
   const isPublicStatic =
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.startsWith('/icon.png');
+    /\.[a-zA-Z0-9]+$/.test(pathname);
 
   if (isLoginPage || isLoginApi || isPublicStatic) {
     return NextResponse.next();
   }
 
-  const expectedToken = await getExpectedAdminToken();
-  const cookieToken = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-  const isAuthenticated = !!expectedToken && cookieToken === expectedToken;
+  const isAuthenticated = await requireAdminSession(request);
 
   if (isAuthenticated) {
     return NextResponse.next();

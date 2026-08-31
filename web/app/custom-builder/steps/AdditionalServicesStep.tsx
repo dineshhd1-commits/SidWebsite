@@ -101,11 +101,6 @@ export function AdditionalServicesStep({
                     <h3 className="font-playfair text-base sm:text-lg font-bold text-maroon-900">
                       {item.name}
                     </h3>
-                    {item.price > 0 && (
-                      <span className="text-xs font-bold text-gold-800 bg-gold-100 border border-gold-300 rounded-full px-2 py-0.5">
-                        ₹{item.price.toLocaleString('en-IN')}{item.unit ? ` / ${item.unit}` : ''}
-                      </span>
-                    )}
                   </div>
                   <p className="text-xs text-maroon-700/80 leading-relaxed line-clamp-2">
                     {item.description}

@@ -13,7 +13,8 @@ ON CONFLICT (id) DO UPDATE SET
   supported_event_types = EXCLUDED.supported_event_types,
   name = EXCLUDED.name,
   default_max_selections = EXCLUDED.default_max_selections,
-  display_order = EXCLUDED.display_order;
+  display_order = EXCLUDED.display_order,
+  active = true;
 
 UPDATE catalog_groups SET display_order = 5 WHERE id = 'photo-services';
 
@@ -43,7 +44,7 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('dec-couple-fireworks', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Fire Works', 'Fireworks display for a grand couple entry.', '', '[]', 'gold', 8000, 'per event', 'single', 5),
 ('dec-couple-dole', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Dole', 'Traditional dole (palanquin) entry for the couple.', '', '[]', 'gold', 6000, 'per event', 'single', 6),
 ('dec-couple-dancer', ARRAY['wedding'], 'decoration', 'dec-couple-entry', 'Dancer', 'Professional dancers to lead the couple entry.', '', '[]', 'gold', 10000, 'per event', 'single', 7)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, price = EXCLUDED.price, display_order = EXCLUDED.display_order;
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, price = EXCLUDED.price, display_order = EXCLUDED.display_order, active = true;
 
 INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, metadata, display_order) VALUES
 ('photo-prewedding-1-day', ARRAY['wedding'], 'photography', 'photo-prewedding-duration', '1 Day', 'Pre-wedding shoot scheduled across a single day.', '', '[]', 'normal', 0, 'shoot', 'single', '{"days": 1}', 1),

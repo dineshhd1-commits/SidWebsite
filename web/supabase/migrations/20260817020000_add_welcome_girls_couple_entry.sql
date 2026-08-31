@@ -7,8 +7,9 @@ INSERT INTO catalog_groups (id, supported_event_types, category_key, name, defau
 ON CONFLICT (id) DO UPDATE SET
   supported_event_types = EXCLUDED.supported_event_types,
   name = EXCLUDED.name,
-  display_order = EXCLUDED.display_order;
+  display_order = EXCLUDED.display_order,
+  active = true;
 
 INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, name, description, image_url, images, package_level, price, unit, quantity_mode, display_order) VALUES
 ('dec-welcome-girls-service', ARRAY['wedding'], 'decoration', 'dec-welcome-girls', 'Welcome Girls', 'Welcome girls to greet and escort guests with flowers and aarti.', '', '[]', 'normal', 5000, 'per event', 'single', 1)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, price = EXCLUDED.price, display_order = EXCLUDED.display_order;
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, price = EXCLUDED.price, display_order = EXCLUDED.display_order, active = true;

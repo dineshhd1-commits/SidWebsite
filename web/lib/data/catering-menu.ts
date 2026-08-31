@@ -1,5 +1,6 @@
 import rawMenu from './catering-menu.json';
 import { CateringMealPeriod, CateringMenuCategory, CateringMenuSection, CateringTiming } from '../types/catering-menu';
+import { toAssetUrl } from '../asset-url';
 
 function slugify(text: string): string {
   return text
@@ -23,7 +24,7 @@ const ALL_CATEGORIES: CateringMenuCategory[] = rawMenu.categories.map((category)
   name: category.name,
   items: category.items.map((name) => {
     const id = `${category.id}__${slugify(name)}`;
-    return { id, name, imageUrl: `/catering/${id}.jpg` };
+    return { id, name, imageUrl: toAssetUrl(`/catering/${id}.jpg`) };
   }),
   maxSelections: CATEGORY_LIMITS[category.id],
 }));

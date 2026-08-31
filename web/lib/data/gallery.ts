@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../supabase';
 import { GalleryItem } from '../types/wedding';
 import { MOCK_GALLERY } from '../mock-data';
+import { toAssetUrl } from '../asset-url';
 
 function mapRow(row: any): GalleryItem {
   return {
@@ -8,9 +9,9 @@ function mapRow(row: any): GalleryItem {
     title: row.title,
     category: row.category,
     mediaType: row.media_type || 'image',
-    url: row.url,
-    thumbnailUrl: row.thumbnail_url || undefined,
-    images: row.images || undefined,
+    url: toAssetUrl(row.url),
+    thumbnailUrl: row.thumbnail_url ? toAssetUrl(row.thumbnail_url) : undefined,
+    images: row.images ? row.images.map(toAssetUrl) : undefined,
     rotate: row.rotate || undefined,
   };
 }

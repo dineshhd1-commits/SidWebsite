@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../supabase';
 import { Testimonial } from '../types/wedding';
 import { MOCK_TESTIMONIALS } from '../mock-data';
+import { toAssetUrl } from '../asset-url';
 
 export interface TestimonialWithVerification extends Testimonial {
   isGoogleVerified: boolean;
@@ -14,7 +15,7 @@ function mapRow(row: any): TestimonialWithVerification {
     location: row.location || '',
     rating: row.rating ?? 5,
     comment: row.comment,
-    imageUrl: row.image_url || '',
+    imageUrl: toAssetUrl(row.image_url || ''),
     isGoogleVerified: row.is_google_verified !== false,
   };
 }

@@ -1,8 +1,16 @@
 import raw from './decoration-inspiration.json';
 import { CatalogItem } from '../types/catalog';
 import { DecorationPhoto } from '../types/decoration-inspiration';
+import { toAssetUrl } from '../asset-url';
 
-const ALL_PHOTOS: DecorationPhoto[] = raw.photos;
+// Every other /public asset source in this app goes through toAssetUrl() so
+// it can be served from Supabase Storage instead of the local filesystem
+// once NEXT_PUBLIC_USE_SUPABASE_ASSETS is on - this ~1500-photo array never
+// did, meaning every decoration inspiration photo always loaded from local
+// /public regardless of that flag. Mapped once here at module load so every
+// consumer (getAllDecorationPhotos, getDecorationPhotosByCategory,
+// getDecorationPhotosForItem, decorationPhotoToCartItem, etc.) is covered.
+const ALL_PHOTOS: DecorationPhoto[] = raw.photos.map((p) => ({ ...p, src: toAssetUrl(p.src) }));
 
 /** Cart item ids for a decoration photo are namespaced with this prefix so a
  * cart line can be traced back to the photo it came from. */

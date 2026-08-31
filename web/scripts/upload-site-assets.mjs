@@ -102,6 +102,38 @@ const ASSET_PATTERN = /["']((\/[^"'\r\n]+\.(?:jpg|jpeg|png|webp|avif|svg|gif|mp4
 // this script would otherwise never see that file's file paths at all.
 const SCAN_DIRS = ['app', 'components', 'lib'];
 
+// lib/data/catering-menu.ts builds every catering item's image path at
+// runtime - `toAssetUrl(`/catering/${id}.jpg`)` - so no literal "/catering/
+// ....jpg" string ever appears in source for ASSET_PATTERN to find. That
+// gap meant the entire /public/catering folder (670+ dish photos) was
+// silently never uploaded, so every catering image 400'd once
+// NEXT_PUBLIC_USE_SUPABASE_ASSETS was flipped on - discovered 2026-08-31.
+// Walked directly here instead of trying to make the regex understand
+// template literals.
+const CONVENTIONED_ASSET_DIRS = ['catering'];
+
+// Deliberately NOT recursive: public/catering/ also holds a dozen+
+// subfolders (Fruits/, HotBeverages/, bajji-bonda/, deserts/ with 137
+// files, etc.) of pre-convention source photos that predate the flat
+// `{categoryId}__{slug}.jpg` naming scheme (e.g. bajji_bonda__aloo-bonda.jpg
+// sits next to a stale bajji-bonda/ folder of .jfif originals for the same
+// dishes). catering-menu.ts only ever builds flat `/catering/{id}.jpg`
+// paths, so those subfolders are unreferenced cruft - uploading them would
+// waste bandwidth/storage and, for the .jfif ones, hit the same broken-
+// extension problem findBadExtensionAssets() guards against elsewhere.
+function findConventionedAssets() {
+  const found = [];
+  for (const rel of CONVENTIONED_ASSET_DIRS) {
+    const dirPath = path.join(ROOT, 'public', rel);
+    if (!fs.existsSync(dirPath)) continue;
+    for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+      if (!entry.isFile()) continue;
+      found.push(`/${rel}/${entry.name}`);
+    }
+  }
+  return found;
+}
+
 function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === 'node_modules' || entry.name === '.next') continue;
@@ -150,8 +182,10 @@ function findUsedAssets() {
 }
 
 async function main() {
-  const assets = findUsedAssets();
-  console.log(`Found ${assets.length} referenced asset paths.`);
+  const scanned = findUsedAssets();
+  const conventioned = findConventionedAssets();
+  const assets = Array.from(new Set([...scanned, ...conventioned])).sort();
+  console.log(`Found ${scanned.length} referenced asset paths + ${conventioned.length} conventioned (${assets.length} total after dedup).`);
 
   const badExtensionAssets = findBadExtensionAssets();
   if (badExtensionAssets.length > 0) {

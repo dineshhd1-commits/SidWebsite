@@ -141,12 +141,18 @@ export function getWatermarkedDecorationSrc(src: string): string {
 /**
  * Checks whether an item should have NO photo dropdown.
  * Explicit rule: No dropdown for Music Arrangement, Choreography, Punjabi Dole / Dhol,
- * Kashi Yatra, Normal Garlands, Homa Gunda, Nadaswara, Dancers, Crackers, Security.
+ * Kashi Yatra, Normal Garlands, Homa Gunda, Nadaswara, Dancers, Crackers, Security, Fog Machine.
  */
 export function isNoDropdownDecorationItem(item: { id?: string; name?: string; groupId?: string | null }): boolean {
   const id = (item.id || '').toLowerCase();
   const name = (item.name || '').toLowerCase();
   const groupId = (item.groupId || '').toLowerCase();
+
+  // Fog Machine only (dec-couple-fog-machine) - a plain checkbox add-on, no
+  // photo picker. Matched narrowly by "fog machine"/"fog-machine" so this
+  // doesn't also swallow "Dancing on a Cloud (Heavy Fog)" or "Fog, Cold
+  // Pyros & Sparklers", which keep their entry-concept photo dropdown.
+  if (id.includes('fog-machine') || name.includes('fog machine')) return true;
 
   // Nadaswara / Nadaswaram
   if (id.includes('nadaswara') || name.includes('nadaswara') || id.includes('nadaswaram') || name.includes('nadaswaram')) return true;

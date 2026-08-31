@@ -8311,12 +8311,6 @@
       "categoryLabel": "Couple Entry Concept"
     },
     {
-      "id": "couple-entry-2",
-      "src": "/decotion/couple-entry/IMG-20251101-WA0037.jpg",
-      "category": "couple-entry",
-      "categoryLabel": "Couple Entry Concept"
-    },
-    {
       "id": "cold-fire-entry-1",
       "src": "/decotion/cold fire/1.jpg",
       "category": "cold-fire-entry",
@@ -9668,306 +9662,174 @@
     },
     {
       "id": "corporate-events-1",
-      "src": "/decotion/Corporate Events/1.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-2",
-      "src": "/decotion/Corporate Events/2.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-3",
-      "src": "/decotion/Corporate Events/3.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-4",
-      "src": "/decotion/Corporate Events/4.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-5",
-      "src": "/decotion/Corporate Events/5.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-6",
-      "src": "/decotion/Corporate Events/6.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-7",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0017.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-8",
+      "id": "corporate-events-2",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0018.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-9",
+      "id": "corporate-events-3",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0019.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-10",
+      "id": "corporate-events-4",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0021.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-11",
+      "id": "corporate-events-5",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0022.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-12",
+      "id": "corporate-events-6",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0023.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-13",
+      "id": "corporate-events-7",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0024.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-14",
+      "id": "corporate-events-8",
       "src": "/decotion/Corporate Events/IMG-20190221-WA0025.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-15",
-      "src": "/decotion/Corporate Events/IMG-20190221-WA0027.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-16",
-      "src": "/decotion/Corporate Events/IMG-20190221-WA0028.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-17",
+      "id": "corporate-events-9",
       "src": "/decotion/Corporate Events/IMG-20190222-WA0004.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-18",
+      "id": "corporate-events-10",
       "src": "/decotion/Corporate Events/IMG-20190222-WA0005.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-19",
+      "id": "corporate-events-11",
       "src": "/decotion/Corporate Events/IMG_20190310_175626.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-20",
+      "id": "corporate-events-12",
       "src": "/decotion/Corporate Events/IMG_20190310_175943.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-21",
+      "id": "corporate-events-13",
       "src": "/decotion/Corporate Events/IMG_20190310_195655.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-22",
+      "id": "corporate-events-14",
       "src": "/decotion/Corporate Events/IMG_20190310_213906.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-23",
+      "id": "corporate-events-15",
       "src": "/decotion/Corporate Events/IMG_20190310_214206.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-24",
+      "id": "corporate-events-16",
       "src": "/decotion/Corporate Events/IMG_20190310_214251.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-25",
-      "src": "/decotion/Corporate Events/IMG_20190324_135842_BURST001_COVER.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-26",
+      "id": "corporate-events-17",
       "src": "/decotion/Corporate Events/IMG_20190324_135842_BURST002.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-27",
-      "src": "/decotion/Corporate Events/IMG_20190324_135917.jpg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-28",
+      "id": "corporate-events-18",
       "src": "/decotion/Corporate Events/IMG_20190324_161508.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-29",
+      "id": "corporate-events-19",
       "src": "/decotion/Corporate Events/IMG_20190324_161714.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-30",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.02.56.jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-31",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.02.58 (1).jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-32",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.02.58.jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-33",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.02.59 (1).jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-34",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.02.59.jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-35",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.00 (1).jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-36",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.00.jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-37",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.01 (1).jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-38",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.01.jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-39",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.02 (1).jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-40",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.02.jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-41",
-      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.03.jpeg",
-      "category": "corporate-events",
-      "categoryLabel": "Corporate Events"
-    },
-    {
-      "id": "corporate-events-42",
+      "id": "corporate-events-20",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.06.jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-43",
+      "id": "corporate-events-21",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.07 (1).jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-44",
+      "id": "corporate-events-22",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.07.jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-45",
+      "id": "corporate-events-23",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.09.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-46",
+      "id": "corporate-events-24",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.10.jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-47",
+      "id": "corporate-events-25",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.40.jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-48",
+      "id": "corporate-events-26",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.42 (1).jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-49",
+      "id": "corporate-events-27",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.42.jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-50",
+      "id": "corporate-events-28",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.42.jpg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
     },
     {
-      "id": "corporate-events-51",
+      "id": "corporate-events-29",
       "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.43.jpeg",
       "category": "corporate-events",
       "categoryLabel": "Corporate Events"
@@ -11027,6 +10889,18 @@
       "src": "/decotion/naming ceremony decortopn/Naming Ceremony (99).jpg",
       "category": "naming-ceremony",
       "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "vintage-cars-1",
+      "src": "/decotion/vintage-cars/IMG-20251101-WA0037.jpg",
+      "category": "vintage-cars",
+      "categoryLabel": "Vintage Car"
+    },
+    {
+      "id": "vintage-cars-2",
+      "src": "/decotion/vintage-cars/sid-party40.jpeg",
+      "category": "vintage-cars",
+      "categoryLabel": "Vintage Car"
     }
   ]
 }

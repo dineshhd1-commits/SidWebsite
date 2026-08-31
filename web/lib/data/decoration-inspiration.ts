@@ -74,6 +74,7 @@ export const DECORATION_CATEGORIES: { slug: string; label: string }[] = [
   { slug: 'photo-booth', label: 'Photo Booth' },
   { slug: 'bridal-entry', label: 'Bridal Entry Ideas' },
   { slug: 'couple-entry', label: 'Couple Entry Concept' },
+  { slug: 'vintage-cars', label: 'Vintage Car' },
   { slug: 'cold-fire-entry', label: 'Cold Fire Entry' },
   { slug: 'welcome-bouquet', label: 'Welcome Bouquet' },
   { slug: 'welcome-girls', label: 'Welcome Girls' },
@@ -102,6 +103,7 @@ const CATEGORY_EVENT_TYPES: Record<string, string[]> = {
   'photo-booth': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary'],
   'bridal-entry': ['wedding', 'engagement', 'reception', 'haldi_function', 'half_saree_function'],
   'couple-entry': ['wedding', 'engagement', 'reception'],
+  'vintage-cars': ['wedding', 'engagement', 'reception'],
   'cold-fire-entry': ['wedding', 'engagement', 'reception', 'birthday', 'anniversary', 'half_saree_function'],
   'welcome-bouquet': ['wedding', 'engagement', 'reception', 'birthday'],
   'welcome-girls': ['wedding'],
@@ -296,12 +298,18 @@ export function getDecorationPhotosForItem(item: CatalogItem | { id: string; nam
     return getDecorationPhotosByCategory('cold-fire-entry');
   }
 
-  // 17. Couple Entry Concepts (Cloud Fog, Fireworks, Smoke Bombs, Vintage Car, Carriage, Floral Canopy) -> /decotion/couple-entry/ & /decotion/bridal entry idea/
+  // 17a. Vintage Car -> /decotion/vintage-cars/ only (kept separate from the
+  // general entry-concepts branch below so it never picks up unrelated
+  // carriage/fireworks/canopy photos from bridal-entry or couple-entry).
+  if (id.includes('vintage') || name.includes('vintage')) {
+    return getDecorationPhotosByCategory('vintage-cars');
+  }
+
+  // 17b. Couple Entry Concepts (Cloud Fog, Fireworks, Smoke Bombs, Carriage, Floral Canopy) -> /decotion/couple-entry/ & /decotion/bridal entry idea/
   if (
     groupId.includes('entry') ||
     id.includes('entry') ||
     name.includes('entry') ||
-    id.includes('vintage') ||
     id.includes('carriage') ||
     id.includes('canopy') ||
     id.includes('cloud') ||
@@ -313,7 +321,6 @@ export function getDecorationPhotosForItem(item: CatalogItem | { id: string; nam
     name.includes('smoke') ||
     name.includes('firework') ||
     name.includes('carriage') ||
-    name.includes('vintage') ||
     name.includes('fog')
   ) {
     const bridal = getDecorationPhotosByCategory('bridal-entry');

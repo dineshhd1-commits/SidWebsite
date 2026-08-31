@@ -23,7 +23,7 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('dec-home-chapra', ARRAY['wedding'], 'decoration', 'dec-home', 'Chapra Decoration', 'Traditional chapra (canopy) decoration with flowers and drapery.', '', '[]', 'gold', 12000, 'per event', 'single', 2),
 ('dec-home-front-door', ARRAY['wedding'], 'decoration', 'dec-home', 'Front Door Decoration', 'Floral and festive decoration for the main entrance of the house.', '', '[]', 'normal', 6000, 'per event', 'single', 3),
 ('dec-home-pooja-door', ARRAY['wedding'], 'decoration', 'dec-home', 'Pooja Door Decoration', 'Decoration for the pooja room door with flowers and toran.', '', '[]', 'normal', 4000, 'per event', 'single', 4),
-('dec-home-yellow', ARRAY['wedding'], 'decoration', 'dec-home', 'Yellow Decoration', 'Traditional yellow-themed decor for the pre-wedding rituals.', '', '[]', 'normal', 5000, 'per event', 'single', 5),
+('dec-home-yellow', ARRAY['wedding'], 'decoration', 'dec-home', 'Haldi Decoration', 'Traditional yellow-themed decor for the pre-wedding rituals.', '', '[]', 'normal', 5000, 'per event', 'single', 5),
 ('dec-home-mehendi', ARRAY['wedding'], 'decoration', 'dec-home', 'Mehendi', 'Decor setup for the Mehendi ceremony seating and backdrop.', '', '[]', 'normal', 6000, 'per event', 'single', 6),
 ('dec-home-led-par-light', ARRAY['wedding'], 'decoration', 'dec-home', 'LED Par Light', 'LED par light setup for ambient event lighting.', '', '[]', 'normal', 5000, 'per event', 'single', 7),
 ('dec-venue-entrance-name-board', ARRAY['wedding'], 'decoration', 'dec-venue', 'Entrance Name Board', 'Personalised name board decoration at the venue entrance.', '', '[]', 'normal', 4000, 'per event', 'single', 1),

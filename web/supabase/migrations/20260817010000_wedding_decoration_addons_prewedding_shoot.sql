@@ -52,4 +52,4 @@ INSERT INTO catalog_items (id, supported_event_types, category_key, group_id, na
 ('photo-prewedding-photographer', ARRAY['wedding'], 'photography', 'photo-prewedding-services', 'Photographer', 'Dedicated photographer for the pre-wedding shoot.', '', '[]', 'normal', 20000, 'per event', 'single', '{}', 1),
 ('photo-prewedding-cinematic-video', ARRAY['wedding'], 'photography', 'photo-prewedding-services', 'Cinematic Video', 'Cinematic video coverage of the pre-wedding shoot.', '', '[]', 'gold', 30000, 'per event', 'single', '{}', 2),
 ('photo-prewedding-drone', ARRAY['wedding'], 'photography', 'photo-prewedding-services', 'Drone', '4K aerial drone coverage for the pre-wedding shoot.', '', '[]', 'gold', 15000, 'per event', 'single', '{}', 3)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, price = EXCLUDED.price, display_order = EXCLUDED.display_order;
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, price = EXCLUDED.price, display_order = EXCLUDED.display_order, active = true;

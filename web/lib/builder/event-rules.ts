@@ -29,7 +29,22 @@ export function isCoupleAnniversary(anniversaryType?: string): boolean {
  */
 export function isDecorationEnquiryOnly(eventTypeId: string | null): boolean {
   if (!eventTypeId) return false;
-  return ['birthday', 'corporate_event', 'get_together', 'bachelor_party', 'other_events'].includes(eventTypeId);
+  // housewarming/haldi_function/traditional_home_function/shrimantha_karya/
+  // half_saree_function have no entry in DecorationStep's CHECKLIST_GROUPS_BY_EVENT
+  // map - without being enquiry-only here too, Step 2 renders nothing at all for
+  // them (no checklist, no enquiry card, no error).
+  return [
+    'birthday',
+    'corporate_event',
+    'get_together',
+    'bachelor_party',
+    'other_events',
+    'housewarming',
+    'haldi_function',
+    'traditional_home_function',
+    'shrimantha_karya',
+    'half_saree_function',
+  ].includes(eventTypeId);
 }
 
 /**

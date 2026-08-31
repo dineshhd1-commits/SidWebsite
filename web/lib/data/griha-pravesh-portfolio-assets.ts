@@ -18,7 +18,7 @@ export const GRIHA_PRAVESH_PORTFOLIO_ASSETS: string[] = [
   "/decotion/houswarming/6.jpg",
   "/decotion/houswarming/7.jpg",
   "/decotion/houswarming/houswaring  (1).jpg",
-  "/decotion/houswarming/houswaring  (1).tif",
+  "/decotion/houswarming/houswaring  (1b).jpg",
   "/decotion/houswarming/houswaring  (10).JPG",
   "/decotion/houswarming/houswaring  (11).JPG",
   "/decotion/houswarming/houswaring  (12).JPG",

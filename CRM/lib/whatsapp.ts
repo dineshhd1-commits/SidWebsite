@@ -131,7 +131,7 @@ function formatShortEnquiryNotification(
   lines.push('');
   lines.push(`Customer: ${details.customerName || 'Not provided'}`);
   lines.push(`Event: ${details.eventTypeLabel}`);
-  lines.push(`Date: ${details.eventDate ? new Date(details.eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Not set'}`);
+  lines.push(`Date: ${details.eventDate ? new Date(details.eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }) : 'Not set'}`);
   lines.push(`Location: ${details.location || 'Not provided'}`);
   lines.push(`Guests: ${details.guestCount || 'Not specified'}`);
   lines.push(`Reference: #${refCode}`);

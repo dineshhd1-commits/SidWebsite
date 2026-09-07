@@ -129,7 +129,7 @@ export default function QuotationViewPage() {
 
           <div className="text-left sm:text-right text-xs text-maroon-800 space-y-1">
             <div className="font-bold text-sm text-maroon-900">Reference #: {quoteId}</div>
-            <div>Date: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+            <div>Date: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' })}</div>
             <div>Guests: {guestCount}</div>
           </div>
         </div>

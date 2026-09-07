@@ -31,7 +31,7 @@ export interface CorporateDecorationEnquiryDetails {
 function formatDate(dateStr: string): string {
   if (!dateStr) return 'Not set';
   try {
-    return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
   } catch {
     return dateStr;
   }
@@ -39,7 +39,8 @@ function formatDate(dateStr: string): string {
 
 function formatDateTime(iso: string): string {
   try {
-    return new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+    // Pinned to IST regardless of the runtime's local timezone.
+    return new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
   } catch {
     return iso;
   }

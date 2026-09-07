@@ -188,7 +188,7 @@ export function buildEnquiryDetails(state: EventBuilderState): EnquiryDetails {
 export function formatDate(dateStr: string): string {
   if (!dateStr) return 'Not set';
   try {
-    return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
   } catch {
     return dateStr;
   }
@@ -196,7 +196,9 @@ export function formatDate(dateStr: string): string {
 
 export function formatDateTime(iso: string): string {
   try {
-    return new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+    // Pinned to IST regardless of the runtime's local timezone (Vercel's
+    // serverless functions run on UTC).
+    return new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
   } catch {
     return iso;
   }

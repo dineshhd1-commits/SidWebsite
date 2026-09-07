@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Building2, Images, MessageSquarePlus, PartyPopper, Sparkles } from 'lucide-react';
+import { Building2, Check, Images, MessageSquarePlus, PartyPopper, Sparkles } from 'lucide-react';
 import { EventBuilderState } from '@/lib/types/event-builder';
 import { getEventTypeLabel } from '@/lib/builder/enquiry';
 import { getDecorationPhotosByCategory, getWatermarkedDecorationSrc } from '@/lib/data/decoration-inspiration';
@@ -26,17 +26,35 @@ const INSPIRATION_CATEGORY_BY_EVENT: Record<string, string> = {
  * to 100+ photos), so the enquiry card stays the focus of the page. */
 const MAX_INSPIRATION_PHOTOS = 12;
 
-/** Read-only inspiration tile - no selection state, nothing added to cart;
- * this is enquiry-only decoration, so photos are just a preview of past
- * work, not a picker. Reuses the same watermarked source and drag/right-
- * click protection as the selectable gallery. */
-function InspirationPhotoTile({ src, alt }: { src: string; alt: string }) {
+/** Inspiration tile the customer can select as a design they like - nothing
+ * is added to the cart (this event type is still enquiry-only), the pick is
+ * just carried along as a named option on the enquiry (see selectedOptions
+ * on CorporateDecorationEnquiryDetails) so the team knows which look to
+ * quote for. Reuses the same watermarked source and drag/right-click
+ * protection as the selectable gallery elsewhere in the builder. */
+function InspirationPhotoTile({
+  src,
+  alt,
+  selected,
+  onToggle,
+}: {
+  src: string;
+  alt: string;
+  selected: boolean;
+  onToggle: () => void;
+}) {
   const [failed, setFailed] = useState(false);
   return (
-    <div
+    <button
+      type="button"
+      onClick={onToggle}
       onContextMenu={(e) => e.preventDefault()}
       style={{ WebkitTouchCallout: 'none', WebkitUserDrag: 'none' } as React.CSSProperties}
-      className="relative aspect-square rounded-xl overflow-hidden border-2 border-gold-200 bg-maroon-950/5 select-none"
+      title={selected ? 'Click to deselect this design' : 'Click to select this design'}
+      aria-pressed={selected}
+      className={`group relative aspect-square rounded-xl overflow-hidden bg-maroon-950/5 select-none transition-all ${
+        selected ? 'border-2 border-gold-500 ring-2 ring-gold-400/80 shadow-md' : 'border-2 border-gold-200 hover:border-gold-400'
+      }`}
     >
       {failed ? (
         <div className="w-full h-full bg-gold-100 flex items-center justify-center text-gold-600/70">
@@ -55,7 +73,12 @@ function InspirationPhotoTile({ src, alt }: { src: string; alt: string }) {
           onError={() => setFailed(true)}
         />
       )}
-    </div>
+      {selected && (
+        <span className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-maroon-800 border border-gold-400 text-gold-200 flex items-center justify-center shadow">
+          <Check className="w-3 h-3" />
+        </span>
+      )}
+    </button>
   );
 }
 
@@ -88,6 +111,7 @@ const DEFAULT_COPY = {
  * picker. */
 export function CorporateDecorationSection({ state }: CorporateDecorationSectionProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState<Set<string>>(new Set());
   const eventTypeId = state.eventTypeId || '';
   const eventTypeLabel = getEventTypeLabel(state.eventTypeId);
   const isCorporate = eventTypeId === 'corporate_event';
@@ -98,6 +122,22 @@ export function CorporateDecorationSection({ state }: CorporateDecorationSection
     () => (inspirationCategory ? getDecorationPhotosByCategory(inspirationCategory).slice(0, MAX_INSPIRATION_PHOTOS) : []),
     [inspirationCategory]
   );
+
+  const togglePhoto = (photoId: string) => {
+    setSelectedPhotoIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(photoId)) next.delete(photoId);
+      else next.add(photoId);
+      return next;
+    });
+  };
+
+  // Carried into the enquiry as named options (see CorporateDecorationEnquiryDetails.selectedOptions) -
+  // numbered per photo since every photo in a category shares the same categoryLabel.
+  const selectedPhotoLabels = inspirationPhotos
+    .map((photo, i) => ({ photo, label: `${photo.categoryLabel} - Design #${i + 1}` }))
+    .filter(({ photo }) => selectedPhotoIds.has(photo.id))
+    .map(({ label }) => label);
 
   const prefill = {
     name: state.eventDetails.customerName,
@@ -118,9 +158,18 @@ export function CorporateDecorationSection({ state }: CorporateDecorationSection
               {inspirationPhotos.length} photo{inspirationPhotos.length === 1 ? '' : 's'}
             </span>
           </div>
+          <p className="text-[11px] text-maroon-700/70 -mt-1.5">
+            Tap any design you like - we&apos;ll note it on your enquiry so the team knows the look to quote for.
+          </p>
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-3">
             {inspirationPhotos.map((photo) => (
-              <InspirationPhotoTile key={photo.id} src={photo.src} alt={photo.categoryLabel} />
+              <InspirationPhotoTile
+                key={photo.id}
+                src={photo.src}
+                alt={photo.categoryLabel}
+                selected={selectedPhotoIds.has(photo.id)}
+                onToggle={() => togglePhoto(photo.id)}
+              />
             ))}
           </div>
         </div>
@@ -146,7 +195,7 @@ export function CorporateDecorationSection({ state }: CorporateDecorationSection
         <CorporateDecorationEnquiryModal
           eventTypeId={eventTypeId}
           eventTypeLabel={eventTypeLabel}
-          selectedOptions={[]}
+          selectedOptions={selectedPhotoLabels}
           prefill={prefill}
           onClose={() => setModalOpen(false)}
         />

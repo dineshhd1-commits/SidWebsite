@@ -9,6 +9,7 @@ const nextConfig = {
   serverExternalPackages: ['ioredis'],
   poweredByHeader: false,
   images: {
+    unoptimized: true, // skip Vercel's image optimizer (was hitting the monthly quota -> 402s)
     formats: ['image/avif', 'image/webp'],
     // NOT a long value on purpose: this project regularly swaps catering/
     // gallery photos under the *same* filename (e.g. public/catering/paan__

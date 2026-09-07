@@ -5,7 +5,6 @@ export const NAMING_PORTFOLIO_ASSETS: string[] = [
   "/sid-party34.jpeg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (1).jpeg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (1).jpg",
-  "/decotion/naming ceremony decortopn/Naming Ceremony (1).mp4",
   "/decotion/naming ceremony decortopn/Naming Ceremony (10).jpg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (100).jpg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (101).jpg",
@@ -26,7 +25,7 @@ export const NAMING_PORTFOLIO_ASSETS: string[] = [
   "/decotion/naming ceremony decortopn/Naming Ceremony (115).jpg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (116).jpg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (117).jpg",
-  "/decotion/naming ceremony decortopn/Naming Ceremony (118).jpg",
+  "/decotion/naming ceremony decortopn/Naming Ceremony (65).jpg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (119).jpg",
   "/decotion/naming ceremony decortopn/Naming Ceremony (12).JPG"
 ];

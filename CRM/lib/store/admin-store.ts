@@ -323,6 +323,7 @@ export async function uploadEnquiryPdf(pdfBlob: Blob, refCode: string): Promise<
 
     const { error: uploadError } = await supabase.storage.from('enquiry-pdfs').upload(objectPath, pdfBlob, {
       contentType: 'application/pdf',
+      cacheControl: '604800',
       upsert: false,
     });
     if (uploadError) {
@@ -402,6 +403,21 @@ export async function deleteAdminQuote(id: string, refCode: string): Promise<Adm
   if (!res.ok) throw new Error(`Admin quote delete failed: ${res.status}`);
   return updated;
 }
+
+export async function attachAdminQuotePdf(refCode: string, pdfUrl: string): Promise<void> {
+  const current = getAdminQuotes();
+  const updated = current.map((q) => (q.refCode === refCode ? { ...q, pdfUrl } : q));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY_QUOTES, JSON.stringify(updated));
+  }
+  const res = await fetch('/api/admin/quotes', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refCode, pdfUrl }),
+  });
+  if (!res.ok) throw new Error(`Admin quote PDF attach failed: ${res.status}`);
+}
+
 
 // --- 2. Inquiries CRUD ---
 export function getAdminInquiries(): AdminInquiry[] {

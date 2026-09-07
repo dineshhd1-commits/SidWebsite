@@ -3,7 +3,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { Search, X, ZoomIn, PlayCircle, Film, Images } from 'lucide-react';
+import Link from 'next/link';
+import { Search, X, ZoomIn, PlayCircle, Film, Images, ArrowRight } from 'lucide-react';
 import { LightboxMediaItem } from '@/components/ui/shared-image-lightbox';
 import { LazyVideo } from '@/components/ui/lazy-video';
 
@@ -190,15 +191,26 @@ export function PortfolioAlbumModal({
           )}
         </div>
 
-        {/* Footer info */}
-        <div className="px-5 sm:px-6 py-3 border-t border-gold-200 bg-gold-50/50 flex items-center justify-between text-xs text-maroon-800/80">
-          <span>Tap any photo or video to view in full screen</span>
-          <button
-            onClick={handleClose}
-            className="font-bold text-gold-700 hover:text-maroon-900 underline cursor-pointer"
-          >
-            Close Album
-          </button>
+        {/* Footer info & CTA */}
+        <div className="px-5 sm:px-6 py-3.5 border-t border-gold-200 bg-gradient-to-r from-gold-50/90 via-cream-50 to-gold-50/90 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-maroon-800/80">
+          <span className="hidden sm:inline text-maroon-700/70">Tap any photo or video to view in full screen</span>
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="font-semibold text-maroon-700 hover:text-maroon-950 px-3 py-1.5 rounded-lg hover:bg-gold-100/60 transition-colors cursor-pointer text-xs"
+            >
+              Close Album
+            </button>
+            <Link
+              href="/custom-builder"
+              onClick={handleClose}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-maroon-900 to-maroon-800 text-gold-200 hover:text-white font-medium text-xs tracking-wide shadow-md hover:shadow-lg hover:from-maroon-800 hover:to-maroon-700 transition-all border border-gold-400/40 cursor-pointer"
+            >
+              <span>Plan Your Event</span>
+              <ArrowRight className="w-3.5 h-3.5 text-gold-300" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>,

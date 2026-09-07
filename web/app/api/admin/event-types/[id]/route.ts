@@ -32,5 +32,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const admin = getSupabaseAdminClient();
   const { data, error } = await admin.from('event_types').update(row).eq('id', id).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const { cacheDel } = await import('@/lib/redis');
+  await cacheDel(['admin:event_types:list', 'data:event_types:all']).catch(() => {});
   return NextResponse.json({ eventType: data });
 }

@@ -74,6 +74,7 @@ export interface EnquiryCateringMenu {
 export interface EnquiryDetails {
   eventTypeId: string | null;
   eventTypeLabel: string;
+  anniversaryType?: string;
   customerName: string;
   customerPhone: string;
   customerEmail: string;
@@ -82,10 +83,8 @@ export interface EnquiryDetails {
   guestCount: number;
   specialRequirements: string;
   sections: EnquiryCategorySection[];
-  /** Every meal the customer has any picks for, Morning → Afternoon →
-   * Evening, each with its own guest count and category breakdown - never
-   * flattened into a single combined menu. */
   cateringMenus: EnquiryCateringMenu[];
+  cateringSkipped?: boolean;
   requestedExtras: EnquirySelectionLine[];
   estimatedTotal: number;
   totalSelectionsCount: number;

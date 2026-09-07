@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSupabaseAdminClient } from '@/lib/supabase-admin';
-import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { checkRateLimitAsync, getClientIp } from '@/lib/rate-limit';
+import { cacheDel } from '@/lib/redis';
+import { EnquiryDetails } from '@/lib/builder/enquiry';
 
 /**
- * Server-side landing point for a submitted event enquiry. Previously the
- * browser wrote straight into Supabase's `quotations` table with the public
- * anon key (see lib/store/admin-store.ts's old saveAdminQuote) - which meant
- * every "security" property of a submission (the guest-count cap, the
- * reference code, which fields even exist) was purely a frontend
- * convention that a direct API call could ignore entirely. This route is
- * the actual trust boundary: it validates every field server-side and
- * generates the reference code itself, then writes with the service-role
- * key - the browser never gets to assert either.
+ * Server-side landing point for a submitted event enquiry.
+ * Integrates Redis rate limiting and invalidates CRM quotes cache on insert/update.
  */
 
 const MAX_GUEST_COUNT = 5000;
@@ -33,24 +28,12 @@ const enquirySchema = z.object({
   photographyTier: z.string().trim().max(200).optional().default('custom'),
   purohitTier: z.string().trim().max(200).optional().default('custom'),
   selectedServicesCount: z.number().int().min(0).max(1000).optional().default(0),
-  // Estimated total is display-only convenience data (this booking flow has
-  // no payment/checkout step - final pricing is always manually confirmed
-  // by the owner after enquiry, per the site's existing copy), so a
-  // generous sanity ceiling rather than a server-recomputed value is
-  // sufficient here; it is never treated as a binding price anywhere.
   estimatedCost: z.number().min(0).max(100_000_000).optional().default(0),
   notes: z.string().trim().regex(/^[a-zA-Z0-9\s.,'"!?()\-:;&]*$/, 'Special requirements contains unsupported characters.').max(2000).optional().default(''),
-  // Free-form breakdown used for the PDF/owner view - validated for shape/size
-  // only (not every nested field), capped so a malicious payload can't bloat
-  // the database or the generated PDF.
   fullDetails: z.record(z.any()).optional(),
 });
 
 function generateRefCode(): string {
-  // 6 random base36 characters (~2.1 billion combinations) instead of the
-  // old client-generated 4-digit number (9,000 combinations) - reference
-  // codes double as the lookup key for the enquiry PDF's storage path, so
-  // low entropy there was effectively a guessable/enumerable PDF ID.
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let suffix = '';
   const bytes = new Uint8Array(6);
@@ -61,8 +44,7 @@ function generateRefCode(): string {
 
 export async function POST(request: NextRequest) {
   // 20 submissions per IP per 10 minutes - generous for a genuine customer
-  // (who submits once), tight enough to blunt scripted spam.
-  if (!checkRateLimit(`enquiry:${getClientIp(request)}`, 20, 10 * 60 * 1000)) {
+  if (!(await checkRateLimitAsync(`enquiry:${getClientIp(request)}`, 20, 10 * 60 * 1000))) {
     return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
   }
 
@@ -74,10 +56,7 @@ export async function POST(request: NextRequest) {
   }
   const data = parsed.data;
 
-  // Simple honeypot: a hidden form field named "companyWebsite" that real
-  // customers never see or fill in - if it arrives non-empty, silently
-  // report success without writing anything, which wastes a bot's time
-  // without giving it a signal to adapt to.
+  // Honeypot check
   if (typeof body === 'object' && body && typeof body.companyWebsite === 'string' && body.companyWebsite.trim() !== '') {
     return NextResponse.json({ refCode: generateRefCode(), savedToBackend: true });
   }
@@ -86,6 +65,66 @@ export async function POST(request: NextRequest) {
 
   try {
     const admin = getSupabaseAdminClient();
+    const submittedAtIso = new Date().toISOString();
+
+    // Generate and store the compressed PDF directly in the CRM's Supabase Storage
+    let pdfUrl: string | null = null;
+    try {
+      const { generateEnquiryPdfBuffer } = await import('@/lib/builder/enquiry-pdf');
+      const fullDetails: EnquiryDetails = (data.fullDetails as unknown as EnquiryDetails) || {
+        eventTypeId: 'custom',
+        eventTypeLabel: data.photographyTier || 'Custom Event',
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        customerEmail: data.customerEmail,
+        eventDate: data.weddingDate,
+        location: data.venueCity,
+        guestCount: data.guestCount,
+        specialRequirements: data.notes,
+        sections: [],
+        cateringMenus: [],
+        requestedExtras: [],
+        estimatedTotal: data.estimatedCost,
+        totalSelectionsCount: data.selectedServicesCount,
+      };
+
+      const pdfBuffer = await generateEnquiryPdfBuffer(fullDetails, refCode, submittedAtIso);
+      const randomSuffix = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}`;
+      const objectPath = `${refCode}/${randomSuffix}.pdf`;
+
+      const { error: uploadError } = await admin.storage.from('enquiry-pdfs').upload(objectPath, pdfBuffer, {
+        contentType: 'application/pdf',
+        cacheControl: '31536000',
+        upsert: true,
+      });
+
+      if (!uploadError) {
+        const { data: signData } = await admin.storage
+          .from('enquiry-pdfs')
+          .createSignedUrl(objectPath, 60 * 60 * 24 * 365);
+        if (signData?.signedUrl) {
+          pdfUrl = signData.signedUrl;
+        }
+      } else if (uploadError.message?.toLowerCase().includes('not found') || (uploadError as any).statusCode === 404) {
+        await admin.storage.createBucket('enquiry-pdfs', { public: false });
+        const { error: retryError } = await admin.storage.from('enquiry-pdfs').upload(objectPath, pdfBuffer, {
+          contentType: 'application/pdf',
+          cacheControl: '31536000',
+          upsert: true,
+        });
+        if (!retryError) {
+          const { data: signData } = await admin.storage
+            .from('enquiry-pdfs')
+            .createSignedUrl(objectPath, 60 * 60 * 24 * 365);
+          if (signData?.signedUrl) {
+            pdfUrl = signData.signedUrl;
+          }
+        }
+      }
+    } catch (pdfErr) {
+      console.warn('Server-side PDF generation/upload error:', pdfErr);
+    }
+
     const { error } = await admin.from('quotations').insert([
       {
         id: refCode,
@@ -103,7 +142,7 @@ export async function POST(request: NextRequest) {
           purohitTier: data.purohitTier,
           selectedServicesCount: data.selectedServicesCount,
           fullDetails: data.fullDetails || null,
-          pdfUrl: null,
+          pdfUrl,
         },
         price_breakdown: { estimatedCost: data.estimatedCost },
         status: 'New',
@@ -111,14 +150,15 @@ export async function POST(request: NextRequest) {
     ]);
     if (error) {
       console.error('Enquiry insert failed:', error.message);
-      return NextResponse.json({ refCode, savedToBackend: false });
+      return NextResponse.json({ refCode, savedToBackend: false, pdfUrl });
     }
-    return NextResponse.json({ refCode, savedToBackend: true });
+
+    // Invalidate CRM cache in Redis so quotes update immediately
+    await cacheDel('admin:quotes:list').catch(() => {});
+
+    return NextResponse.json({ refCode, savedToBackend: true, pdfUrl });
   } catch (e) {
     console.error('Enquiry submission error:', e);
-    // Never leak internal error details (DB host, stack trace, etc.) to the
-    // client - a generic message plus the still-usable refCode so the
-    // customer's WhatsApp fallback message can proceed regardless.
     return NextResponse.json({ refCode, savedToBackend: false });
   }
 }
@@ -128,12 +168,9 @@ const patchSchema = z.object({
   pdfUrl: z.string().trim().url().max(2000),
 });
 
-/** Attaches the generated PDF's URL to an enquiry right after upload - the
- * PDF has to be built client-side (see lib/builder/enquiry-pdf.tsx) after
- * the server-issued refCode comes back from POST above, so this is a
- * necessary second step rather than a single atomic write. */
+/** Attaches the generated PDF's URL to an enquiry right after upload */
 export async function PATCH(request: NextRequest) {
-  if (!checkRateLimit(`enquiry-patch:${getClientIp(request)}`, 20, 10 * 60 * 1000)) {
+  if (!(await checkRateLimitAsync(`enquiry-patch:${getClientIp(request)}`, 20, 10 * 60 * 1000))) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   }
   const body = await request.json().catch(() => null);
@@ -155,9 +192,14 @@ export async function PATCH(request: NextRequest) {
       .update({ builder_state: { ...(existing.builder_state || {}), pdfUrl: parsed.data.pdfUrl } })
       .eq('id', parsed.data.refCode);
     if (error) return NextResponse.json({ error: 'Failed to attach PDF.' }, { status: 500 });
+
+    // Invalidate CRM cache in Redis
+    await cacheDel('admin:quotes:list').catch(() => {});
+
     return NextResponse.json({ success: true });
   } catch (e) {
     console.error('Enquiry PDF attach error:', e);
     return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 }
+

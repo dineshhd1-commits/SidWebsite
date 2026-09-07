@@ -1,706 +1,856 @@
 {
   "photos": [
     {
-      "id": "bridal-entry-1",
-      "src": "/decotion/bridal entry idea/1.jpg",
-      "category": "bridal-entry",
-      "categoryLabel": "Bridal Entry Ideas"
+      "id": "house-lighting-1",
+      "src": "/decotion/house-lighting/1.jpg",
+      "category": "house-lighting",
+      "categoryLabel": "House Lighting"
     },
     {
-      "id": "bridal-entry-2",
-      "src": "/decotion/bridal entry idea/2.jpg",
-      "category": "bridal-entry",
-      "categoryLabel": "Bridal Entry Ideas"
+      "id": "house-lighting-2",
+      "src": "/decotion/house-lighting/2.jpg",
+      "category": "house-lighting",
+      "categoryLabel": "House Lighting"
     },
     {
-      "id": "bridal-entry-3",
-      "src": "/decotion/bridal entry idea/3.jpg",
-      "category": "bridal-entry",
-      "categoryLabel": "Bridal Entry Ideas"
+      "id": "house-lighting-3",
+      "src": "/decotion/house-lighting/3.jpg",
+      "category": "house-lighting",
+      "categoryLabel": "House Lighting"
     },
     {
-      "id": "bridal-entry-4",
-      "src": "/decotion/bridal entry idea/4.jpg",
-      "category": "bridal-entry",
-      "categoryLabel": "Bridal Entry Ideas"
+      "id": "house-lighting-4",
+      "src": "/decotion/house-lighting/4.jpg",
+      "category": "house-lighting",
+      "categoryLabel": "House Lighting"
     },
     {
-      "id": "bridal-entry-5",
-      "src": "/decotion/bridal entry idea/5.jpg",
-      "category": "bridal-entry",
-      "categoryLabel": "Bridal Entry Ideas"
+      "id": "house-lighting-5",
+      "src": "/decotion/house-lighting/5.jpg",
+      "category": "house-lighting",
+      "categoryLabel": "House Lighting"
     },
     {
-      "id": "bridal-entry-6",
-      "src": "/decotion/bridal entry idea/6.jpg",
-      "category": "bridal-entry",
-      "categoryLabel": "Bridal Entry Ideas"
+      "id": "house-lighting-6",
+      "src": "/decotion/house-lighting/6.jpg",
+      "category": "house-lighting",
+      "categoryLabel": "House Lighting"
     },
     {
-      "id": "bridal-entry-7",
-      "src": "/decotion/bridal entry idea/7.jpg",
-      "category": "bridal-entry",
-      "categoryLabel": "Bridal Entry Ideas"
-    },
-    {
-      "id": "chapra-with-flowers-1",
-      "src": "/decotion/chapra with flower/1.jpg",
-      "category": "chapra-with-flowers",
-      "categoryLabel": "Chapra With Flowers"
-    },
-    {
-      "id": "chapra-with-flowers-2",
-      "src": "/decotion/chapra with flower/2.jpg",
-      "category": "chapra-with-flowers",
-      "categoryLabel": "Chapra With Flowers"
+      "id": "house-lighting-7",
+      "src": "/decotion/house-lighting/7.jpg",
+      "category": "house-lighting",
+      "categoryLabel": "House Lighting"
     },
     {
       "id": "chapra-with-flowers-3",
-      "src": "/decotion/chapra with flower/2a2228b72e81a24786cd651e1ed3b59d.jpg",
-      "category": "chapra-with-flowers",
-      "categoryLabel": "Chapra With Flowers"
-    },
-    {
-      "id": "chapra-with-flowers-4",
-      "src": "/decotion/chapra with flower/2cd56467e6e1d181041ef6e2ec1e99e1.jpg",
-      "category": "chapra-with-flowers",
-      "categoryLabel": "Chapra With Flowers"
-    },
-    {
-      "id": "chapra-with-flowers-5",
-      "src": "/decotion/chapra with flower/3.jpg",
-      "category": "chapra-with-flowers",
-      "categoryLabel": "Chapra With Flowers"
-    },
-    {
-      "id": "chapra-with-flowers-6",
-      "src": "/decotion/chapra with flower/4.jpg",
-      "category": "chapra-with-flowers",
-      "categoryLabel": "Chapra With Flowers"
-    },
-    {
-      "id": "chapra-with-flowers-7",
-      "src": "/decotion/chapra with flower/5.jpg",
+      "src": "/decotion/chapra with flower/20200127_064341.jpg",
       "category": "chapra-with-flowers",
       "categoryLabel": "Chapra With Flowers"
     },
     {
       "id": "chapra-with-flowers-8",
-      "src": "/decotion/chapra with flower/6.jpg",
+      "src": "/decotion/chapra with flower/5.jpg",
       "category": "chapra-with-flowers",
       "categoryLabel": "Chapra With Flowers"
     },
     {
-      "id": "chapra-with-flowers-9",
+      "id": "chapra-with-flowers-10",
       "src": "/decotion/chapra with flower/7.jpg",
       "category": "chapra-with-flowers",
       "categoryLabel": "Chapra With Flowers"
     },
     {
-      "id": "cold-fire-entry-1",
-      "src": "/decotion/cold fire/1.jpg",
-      "category": "cold-fire-entry",
-      "categoryLabel": "Cold Fire Entry"
+      "id": "chapra-with-flowers-12",
+      "src": "/decotion/chapra with flower/c1 (2).jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
     },
     {
-      "id": "cold-fire-entry-2",
-      "src": "/decotion/cold fire/2.jpg",
-      "category": "cold-fire-entry",
-      "categoryLabel": "Cold Fire Entry"
+      "id": "chapra-with-flowers-14",
+      "src": "/decotion/chapra with flower/c1 (4).jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-16",
+      "src": "/decotion/chapra with flower/DSC02078.JPG",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-17",
+      "src": "/decotion/chapra with flower/DSC02079.JPG",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-18",
+      "src": "/decotion/chapra with flower/DSC05491.JPG",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-19",
+      "src": "/decotion/chapra with flower/DSC09102.JPG",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-20",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0002.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-21",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0003.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-24",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0006.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-26",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0009.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-28",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0011.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-30",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0013.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-31",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0015.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-35",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0023.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-37",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0025.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-39",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0028.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-41",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0031.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-44",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0034.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-46",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0039.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-47",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0042.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-50",
+      "src": "/decotion/chapra with flower/IMG-20190521-WA0014.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
+    },
+    {
+      "id": "chapra-with-flowers-52",
+      "src": "/decotion/chapra with flower/IMG-20240414-WA0004.jpg",
+      "category": "chapra-with-flowers",
+      "categoryLabel": "Chapra With Flowers"
     },
     {
       "id": "door-decoration-1",
-      "src": "/decotion/door decation/1.jpg",
-      "category": "door-decoration",
-      "categoryLabel": "Door & Entrance Decoration"
-    },
-    {
-      "id": "door-decoration-2",
-      "src": "/decotion/door decation/2.jpg",
+      "src": "/decotion/entersnce door decortion/1 (1).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
       "id": "door-decoration-3",
-      "src": "/decotion/door decation/3.jpg",
+      "src": "/decotion/entersnce door decortion/1 (11).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-4",
-      "src": "/decotion/door decation/4.jpg",
+      "id": "door-decoration-12",
+      "src": "/decotion/entersnce door decortion/1 (2).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-5",
-      "src": "/decotion/door decation/5.jpg",
+      "id": "door-decoration-19",
+      "src": "/decotion/entersnce door decortion/1 (26).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-6",
-      "src": "/decotion/door decation/6.jpg",
+      "id": "door-decoration-20",
+      "src": "/decotion/entersnce door decortion/1 (27).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-7",
-      "src": "/decotion/door decation/7.jpg",
+      "id": "door-decoration-21",
+      "src": "/decotion/entersnce door decortion/1 (28).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-8",
-      "src": "/decotion/door decation/8.jpg",
+      "id": "door-decoration-22",
+      "src": "/decotion/entersnce door decortion/1 (29).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-9",
-      "src": "/decotion/door decation/9.jpg",
+      "id": "door-decoration-23",
+      "src": "/decotion/entersnce door decortion/1 (3).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-10",
-      "src": "/decotion/door decation/10.jpg",
+      "id": "door-decoration-24",
+      "src": "/decotion/entersnce door decortion/1 (30).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "door-decoration-11",
-      "src": "/decotion/door decation/11.jpg",
+      "id": "door-decoration-25",
+      "src": "/decotion/entersnce door decortion/1 (31).JPG",
       "category": "door-decoration",
       "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-1",
-      "src": "/decotion/Garlands/1.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-26",
+      "src": "/decotion/entersnce door decortion/1 (32).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-2",
-      "src": "/decotion/Garlands/2.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-27",
+      "src": "/decotion/entersnce door decortion/1 (33).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-3",
-      "src": "/decotion/Garlands/3.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-28",
+      "src": "/decotion/entersnce door decortion/1 (34).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-4",
-      "src": "/decotion/Garlands/4.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-29",
+      "src": "/decotion/entersnce door decortion/1 (35).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-5",
-      "src": "/decotion/Garlands/5.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-30",
+      "src": "/decotion/entersnce door decortion/1 (36).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-6",
-      "src": "/decotion/Garlands/6.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-31",
+      "src": "/decotion/entersnce door decortion/1 (37).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-7",
-      "src": "/decotion/Garlands/7.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-32",
+      "src": "/decotion/entersnce door decortion/1 (38).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-8",
-      "src": "/decotion/Garlands/8.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-33",
+      "src": "/decotion/entersnce door decortion/1 (39).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-9",
-      "src": "/decotion/Garlands/9.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-34",
+      "src": "/decotion/entersnce door decortion/1 (4).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-10",
-      "src": "/decotion/Garlands/10.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-35",
+      "src": "/decotion/entersnce door decortion/1 (40).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-11",
-      "src": "/decotion/Garlands/11.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-36",
+      "src": "/decotion/entersnce door decortion/1 (41).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-12",
-      "src": "/decotion/Garlands/12.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-37",
+      "src": "/decotion/entersnce door decortion/1 (5).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-13",
-      "src": "/decotion/Garlands/13.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-38",
+      "src": "/decotion/entersnce door decortion/1 (6).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-14",
-      "src": "/decotion/Garlands/14.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-39",
+      "src": "/decotion/entersnce door decortion/1 (7).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-15",
-      "src": "/decotion/Garlands/15.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "door-decoration-40",
+      "src": "/decotion/entersnce door decortion/1 (8).JPG",
+      "category": "door-decoration",
+      "categoryLabel": "Door & Entrance Decoration"
     },
     {
-      "id": "garlands-16",
-      "src": "/decotion/Garlands/16.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-1",
+      "src": "/decotion/entrance-gatename-decoration/0L9A8667.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-17",
-      "src": "/decotion/Garlands/17.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-2",
+      "src": "/decotion/entrance-gatename-decoration/147A3710.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-18",
-      "src": "/decotion/Garlands/18.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-3",
+      "src": "/decotion/entrance-gatename-decoration/DSC01166.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-19",
-      "src": "/decotion/Garlands/19.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-4",
+      "src": "/decotion/entrance-gatename-decoration/DSC06182.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-20",
-      "src": "/decotion/Garlands/20.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-5",
+      "src": "/decotion/entrance-gatename-decoration/DSC06185.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-21",
-      "src": "/decotion/Garlands/21.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-6",
+      "src": "/decotion/entrance-gatename-decoration/DSC06263.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-22",
-      "src": "/decotion/Garlands/22.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-7",
+      "src": "/decotion/entrance-gatename-decoration/DSC09437.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-23",
-      "src": "/decotion/Garlands/23.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-8",
+      "src": "/decotion/entrance-gatename-decoration/DSC09438.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-24",
-      "src": "/decotion/Garlands/24.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-9",
+      "src": "/decotion/entrance-gatename-decoration/DSC09440.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "garlands-25",
-      "src": "/decotion/Garlands/25.jpg",
-      "category": "garlands",
-      "categoryLabel": "Garlands"
+      "id": "entrance-gatename-decoration-10",
+      "src": "/decotion/entrance-gatename-decoration/DSC09592.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-1",
-      "src": "/decotion/mantap decotion/1.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-11",
+      "src": "/decotion/entrance-gatename-decoration/DSC09619.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-2",
-      "src": "/decotion/mantap decotion/2.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-12",
+      "src": "/decotion/entrance-gatename-decoration/DSC09841.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-3",
-      "src": "/decotion/mantap decotion/3.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-13",
+      "src": "/decotion/entrance-gatename-decoration/DSC09862.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-4",
-      "src": "/decotion/mantap decotion/4.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-14",
+      "src": "/decotion/entrance-gatename-decoration/DSC_0012.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-5",
-      "src": "/decotion/mantap decotion/5.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-15",
+      "src": "/decotion/entrance-gatename-decoration/DSC_0520.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-6",
-      "src": "/decotion/mantap decotion/6.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-16",
+      "src": "/decotion/entrance-gatename-decoration/DSC_0522.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-7",
-      "src": "/decotion/mantap decotion/7.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-17",
+      "src": "/decotion/entrance-gatename-decoration/DSC_0850.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-8",
-      "src": "/decotion/mantap decotion/8.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-18",
+      "src": "/decotion/entrance-gatename-decoration/DSC_5621.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-9",
-      "src": "/decotion/mantap decotion/9.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-19",
+      "src": "/decotion/entrance-gatename-decoration/DSC_6041.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-10",
-      "src": "/decotion/mantap decotion/10.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-20",
+      "src": "/decotion/entrance-gatename-decoration/DSC_8937.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-11",
-      "src": "/decotion/mantap decotion/11.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-21",
+      "src": "/decotion/entrance-gatename-decoration/DSC_8941.JPG",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-12",
-      "src": "/decotion/mantap decotion/12.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-22",
+      "src": "/decotion/entrance-gatename-decoration/IMG-20201130-WA0038.jpg",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-13",
-      "src": "/decotion/mantap decotion/13.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-23",
+      "src": "/decotion/entrance-gatename-decoration/IMG-20201130-WA0058.jpg",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-14",
-      "src": "/decotion/mantap decotion/14.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-24",
+      "src": "/decotion/entrance-gatename-decoration/IMG-20201201-WA0025.jpg",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-15",
-      "src": "/decotion/mantap decotion/15.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "entrance-gatename-decoration-26",
+      "src": "/decotion/entrance-gatename-decoration/IMG-20210101-WA0013.jpg",
+      "category": "entrance-gatename-decoration",
+      "categoryLabel": "Entrance Gate Name Plate Decoration"
     },
     {
-      "id": "mantap-decoration-16",
-      "src": "/decotion/mantap decotion/16.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "haldi-decoration-4",
+      "src": "/decotion/haldi decortion/h1 (4).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
     },
     {
-      "id": "mantap-decoration-17",
-      "src": "/decotion/mantap decotion/17.jpg",
-      "category": "mantap-decoration",
-      "categoryLabel": "Manthapa Decoration"
+      "id": "haldi-decoration-11",
+      "src": "/decotion/haldi decortion/Haldi decortion  (11).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
     },
     {
-      "id": "passage-decoration-1",
-      "src": "/decotion/pasage/1.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
+      "id": "haldi-decoration-14",
+      "src": "/decotion/haldi decortion/Haldi decortion  (14).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
     },
     {
-      "id": "passage-decoration-2",
-      "src": "/decotion/pasage/2.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
+      "id": "haldi-decoration-16",
+      "src": "/decotion/haldi decortion/Haldi decortion  (16).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
     },
     {
-      "id": "passage-decoration-3",
-      "src": "/decotion/pasage/3.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
+      "id": "haldi-decoration-17",
+      "src": "/decotion/haldi decortion/Haldi decortion  (17).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
     },
     {
-      "id": "passage-decoration-4",
-      "src": "/decotion/pasage/4.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
+      "id": "haldi-decoration-22",
+      "src": "/decotion/haldi decortion/Haldi decortion  (20).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-23",
+      "src": "/decotion/haldi decortion/Haldi decortion  (21).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-24",
+      "src": "/decotion/haldi decortion/Haldi decortion  (22).JPG",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-25",
+      "src": "/decotion/haldi decortion/Haldi decortion  (23).JPG",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-27",
+      "src": "/decotion/haldi decortion/Haldi decortion  (25).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-31",
+      "src": "/decotion/haldi decortion/Haldi decortion  (29).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-32",
+      "src": "/decotion/haldi decortion/Haldi decortion  (3).jpeg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-34",
+      "src": "/decotion/haldi decortion/Haldi decortion  (30).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-35",
+      "src": "/decotion/haldi decortion/Haldi decortion  (31).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-36",
+      "src": "/decotion/haldi decortion/Haldi decortion  (32).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-37",
+      "src": "/decotion/haldi decortion/Haldi decortion  (33).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-38",
+      "src": "/decotion/haldi decortion/Haldi decortion  (34).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-43",
+      "src": "/decotion/haldi decortion/Haldi decortion  (39).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-45",
+      "src": "/decotion/haldi decortion/Haldi decortion  (40).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-48",
+      "src": "/decotion/haldi decortion/Haldi decortion  (43).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-49",
+      "src": "/decotion/haldi decortion/Haldi decortion  (44).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-53",
+      "src": "/decotion/haldi decortion/Haldi decortion  (48).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-54",
+      "src": "/decotion/haldi decortion/Haldi decortion  (49).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-57",
+      "src": "/decotion/haldi decortion/Haldi decortion  (51).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
+    },
+    {
+      "id": "haldi-decoration-59",
+      "src": "/decotion/haldi decortion/Haldi decortion  (53).jpg",
+      "category": "haldi-decoration",
+      "categoryLabel": "Haldi & Mehndi Decoration"
     },
     {
       "id": "passage-decoration-5",
-      "src": "/decotion/pasage/5.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-6",
-      "src": "/decotion/pasage/6.jpg",
+      "src": "/decotion/pasage/126.jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
       "id": "passage-decoration-7",
-      "src": "/decotion/pasage/7.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-8",
-      "src": "/decotion/pasage/8.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-9",
-      "src": "/decotion/pasage/9.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-10",
-      "src": "/decotion/pasage/10.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-11",
-      "src": "/decotion/pasage/11.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-12",
-      "src": "/decotion/pasage/12.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-13",
-      "src": "/decotion/pasage/13.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-14",
       "src": "/decotion/pasage/14.jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-15",
-      "src": "/decotion/pasage/15.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-16",
-      "src": "/decotion/pasage/16.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-17",
-      "src": "/decotion/pasage/17.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-18",
-      "src": "/decotion/pasage/18.jpg",
+      "id": "passage-decoration-13",
+      "src": "/decotion/pasage/2.jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
       "id": "passage-decoration-19",
-      "src": "/decotion/pasage/19.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-20",
-      "src": "/decotion/pasage/20.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-21",
-      "src": "/decotion/pasage/21.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-22",
-      "src": "/decotion/pasage/22.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-23",
-      "src": "/decotion/pasage/23.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-24",
-      "src": "/decotion/pasage/24.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-25",
       "src": "/decotion/pasage/25.jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-26",
+      "id": "passage-decoration-20",
       "src": "/decotion/pasage/26.jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-27",
-      "src": "/decotion/pasage/27.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-28",
-      "src": "/decotion/pasage/28.jpg",
-      "category": "passage-decoration",
-      "categoryLabel": "Passage Decoration"
-    },
-    {
-      "id": "passage-decoration-29",
+      "id": "passage-decoration-23",
       "src": "/decotion/pasage/29.jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-30",
-      "src": "/decotion/pasage/30.jpg",
+      "id": "passage-decoration-37",
+      "src": "/decotion/pasage/pasage (1).jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-31",
-      "src": "/decotion/pasage/31.jpg",
+      "id": "passage-decoration-38",
+      "src": "/decotion/pasage/pasage (10).jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-32",
-      "src": "/decotion/pasage/32.jpg",
+      "id": "passage-decoration-41",
+      "src": "/decotion/pasage/pasage (102).jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-33",
-      "src": "/decotion/pasage/33.jpg",
+      "id": "passage-decoration-42",
+      "src": "/decotion/pasage/pasage (103).jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-34",
-      "src": "/decotion/pasage/34.jpg",
+      "id": "passage-decoration-43",
+      "src": "/decotion/pasage/pasage (104).jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "passage-decoration-35",
-      "src": "/decotion/pasage/35.jpg",
+      "id": "passage-decoration-44",
+      "src": "/decotion/pasage/pasage (105).jpg",
       "category": "passage-decoration",
       "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-1",
-      "src": "/decotion/sapthathi/1.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-45",
+      "src": "/decotion/pasage/pasage (106).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-2",
-      "src": "/decotion/sapthathi/2.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-46",
+      "src": "/decotion/pasage/pasage (107).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-3",
-      "src": "/decotion/sapthathi/3.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-47",
+      "src": "/decotion/pasage/pasage (108).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-4",
-      "src": "/decotion/sapthathi/4.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-48",
+      "src": "/decotion/pasage/pasage (109).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-5",
-      "src": "/decotion/sapthathi/5.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-49",
+      "src": "/decotion/pasage/pasage (11).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-6",
-      "src": "/decotion/sapthathi/6.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-50",
+      "src": "/decotion/pasage/pasage (110).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-7",
-      "src": "/decotion/sapthathi/7.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-51",
+      "src": "/decotion/pasage/pasage (111).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-8",
-      "src": "/decotion/sapthathi/8.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-52",
+      "src": "/decotion/pasage/pasage (112).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-9",
-      "src": "/decotion/sapthathi/9.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-53",
+      "src": "/decotion/pasage/pasage (113).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-10",
-      "src": "/decotion/sapthathi/10.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-56",
+      "src": "/decotion/pasage/pasage (116).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
     },
     {
-      "id": "saptapadi-11",
-      "src": "/decotion/sapthathi/11.jpg",
-      "category": "saptapadi",
-      "categoryLabel": "Saptapadi Setup"
+      "id": "passage-decoration-57",
+      "src": "/decotion/pasage/pasage (117).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
+    },
+    {
+      "id": "passage-decoration-58",
+      "src": "/decotion/pasage/pasage (118).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
+    },
+    {
+      "id": "passage-decoration-59",
+      "src": "/decotion/pasage/pasage (119).jpg",
+      "category": "passage-decoration",
+      "categoryLabel": "Passage Decoration"
+    },
+    {
+      "id": "photo-booth-4",
+      "src": "/decotion/photo both/p1 (4).jpg",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-5",
+      "src": "/decotion/photo both/p1 (5).jpg",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-6",
+      "src": "/decotion/photo both/photo both  (1).JPG",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-7",
+      "src": "/decotion/photo both/photo both  (10).JPG",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-8",
+      "src": "/decotion/photo both/photo both  (11).JPG",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-9",
+      "src": "/decotion/photo both/photo both  (12).JPG",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-10",
+      "src": "/decotion/photo both/photo both  (2).jpg",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-14",
+      "src": "/decotion/photo both/photo both  (6).jpg",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-15",
+      "src": "/decotion/photo both/photo both  (7).jpg",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
+    },
+    {
+      "id": "photo-booth-17",
+      "src": "/decotion/photo both/photo both  (9).jpg",
+      "category": "photo-booth",
+      "categoryLabel": "Photo Booth"
     },
     {
       "id": "stage-decoration-1",
@@ -709,376 +859,1486 @@
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-2",
-      "src": "/decotion/stage decortion/3.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-3",
-      "src": "/decotion/stage decortion/4.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-4",
-      "src": "/decotion/stage decortion/5.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
       "id": "stage-decoration-5",
-      "src": "/decotion/stage decortion/6.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-6",
-      "src": "/decotion/stage decortion/7.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-7",
-      "src": "/decotion/stage decortion/8.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-8",
-      "src": "/decotion/stage decortion/9.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-9",
-      "src": "/decotion/stage decortion/10.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-10",
-      "src": "/decotion/stage decortion/11.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-11",
-      "src": "/decotion/stage decortion/12.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-12",
       "src": "/decotion/stage decortion/13.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-13",
-      "src": "/decotion/stage decortion/14.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-14",
-      "src": "/decotion/stage decortion/15.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-15",
+      "id": "stage-decoration-8",
       "src": "/decotion/stage decortion/16.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-16",
+      "id": "stage-decoration-9",
       "src": "/decotion/stage decortion/17.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-17",
+      "id": "stage-decoration-10",
       "src": "/decotion/stage decortion/18.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-18",
+      "id": "stage-decoration-11",
       "src": "/decotion/stage decortion/19.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-19",
+      "id": "stage-decoration-12",
       "src": "/decotion/stage decortion/20.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-20",
+      "id": "stage-decoration-13",
       "src": "/decotion/stage decortion/21.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-21",
+      "id": "stage-decoration-14",
       "src": "/decotion/stage decortion/22.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-22",
+      "id": "stage-decoration-15",
       "src": "/decotion/stage decortion/23.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-23",
-      "src": "/decotion/stage decortion/24.png",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-24",
+      "id": "stage-decoration-17",
       "src": "/decotion/stage decortion/25.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-25",
+      "id": "stage-decoration-18",
       "src": "/decotion/stage decortion/26.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-26",
+      "id": "stage-decoration-19",
       "src": "/decotion/stage decortion/27.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-27",
+      "id": "stage-decoration-20",
       "src": "/decotion/stage decortion/28.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-28",
+      "id": "stage-decoration-21",
       "src": "/decotion/stage decortion/29.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-29",
+      "id": "stage-decoration-23",
       "src": "/decotion/stage decortion/30.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-30",
-      "src": "/decotion/stage decortion/31.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-31",
+      "id": "stage-decoration-25",
       "src": "/decotion/stage decortion/32.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-32",
-      "src": "/decotion/stage decortion/33.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-33",
-      "src": "/decotion/stage decortion/34.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
-    },
-    {
-      "id": "stage-decoration-34",
+      "id": "stage-decoration-28",
       "src": "/decotion/stage decortion/35.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-35",
+      "id": "stage-decoration-29",
       "src": "/decotion/stage decortion/36.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-36",
+      "id": "stage-decoration-30",
       "src": "/decotion/stage decortion/37.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-37",
+      "id": "stage-decoration-31",
       "src": "/decotion/stage decortion/38.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-38",
+      "id": "stage-decoration-32",
       "src": "/decotion/stage decortion/39.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-39",
+      "id": "stage-decoration-33",
+      "src": "/decotion/stage decortion/4.jpg",
+      "category": "stage-decoration",
+      "categoryLabel": "Stage Decoration"
+    },
+    {
+      "id": "stage-decoration-34",
       "src": "/decotion/stage decortion/40.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-40",
+      "id": "stage-decoration-35",
       "src": "/decotion/stage decortion/41.jpg",
       "category": "stage-decoration",
       "categoryLabel": "Stage Decoration"
     },
     {
-      "id": "stage-decoration-41",
-      "src": "/decotion/stage decortion/42.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-1",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (1).jpeg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-42",
-      "src": "/decotion/stage decortion/43.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-2",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (1).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-43",
-      "src": "/decotion/stage decortion/44.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-5",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (101).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-44",
-      "src": "/decotion/stage decortion/45.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-6",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (102).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-45",
-      "src": "/decotion/stage decortion/46.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-8",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (104).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-46",
-      "src": "/decotion/stage decortion/47.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-11",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (107).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-47",
-      "src": "/decotion/stage decortion/48.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-13",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (11).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-48",
-      "src": "/decotion/stage decortion/49.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-14",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (12).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-49",
-      "src": "/decotion/stage decortion/50.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-15",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (13).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-50",
-      "src": "/decotion/stage decortion/51.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-16",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (14).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-51",
-      "src": "/decotion/stage decortion/52.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-18",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (16).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-52",
-      "src": "/decotion/stage decortion/53.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-22",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (2).jpeg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-53",
-      "src": "/decotion/stage decortion/54.jpeg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-23",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (2).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-54",
-      "src": "/decotion/stage decortion/54.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-25",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (21).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-55",
-      "src": "/decotion/stage decortion/55.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-26",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (22).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-56",
-      "src": "/decotion/stage decortion/56.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-29",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (25).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-57",
-      "src": "/decotion/stage decortion/57.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-30",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (26).JPG",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-58",
-      "src": "/decotion/stage decortion/58.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-32",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (28).JPG",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-59",
-      "src": "/decotion/stage decortion/59.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-33",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (29).JPG",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-60",
-      "src": "/decotion/stage decortion/60.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-34",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (3).jpeg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-61",
-      "src": "/decotion/stage decortion/61.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-35",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (3).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-62",
-      "src": "/decotion/stage decortion/62.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-36",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (30).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
     },
     {
-      "id": "stage-decoration-63",
-      "src": "/decotion/stage decortion/63.jpg",
-      "category": "stage-decoration",
-      "categoryLabel": "Stage Decoration"
+      "id": "mantap-decoration-37",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (31).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
+    },
+    {
+      "id": "mantap-decoration-38",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (32).JPG",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
+    },
+    {
+      "id": "mantap-decoration-39",
+      "src": "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (33).jpg",
+      "category": "mantap-decoration",
+      "categoryLabel": "Manthapa Decoration"
+    },
+    {
+      "id": "saptapadi-1",
+      "src": "/decotion/saptapadi/0L9A8921.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "saptapadi-14",
+      "src": "/decotion/saptapadi/DSC00085.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "saptapadi-15",
+      "src": "/decotion/saptapadi/DSC00699.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "saptapadi-16",
+      "src": "/decotion/saptapadi/DSC04529.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "saptapadi-17",
+      "src": "/decotion/saptapadi/DSC09067.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "saptapadi-18",
+      "src": "/decotion/saptapadi/DSC09720.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "saptapadi-19",
+      "src": "/decotion/saptapadi/DSC_9306.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "saptapadi-20",
+      "src": "/decotion/saptapadi/DSC_9323.JPG",
+      "category": "saptapadi",
+      "categoryLabel": "Saptapadi & Deepa Alankara"
+    },
+    {
+      "id": "garlands-50",
+      "src": "/decotion/Garlands/Garlands  (118).jpg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-51",
+      "src": "/decotion/Garlands/Garlands  (119).jpg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-52",
+      "src": "/decotion/Garlands/Garlands  (12).jpeg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-54",
+      "src": "/decotion/Garlands/Garlands  (120).jpg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-55",
+      "src": "/decotion/Garlands/Garlands  (121).jpg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-56",
+      "src": "/decotion/Garlands/Garlands  (122).jpg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-75",
+      "src": "/decotion/Garlands/Garlands  (17).jpeg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-94",
+      "src": "/decotion/Garlands/Garlands  (30).JPG",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-102",
+      "src": "/decotion/Garlands/Garlands  (38).JPG",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-103",
+      "src": "/decotion/Garlands/Garlands  (39).JPG",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-106",
+      "src": "/decotion/Garlands/Garlands  (40).JPG",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-112",
+      "src": "/decotion/Garlands/Garlands  (46).jpg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "garlands-160",
+      "src": "/decotion/Garlands/Garlands  (86).jpg",
+      "category": "garlands",
+      "categoryLabel": "Special Garlands"
+    },
+    {
+      "id": "magina-jadi-2",
+      "src": "/decotion/MAGINA JADI/magina jadi (1).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-7",
+      "src": "/decotion/MAGINA JADI/magina jadi (13).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-12",
+      "src": "/decotion/MAGINA JADI/magina jadi (18).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-16",
+      "src": "/decotion/MAGINA JADI/magina jadi (20).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-17",
+      "src": "/decotion/MAGINA JADI/magina jadi (21).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-21",
+      "src": "/decotion/MAGINA JADI/magina jadi (25).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-32",
+      "src": "/decotion/MAGINA JADI/magina jadi (34).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-61",
+      "src": "/decotion/MAGINA JADI/magina jadi (6).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-70",
+      "src": "/decotion/MAGINA JADI/magina jadi (68).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-72",
+      "src": "/decotion/MAGINA JADI/magina jadi (7).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-78",
+      "src": "/decotion/MAGINA JADI/magina jadi (75).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-79",
+      "src": "/decotion/MAGINA JADI/magina jadi (76).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-80",
+      "src": "/decotion/MAGINA JADI/magina jadi (77).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-81",
+      "src": "/decotion/MAGINA JADI/magina jadi (78).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "magina-jadi-83",
+      "src": "/decotion/MAGINA JADI/magina jadi (9).jpg",
+      "category": "magina-jadi",
+      "categoryLabel": "Mogina Jade"
+    },
+    {
+      "id": "harani-basing-8",
+      "src": "/decotion/harani basing/harani basing (15).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-12",
+      "src": "/decotion/harani basing/harani basing (19).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-13",
+      "src": "/decotion/harani basing/harani basing (2).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-15",
+      "src": "/decotion/harani basing/harani basing (21).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-18",
+      "src": "/decotion/harani basing/harani basing (24).JPG",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-19",
+      "src": "/decotion/harani basing/harani basing (25).JPG",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-20",
+      "src": "/decotion/harani basing/harani basing (26).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-21",
+      "src": "/decotion/harani basing/harani basing (27).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-22",
+      "src": "/decotion/harani basing/harani basing (28).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-23",
+      "src": "/decotion/harani basing/harani basing (29).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-24",
+      "src": "/decotion/harani basing/harani basing (3).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-26",
+      "src": "/decotion/harani basing/harani basing (31).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-30",
+      "src": "/decotion/harani basing/harani basing (35).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "harani-basing-35",
+      "src": "/decotion/harani basing/harani basing (8).jpg",
+      "category": "harani-basing",
+      "categoryLabel": "Harini Bashinge"
+    },
+    {
+      "id": "bridal-entry-6",
+      "src": "/decotion/bridal entry idea/6.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "bridal-entry-8",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0012.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "bridal-entry-9",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0013.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "bridal-entry-10",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0014.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "bridal-entry-11",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0018.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "bridal-entry-12",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0019.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "bridal-entry-13",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0020.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "bridal-entry-14",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0021.jpg",
+      "category": "bridal-entry",
+      "categoryLabel": "Bridal Entry Ideas"
+    },
+    {
+      "id": "couple-entry-1",
+      "src": "/decotion/bridal entry idea/6.jpg",
+      "category": "couple-entry",
+      "categoryLabel": "Couple Entry Concept"
+    },
+    {
+      "id": "couple-entry-2",
+      "src": "/decotion/bridal entry idea/IMG-20190119-WA0012.jpg",
+      "category": "couple-entry",
+      "categoryLabel": "Couple Entry Concept"
+    },
+    {
+      "id": "cold-fire-entry-3",
+      "src": "/decotion/cold fire/DSC04566.JPG",
+      "category": "cold-fire-entry",
+      "categoryLabel": "Cold Fire Entry"
+    },
+    {
+      "id": "welcome-bouquet-1",
+      "src": "/decotion/welcome bouquet/5.jpg",
+      "category": "welcome-bouquet",
+      "categoryLabel": "Welcome Bouquet"
+    },
+    {
+      "id": "welcome-bouquet-2",
+      "src": "/decotion/chapra with flower/IMG-20190205-WA0002.jpg",
+      "category": "welcome-bouquet",
+      "categoryLabel": "Welcome Bouquet"
+    },
+    {
+      "id": "welcome-girls-1",
+      "src": "/decotion/welcome girls/1.jpg",
+      "category": "welcome-girls",
+      "categoryLabel": "Welcome Girls"
+    },
+    {
+      "id": "welcome-girls-2",
+      "src": "/decotion/welcome girls/2.jpg",
+      "category": "welcome-girls",
+      "categoryLabel": "Welcome Girls"
+    },
+    {
+      "id": "welcome-girls-3",
+      "src": "/decotion/welcome girls/3.jpg",
+      "category": "welcome-girls",
+      "categoryLabel": "Welcome Girls"
+    },
+    {
+      "id": "welcome-girls-4",
+      "src": "/decotion/welcome girls/4.jpg",
+      "category": "welcome-girls",
+      "categoryLabel": "Welcome Girls"
+    },
+    {
+      "id": "welcome-girls-5",
+      "src": "/decotion/welcome girls/5.jpg",
+      "category": "welcome-girls",
+      "categoryLabel": "Welcome Girls"
+    },
+    {
+      "id": "birthday-decoration-1",
+      "src": "/decotion/BIRTHDAY/1 (1).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-6",
+      "src": "/decotion/BIRTHDAY/1 (17).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-10",
+      "src": "/decotion/BIRTHDAY/1 (23).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-11",
+      "src": "/decotion/BIRTHDAY/1 (24).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-12",
+      "src": "/decotion/BIRTHDAY/1 (27).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-15",
+      "src": "/decotion/BIRTHDAY/1 (31).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-18",
+      "src": "/decotion/BIRTHDAY/1 (34).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-19",
+      "src": "/decotion/BIRTHDAY/1 (37).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-22",
+      "src": "/decotion/BIRTHDAY/1 (41).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-26",
+      "src": "/decotion/BIRTHDAY/1 (45).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-29",
+      "src": "/decotion/BIRTHDAY/1 (49).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-30",
+      "src": "/decotion/BIRTHDAY/1 (5).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-31",
+      "src": "/decotion/BIRTHDAY/1 (50).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-34",
+      "src": "/decotion/BIRTHDAY/1 (53).jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-41",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1565702486993.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-49",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719149498916.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-50",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719149502573.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-51",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719149504391.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-52",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719149506257.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-53",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719149508026.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-54",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719149509918.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-55",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719215303786.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-57",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719215314836.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-65",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719451866648.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "birthday-decoration-68",
+      "src": "/decotion/BIRTHDAY/FB_IMG_1719451880242.jpg",
+      "category": "birthday-decoration",
+      "categoryLabel": "Birthday Decoration"
+    },
+    {
+      "id": "balloon-decoration-1",
+      "src": "/decotion/bolluan/01.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-4",
+      "src": "/decotion/bolluan/56.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-5",
+      "src": "/decotion/bolluan/609fe318f5606942d014a72b341276a1--hollywood-party-decorations-dance-decorations.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-7",
+      "src": "/decotion/bolluan/Bollun (11).jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-8",
+      "src": "/decotion/bolluan/Bollun (12).jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-9",
+      "src": "/decotion/bolluan/Bollun (14).jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-12",
+      "src": "/decotion/bolluan/Bollun (2).jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-16",
+      "src": "/decotion/bolluan/DSC04117.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-18",
+      "src": "/decotion/bolluan/FB_IMG_1538381153164.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-31",
+      "src": "/decotion/bolluan/FB_IMG_1538475764283.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-32",
+      "src": "/decotion/bolluan/FB_IMG_1538475766784.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-33",
+      "src": "/decotion/bolluan/FB_IMG_1538475771658.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-38",
+      "src": "/decotion/bolluan/IMG-20180914-WA0000.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-39",
+      "src": "/decotion/bolluan/IMG-20190118-WA0003.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-40",
+      "src": "/decotion/bolluan/IMG-20190118-WA0004.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-41",
+      "src": "/decotion/bolluan/IMG-20190118-WA0007.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-43",
+      "src": "/decotion/bolluan/IMG-20190118-WA0026.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-44",
+      "src": "/decotion/bolluan/IMG-20190118-WA0027.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-45",
+      "src": "/decotion/bolluan/IMG-20190118-WA0028.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-46",
+      "src": "/decotion/bolluan/IMG-20190118-WA0029.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-47",
+      "src": "/decotion/bolluan/IMG-20190118-WA0031.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-48",
+      "src": "/decotion/bolluan/IMG-20190118-WA0032.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-50",
+      "src": "/decotion/bolluan/IMG-20190118-WA0034.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-51",
+      "src": "/decotion/bolluan/IMG-20190118-WA0035.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "balloon-decoration-52",
+      "src": "/decotion/bolluan/IMG-20190118-WA0036.jpg",
+      "category": "balloon-decoration",
+      "categoryLabel": "Balloon Decoration"
+    },
+    {
+      "id": "anniversary-decoration-1",
+      "src": "/decotion/anniversary/DSCN2012.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-2",
+      "src": "/decotion/anniversary/DSCN2014.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-3",
+      "src": "/decotion/anniversary/DSCN2018.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-4",
+      "src": "/decotion/anniversary/DSCN2022.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-7",
+      "src": "/decotion/anniversary/DSCN2025.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-8",
+      "src": "/decotion/anniversary/DSCN2027.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-9",
+      "src": "/decotion/anniversary/DSCN2028.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-10",
+      "src": "/decotion/anniversary/DSCN2029.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-12",
+      "src": "/decotion/anniversary/DSCN2035.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "anniversary-decoration-13",
+      "src": "/decotion/anniversary/DSCN2036.JPG",
+      "category": "anniversary-decoration",
+      "categoryLabel": "Anniversary Decoration"
+    },
+    {
+      "id": "corporate-events-5",
+      "src": "/decotion/Corporate Events/IMG-20190221-WA0022.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-6",
+      "src": "/decotion/Corporate Events/IMG-20190221-WA0023.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-8",
+      "src": "/decotion/Corporate Events/IMG-20190221-WA0025.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-9",
+      "src": "/decotion/Corporate Events/IMG-20190222-WA0004.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-10",
+      "src": "/decotion/Corporate Events/IMG-20190222-WA0005.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-11",
+      "src": "/decotion/Corporate Events/IMG_20190310_175626.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-12",
+      "src": "/decotion/Corporate Events/IMG_20190310_175943.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-13",
+      "src": "/decotion/Corporate Events/IMG_20190310_195655.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-14",
+      "src": "/decotion/Corporate Events/IMG_20190310_213906.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-15",
+      "src": "/decotion/Corporate Events/IMG_20190310_214206.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-17",
+      "src": "/decotion/Corporate Events/IMG_20190324_135842_BURST002.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-19",
+      "src": "/decotion/Corporate Events/IMG_20190324_161714.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-20",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.06.jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-21",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.07 (1).jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-22",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.07.jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-23",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.09.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-24",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.10.jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-25",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.40.jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-26",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.42 (1).jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-27",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.42.jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-28",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.42.jpg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "corporate-events-29",
+      "src": "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.43.jpeg",
+      "category": "corporate-events",
+      "categoryLabel": "Corporate Events"
+    },
+    {
+      "id": "housewarming-decoration-2",
+      "src": "/decotion/houswarming/2.jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-9",
+      "src": "/decotion/houswarming/houswaring  (10).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-10",
+      "src": "/decotion/houswarming/houswaring  (11).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-11",
+      "src": "/decotion/houswarming/houswaring  (12).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-12",
+      "src": "/decotion/houswarming/houswaring  (13).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-13",
+      "src": "/decotion/houswarming/houswaring  (14).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-14",
+      "src": "/decotion/houswarming/houswaring  (15).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-15",
+      "src": "/decotion/houswarming/houswaring  (16).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-16",
+      "src": "/decotion/houswarming/houswaring  (17).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-17",
+      "src": "/decotion/houswarming/houswaring  (18).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-18",
+      "src": "/decotion/houswarming/houswaring  (19).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-19",
+      "src": "/decotion/houswarming/houswaring  (2).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-20",
+      "src": "/decotion/houswarming/houswaring  (20).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-21",
+      "src": "/decotion/houswarming/houswaring  (21).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-24",
+      "src": "/decotion/houswarming/houswaring  (24).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-28",
+      "src": "/decotion/houswarming/houswaring  (3).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-29",
+      "src": "/decotion/houswarming/houswaring  (4).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-30",
+      "src": "/decotion/houswarming/houswaring  (5).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-31",
+      "src": "/decotion/houswarming/houswaring  (6).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-32",
+      "src": "/decotion/houswarming/houswaring  (7).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-33",
+      "src": "/decotion/houswarming/houswaring  (8).jpg",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "housewarming-decoration-34",
+      "src": "/decotion/houswarming/houswaring  (9).JPG",
+      "category": "housewarming-decoration",
+      "categoryLabel": "Housewarming Decoration"
+    },
+    {
+      "id": "naming-ceremony-1",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (1).jpeg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-2",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (1).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-3",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (10).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-6",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (102).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-13",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (109).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-14",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (11).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-16",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (111).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-17",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (112).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-18",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (113).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-20",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (115).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-21",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (116).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-22",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (117).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-23",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (118).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-24",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (119).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-25",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (12).JPG",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-26",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (120).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-27",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (121).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-28",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (122).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-29",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (123).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-30",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (124).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-31",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (125).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-32",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (126).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-35",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (129).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-36",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (13).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "naming-ceremony-37",
+      "src": "/decotion/naming ceremony decortopn/Naming Ceremony (131).jpg",
+      "category": "naming-ceremony",
+      "categoryLabel": "Naming Ceremony Decoration"
+    },
+    {
+      "id": "vintage-cars-2",
+      "src": "/decotion/vintage-cars/sid-party40.jpeg",
+      "category": "vintage-cars",
+      "categoryLabel": "Vintage Car"
     }
   ]
 }

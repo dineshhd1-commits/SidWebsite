@@ -14,6 +14,6 @@ export const PHOTOBOOTH_PORTFOLIO_ASSETS: string[] = [
   "/decotion/photo both/p1 (5).jpg",
   "/decotion/photo both/p1 (4).jpg",
   "/decotion/photo both/p1 (3).jpg",
-  "/decotion/photo both/p1 (2).jpg",
+  "/decotion/pasage/30.jpg",
   "/decotion/photo both/p1 (1).jpg"
 ];

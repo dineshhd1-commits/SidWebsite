@@ -18,17 +18,25 @@ function mapRow(row: any): GalleryItem {
 
 // Session-lived cache - avoids re-fetching every time the gallery page is
 // revisited in the same session.
+import { cacheGet, cacheSet } from '../redis';
+
+const CACHE_KEY_GALLERY = 'data:gallery:active';
+
 let galleryCache: Promise<GalleryItem[]> | null = null;
 
-/** Reads gallery items from Supabase; falls back to the bundled mock gallery
- * only when Supabase is unconfigured or genuinely returns no rows, so the
- * portfolio page never renders empty while admin content is still being added. */
 export function getGalleryItems(): Promise<GalleryItem[]> {
   if (!galleryCache) galleryCache = getGalleryItemsUncached();
   return galleryCache;
 }
 
 async function getGalleryItemsUncached(): Promise<GalleryItem[]> {
+  try {
+    const cached = await cacheGet<GalleryItem[]>(CACHE_KEY_GALLERY);
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      return cached;
+    }
+  } catch {}
+
   if (!isSupabaseConfigured()) return MOCK_GALLERY;
   try {
     const { data, error } = await supabase
@@ -38,7 +46,9 @@ async function getGalleryItemsUncached(): Promise<GalleryItem[]> {
       .order('display_order', { ascending: true });
     if (error) throw error;
     if (!data || data.length === 0) return MOCK_GALLERY;
-    return data.map(mapRow);
+    const mapped = data.map(mapRow);
+    await cacheSet(CACHE_KEY_GALLERY, mapped, 300).catch(() => {});
+    return mapped;
   } catch (e) {
     console.warn('getGalleryItems failed, falling back to mock gallery:', e);
     return MOCK_GALLERY;

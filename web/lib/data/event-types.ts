@@ -24,19 +24,28 @@ function withAssetUrl(eventTypes: EventType[]): EventType[] {
   return eventTypes.map((et) => ({ ...et, imageUrl: toAssetUrl(et.imageUrl) }));
 }
 
-// Session-lived cache, same pattern as lib/data/catalog.ts - avoids a repeat
-// network round-trip if the user navigates back to the builder later.
+import { cacheGet, cacheSet } from '../redis';
+
+const CACHE_KEY_EVENT_TYPES = 'data:event_types:active';
+
+// Session-lived in-memory cache
 let eventTypesCache: Promise<EventType[]> | null = null;
 
-/** Reads from Supabase; falls back to local mock event types (matching
- * supabase/seed_event_builder.sql) when the table doesn't exist yet or is
- * genuinely empty, so the builder is reviewable before migrations are run. */
+/** Reads from Supabase with Redis caching; falls back to local mock event types */
 export function getEventTypes(): Promise<EventType[]> {
   if (!eventTypesCache) eventTypesCache = getEventTypesUncached();
   return eventTypesCache;
 }
 
 async function getEventTypesUncached(): Promise<EventType[]> {
+  // Check Redis cache first to avoid hitting Supabase
+  try {
+    const cached = await cacheGet<EventType[]>(CACHE_KEY_EVENT_TYPES);
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      return cached;
+    }
+  } catch {}
+
   if (!isSupabaseConfigured()) return withAssetUrl(MOCK_EVENT_TYPES);
   try {
     const { data, error } = await supabase
@@ -46,7 +55,10 @@ async function getEventTypesUncached(): Promise<EventType[]> {
       .order('display_order', { ascending: true });
     if (error) throw error;
     if (!data || data.length === 0) return withAssetUrl(MOCK_EVENT_TYPES);
-    return data.map(mapRow);
+    const mapped = data.map(mapRow);
+    // Cache in Redis for 5 minutes (300s)
+    await cacheSet(CACHE_KEY_EVENT_TYPES, mapped, 300).catch(() => {});
+    return mapped;
   } catch (e) {
     console.warn('getEventTypes failed, falling back to mock event types:', e);
     return withAssetUrl(MOCK_EVENT_TYPES);

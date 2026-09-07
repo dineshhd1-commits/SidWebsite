@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
 
     const { error: uploadError } = await admin.storage.from(ENQUIRY_PDFS_BUCKET).upload(objectPath, fileBuffer, {
       contentType: 'application/pdf',
+      cacheControl: '31536000',
       upsert: true,
     });
 
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
         await admin.storage.createBucket(ENQUIRY_PDFS_BUCKET, { public: false });
         const { error: retryError } = await admin.storage.from(ENQUIRY_PDFS_BUCKET).upload(objectPath, fileBuffer, {
           contentType: 'application/pdf',
+          cacheControl: '31536000',
           upsert: true,
         });
         if (retryError) {
@@ -90,6 +92,10 @@ export async function POST(request: NextRequest) {
         await admin.from('quotations').update({
           builder_state: { ...(existing.builder_state || {}), pdfUrl },
         }).eq('id', refCode);
+
+        // Invalidate Redis caches
+        const { cacheDel } = await import('@/lib/redis');
+        await cacheDel(['admin:quotes:list', `quote:public:${refCode}`]).catch(() => {});
       }
     }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import confetti from 'canvas-confetti';
@@ -8,19 +8,26 @@ import { CheckCircle2, Home, Sparkles } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { GoldButton } from '@/components/ui/gold-button';
 import { TraditionalBorder } from '@/components/ui/traditional-border';
+import type { LastBookingCookie } from '@/lib/cookies';
 
 function RequestReceivedContent() {
   const searchParams = useSearchParams();
-  const rawRef = searchParams.get('ref') || 'BK-9845';
-  const refCode = rawRef.startsWith('#') ? rawRef : `#${rawRef}`;
+  const rawParamRef = searchParams.get('ref');
+  const [booking, setBooking] = useState<LastBookingCookie | null>(null);
 
   useEffect(() => {
+    import('@/lib/cookies').then(({ getLastBookingCookie }) => {
+      setBooking(getLastBookingCookie());
+    });
     confetti({
       particleCount: 120,
       spread: 80,
       origin: { y: 0.6 },
     });
   }, []);
+
+  const rawRef = rawParamRef || booking?.refCode || 'BK-CONFIRMED';
+  const refCode = rawRef.startsWith('#') ? rawRef : `#${rawRef}`;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-8">
@@ -33,10 +40,10 @@ function RequestReceivedContent() {
           <Sparkles className="w-3.5 h-3.5 text-emerald-700" /> Congratulations!
         </span>
         <h1 className="font-playfair text-3xl sm:text-5xl font-bold text-maroon-900">
-          Congratulations!
+          {booking?.customerName ? `Congratulations, ${booking.customerName}!` : 'Congratulations!'}
         </h1>
         <p className="text-maroon-800 text-base max-w-md mx-auto leading-relaxed">
-          We&apos;ve received your event details. Our team will contact you shortly regarding your booking.
+          We&apos;ve received your event details. Our team will contact you shortly regarding your custom quotation.
         </p>
       </div>
 
@@ -50,12 +57,21 @@ function RequestReceivedContent() {
           </span>
         </div>
 
+        {booking?.weddingDate && (
+          <div className="flex justify-between items-center text-xs border-b border-gold-200/80 pb-3">
+            <span className="text-maroon-800 font-medium">Event Date</span>
+            <span className="font-bold text-maroon-950">{booking.weddingDate}</span>
+          </div>
+        )}
+
         <div className="flex justify-between items-center text-xs">
           <span className="text-maroon-800 font-medium">Booking Status</span>
           <span className="font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-full">
             REQUEST RECEIVED &mdash; OUR TEAM WILL CONTACT YOU SHORTLY
           </span>
         </div>
+
+
       </GlassCard>
 
       <TraditionalBorder />

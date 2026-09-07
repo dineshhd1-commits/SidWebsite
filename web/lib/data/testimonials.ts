@@ -22,6 +22,10 @@ function mapRow(row: any): TestimonialWithVerification {
 
 // Session-lived cache - the homepage and /testimonials both call this, so
 // this avoids fetching the same rows twice in one visit.
+import { cacheGet, cacheSet } from '../redis';
+
+const CACHE_KEY_TESTIMONIALS = 'data:testimonials:active';
+
 let testimonialsCache: Promise<TestimonialWithVerification[]> | null = null;
 
 export function getTestimonials(): Promise<TestimonialWithVerification[]> {
@@ -30,6 +34,13 @@ export function getTestimonials(): Promise<TestimonialWithVerification[]> {
 }
 
 async function getTestimonialsUncached(): Promise<TestimonialWithVerification[]> {
+  try {
+    const cached = await cacheGet<TestimonialWithVerification[]>(CACHE_KEY_TESTIMONIALS);
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      return cached;
+    }
+  } catch {}
+
   if (!isSupabaseConfigured()) {
     return MOCK_TESTIMONIALS.map((t) => ({ ...t, isGoogleVerified: true }));
   }
@@ -43,7 +54,9 @@ async function getTestimonialsUncached(): Promise<TestimonialWithVerification[]>
     if (!data || data.length === 0) {
       return MOCK_TESTIMONIALS.map((t) => ({ ...t, isGoogleVerified: true }));
     }
-    return data.map(mapRow);
+    const mapped = data.map(mapRow);
+    await cacheSet(CACHE_KEY_TESTIMONIALS, mapped, 300).catch(() => {});
+    return mapped;
   } catch (e) {
     console.warn('getTestimonials failed, falling back to mock testimonials:', e);
     return MOCK_TESTIMONIALS.map((t) => ({ ...t, isGoogleVerified: true }));

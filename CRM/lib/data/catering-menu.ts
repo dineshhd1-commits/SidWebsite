@@ -22,7 +22,8 @@ const ALL_CATEGORIES: CateringMenuCategory[] = rawMenu.categories.map((category)
   id: category.id,
   name: category.name,
   items: category.items.map((name) => {
-    const id = `${category.id}__${slugify(name)}`;
+    const slug = slugify(name);
+    const id = `${category.id}__${slug}`;
     return { id, name, imageUrl: `/catering/${id}.jpg` };
   }),
   maxSelections: CATEGORY_LIMITS[category.id],

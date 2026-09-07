@@ -45,6 +45,8 @@ function toRowPatch(input: z.infer<typeof catalogItemPatchSchema>) {
   return row;
 }
 
+import { cacheDel } from '@/lib/redis';
+
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await requireAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -53,6 +55,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const admin = getSupabaseAdminClient();
   const { error } = await admin.from('catalog_items').delete().eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await cacheDel(['admin:catalog_items:all', 'data:catalog_items:all', 'data:catalog_groups:all']).catch(() => {});
+
   return NextResponse.json({ success: true });
 }
 
@@ -73,5 +78,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const admin = getSupabaseAdminClient();
   const { data, error } = await admin.from('catalog_items').update(row).eq('id', id).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await cacheDel(['admin:catalog_items:all', 'data:catalog_items:all', 'data:catalog_groups:all']).catch(() => {});
+
   return NextResponse.json({ item: data });
 }

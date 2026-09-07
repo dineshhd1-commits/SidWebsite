@@ -39,6 +39,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const admin = getSupabaseAdminClient();
   const { error } = await admin.from('testimonials').delete().eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const { cacheDel } = await import('@/lib/redis');
+  await cacheDel(['admin:testimonials:list', 'data:testimonials:all']).catch(() => {});
   return NextResponse.json({ success: true });
 }
 
@@ -59,5 +61,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const admin = getSupabaseAdminClient();
   const { data, error } = await admin.from('testimonials').update(row).eq('id', id).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const { cacheDel } = await import('@/lib/redis');
+  await cacheDel(['admin:testimonials:list', 'data:testimonials:all']).catch(() => {});
   return NextResponse.json({ item: data });
 }

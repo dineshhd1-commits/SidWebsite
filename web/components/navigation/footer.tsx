@@ -122,9 +122,9 @@ export const Footer: React.FC = () => {
 
         <TraditionalBorder className="my-8 opacity-40" />
 
-        <div className="flex flex-col md:flex-row items-center justify-between text-[11px] text-silk-200/70 gap-4 font-sans">
-          <p>© {new Date().getFullYear()} {SITE.legalName}, Davanagere. All Rights Reserved.</p>
-          <div className="flex items-center gap-1.5 text-gold-300/90">
+        <div className="grid grid-cols-1 md:grid-cols-3 items-center text-[11px] text-silk-200/70 gap-4 font-sans text-center">
+          <p className="md:text-left order-2 md:order-1">© {new Date().getFullYear()} {SITE.legalName}, Davanagere. All Rights Reserved.</p>
+          <div className="flex items-center justify-center gap-1.5 text-gold-300/90 order-1 md:order-2">
             <span>Designed &amp; Developed by</span>
             <a
               href="https://naazailabs.com"
@@ -135,8 +135,8 @@ export const Footer: React.FC = () => {
               naazailabs.com
             </a>
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/terms-and-conditions" className="hover:underline">Privacy Policy</Link>
+          <div className="flex items-center justify-center md:justify-end gap-6 order-3">
+            <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
             <Link href="/terms-and-conditions" className="hover:underline">Terms &amp; Conditions</Link>
           </div>
         </div>

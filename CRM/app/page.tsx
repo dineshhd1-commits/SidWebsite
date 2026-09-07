@@ -17,6 +17,7 @@ import {
   AdminQuoteRequest,
   AdminQuoteStatus,
   AdminInquiry,
+  attachAdminQuotePdf,
 } from '@/lib/store/admin-store';
 import {
   FileText,
@@ -328,6 +329,9 @@ export default function AdminDashboardPage() {
   const [quotesLoading, setQuotesLoading] = useState(true);
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([]);
+  const [generatingPdfId, setGeneratingPdfId] = useState<string | null>(null);
+  const [isBackfillingPdfs, setIsBackfillingPdfs] = useState(false);
+  const [pdfStorageStatus, setPdfStorageStatus] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<
     'quotes' | 'inquiries' | 'catalog' | 'eventTypes' | 'packages' | 'portfolio' | 'testimonials'
@@ -706,6 +710,78 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleViewOrGeneratePdf = async (q: AdminQuoteRequest) => {
+    if (q.pdfUrl) {
+      window.open(q.pdfUrl, '_blank');
+      return;
+    }
+
+    setGeneratingPdfId(q.id);
+    try {
+      const { generateEnquiryPdfBlob } = await import('@/lib/builder/enquiry-pdf');
+      const { uploadEnquiryPdf } = await import('@/lib/store/admin-store');
+
+      const fullDetails = q.fullDetails || {
+        eventTypeId: 'custom',
+        eventTypeLabel: q.photographyTier || 'Event Enquiry',
+        customerName: q.customerName,
+        customerPhone: q.customerPhone,
+        customerEmail: q.customerEmail,
+        eventDate: q.weddingDate || '',
+        location: q.venueCity || '',
+        guestCount: q.guestCount,
+        specialRequirements: q.notes || '',
+        sections: [],
+        cateringMenus: [],
+        requestedExtras: [],
+        estimatedTotal: q.estimatedCost || 0,
+        totalSelectionsCount: q.selectedServicesCount || 0,
+      };
+
+      const pdfBlob = await generateEnquiryPdfBlob(fullDetails, q.refCode, q.createdAt || new Date().toISOString());
+
+      // Open immediately in a new tab
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      window.open(blobUrl, '_blank');
+
+      // Upload to Supabase Storage and attach permanently to the quote
+      try {
+        const uploadedUrl = await uploadEnquiryPdf(pdfBlob, q.refCode);
+        if (uploadedUrl) {
+          await attachAdminQuotePdf(q.refCode, uploadedUrl);
+          setQuotes((prev) => prev.map((item) => (item.id === q.id ? { ...item, pdfUrl: uploadedUrl } : item)));
+        }
+      } catch (uploadErr) {
+        console.warn('Supabase PDF upload failed:', uploadErr);
+      }
+    } catch (err) {
+      console.error('Failed to generate PDF:', err);
+      alert('Unable to generate PDF at this moment. Please check console.');
+    } finally {
+      setGeneratingPdfId(null);
+    }
+  };
+
+  const handleEnsureAllBookingsPdfs = async () => {
+    setIsBackfillingPdfs(true);
+    setPdfStorageStatus(null);
+    try {
+      const res = await fetch('/api/admin/backfill-pdfs', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        setPdfStorageStatus(`All bookings verified! Stored/updated ${data.newlyGenerated} compressed PDFs out of ${data.total} bookings.`);
+        await loadQuotes();
+      } else {
+        setPdfStorageStatus(data.error || 'Failed to sync booking PDFs.');
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setPdfStorageStatus(msg || 'Error ensuring booking PDFs.');
+    } finally {
+      setIsBackfillingPdfs(false);
+    }
+  };
+
   // --- Inquiry Operations ---
   const handleDeleteInquiry = (id: string) => {
     if (confirm('Are you sure you want to delete this inquiry?')) {
@@ -750,9 +826,6 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-2">
             <span className="text-gold-600 font-bold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300">
               Admin Portal
-            </span>
-            <span className="inline-flex items-center gap-1 text-xs text-emerald-700 font-bold">
-              Supabase Live Data Sync
             </span>
           </div>
           <h1 className="font-playfair text-3xl sm:text-5xl font-bold text-maroon-900 mt-2">
@@ -925,13 +998,28 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={loadQuotes}
                 disabled={quotesLoading}
-                className="p-2 rounded-lg bg-white border border-gold-300 text-gold-700 hover:bg-gold-50 transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-white border border-gold-300 text-gold-700 hover:bg-gold-50 transition-colors disabled:opacity-50 cursor-pointer"
                 title="Refresh enquiries"
               >
                 <RefreshCw className={`w-4 h-4 ${quotesLoading ? 'animate-spin' : ''}`} />
               </button>
             </div>
           </div>
+
+
+
+          {pdfStorageStatus && (
+            <div className="text-xs bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl px-4 py-2.5 flex items-center justify-between gap-2 shadow-xs">
+              <span>{pdfStorageStatus}</span>
+              <button
+                type="button"
+                onClick={() => setPdfStorageStatus(null)}
+                className="text-emerald-700 hover:text-emerald-950 font-bold ml-2 cursor-pointer text-xs"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
 
           {quotesActionError && (
             <div className="text-xs bg-rose-50 border border-rose-300 text-rose-800 rounded-xl px-4 py-3 mb-4 flex items-center justify-between gap-3">
@@ -1007,18 +1095,28 @@ export default function AdminDashboardPage() {
                       <MessageCircle className="w-4 h-4" />
                     </a>
 
-                    {q.pdfUrl && (
-                      <a
-                        href={q.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg bg-maroon-800 text-gold-200 hover:bg-maroon-900 border border-gold-400/50 transition-colors shadow-sm inline-flex items-center gap-1.5 text-xs font-bold"
-                        title="View & Download Event Quotation PDF"
-                      >
-                        <FileText className="w-4 h-4 text-gold-300" />
-                        <span>PDF</span>
-                      </a>
-                    )}
+                    <button
+                      onClick={() => handleViewOrGeneratePdf(q)}
+                      disabled={generatingPdfId === q.id}
+                      className={`px-2.5 py-1.5 rounded-lg border shadow-sm inline-flex items-center gap-1.5 text-xs font-bold transition-colors ${
+                        q.pdfUrl
+                          ? 'bg-maroon-800 text-gold-200 hover:bg-maroon-900 border-gold-400/50'
+                          : 'bg-gold-500 text-maroon-950 hover:bg-gold-400 border-gold-600'
+                      }`}
+                      title={q.pdfUrl ? 'View & Download Quotation PDF' : 'Generate Quotation PDF from Booking Details'}
+                    >
+                      {generatingPdfId === q.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-maroon-900" />
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FileText className={`w-4 h-4 ${q.pdfUrl ? 'text-gold-300' : 'text-maroon-950'}`} />
+                          <span>{q.pdfUrl ? 'PDF' : 'Get PDF'}</span>
+                        </>
+                      )}
+                    </button>
 
                     <button
                       onClick={() => handleDeleteQuote(q.id, q.refCode)}

@@ -368,12 +368,6 @@ export function EnquiryPdfDocument({ details, refCode, submittedAtIso, logoDataU
           </View>
         )}
 
-        {/* Estimated Total */}
-        <View style={s.totalBox} wrap={false}>
-          <Text style={s.totalLabel}>Estimated Total</Text>
-          <Text style={s.totalAmount}>{'₹'}{details.estimatedTotal.toLocaleString('en-IN')}</Text>
-          <Text style={s.totalNote}>Final customized quote will be provided upon review.</Text>
-        </View>
 
         {/* Reference / status footer block */}
         <View style={s.refBox} wrap={false}>
@@ -415,15 +409,114 @@ function blobToDataUri(blob: Blob): Promise<string> {
  * 5. Falls back to FileReader base64 if canvas is unavailable or encounters error.
  * 6. Uses in-memory cache so images are processed only once.
  */
-async function getOptimizedPdfImage(src: string, isLogo = false): Promise<string> {
-  if (!src || typeof window === 'undefined') return TRANSPARENT_PIXEL;
-  if (pdfImageCache.has(src)) return pdfImageCache.get(src)!;
+interface ImageBudget {
+  maxW: number;
+  maxH: number;
+  quality: number;
+}
+
+/**
+ * Calculates adaptive target image dimensions and JPEG quality based on image count
+ * to ensure total image weight targets ~400KB - 750KB, keeping final PDF inside 500KB - 1MB.
+ */
+function calculateImageBudget(imageCount: number, scaleFactor = 1.0): ImageBudget {
+  if (imageCount <= 2) {
+    return {
+      maxW: Math.round(1200 * scaleFactor),
+      maxH: Math.round(900 * scaleFactor),
+      quality: Math.min(0.90, 0.88 * scaleFactor),
+    };
+  }
+  if (imageCount <= 5) {
+    return {
+      maxW: Math.round(1024 * scaleFactor),
+      maxH: Math.round(768 * scaleFactor),
+      quality: Math.min(0.88, 0.85 * scaleFactor),
+    };
+  }
+  if (imageCount <= 10) {
+    return {
+      maxW: Math.round(850 * scaleFactor),
+      maxH: Math.round(640 * scaleFactor),
+      quality: Math.min(0.84, 0.80 * scaleFactor),
+    };
+  }
+  return {
+    maxW: Math.round(680 * scaleFactor),
+    maxH: Math.round(510 * scaleFactor),
+    quality: Math.min(0.78, 0.74 * scaleFactor),
+  };
+}
+
+/**
+ * Loads and optimizes an image for embedding in the PDF.
+ * - In Node.js: Uses `sharp` to resize and compress using mozjpeg / progressive JPEG.
+ * - In Browser: Uses Canvas downscaling with budgeted dimensions and JPEG quality.
+ */
+async function getOptimizedPdfImage(
+  src: string,
+  isLogo = false,
+  budget: ImageBudget = { maxW: 640, maxH: 480, quality: 0.75 }
+): Promise<string> {
+  if (!src) return TRANSPARENT_PIXEL;
+  const cacheKey = `${src}::${isLogo ? 'logo' : `${budget.maxW}x${budget.maxH}@${budget.quality}`}`;
+  if (pdfImageCache.has(cacheKey)) return pdfImageCache.get(cacheKey)!;
 
   if (src.startsWith('data:image/')) {
-    pdfImageCache.set(src, src);
+    pdfImageCache.set(cacheKey, src);
     return src;
   }
 
+  const maxW = isLogo ? 180 : budget.maxW;
+  const maxH = isLogo ? 180 : budget.maxH;
+  const quality = isLogo ? 0.85 : budget.quality;
+
+  // Server-side (Node.js) execution with sharp compression
+  if (typeof window === 'undefined') {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const sharpModule = await import('sharp');
+      const sharp = sharpModule.default || sharpModule;
+
+      const cleanPath = src.startsWith('/') ? src.slice(1) : src;
+      const candidates = [
+        path.join(process.cwd(), 'public', cleanPath),
+        path.join(process.cwd(), '../web/public', cleanPath),
+        path.join(process.cwd(), '../CRM/public', cleanPath),
+      ];
+
+      let rawBuffer: Buffer | null = null;
+      for (const candidate of candidates) {
+        if (fs.existsSync(/*turbopackIgnore: true*/ candidate)) {
+          rawBuffer = fs.readFileSync(/*turbopackIgnore: true*/ candidate);
+          break;
+        }
+      }
+
+      if (!rawBuffer && (src.startsWith('http://') || src.startsWith('https://'))) {
+        const res = await fetch(src);
+        if (res.ok) {
+          rawBuffer = Buffer.from(await res.arrayBuffer());
+        }
+      }
+
+      if (rawBuffer) {
+        const compressed = await sharp(rawBuffer)
+          .resize({ width: maxW, height: maxH, fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: Math.round(quality * 100), mozjpeg: true, progressive: true })
+          .toBuffer();
+        const dataUri = `data:image/jpeg;base64,${compressed.toString('base64')}`;
+        pdfImageCache.set(cacheKey, dataUri);
+        return dataUri;
+      }
+    } catch (err) {
+      console.warn('[PDF Node Image] Error compressing image with sharp:', err);
+    }
+    return TRANSPARENT_PIXEL;
+  }
+
+  // Browser execution with Canvas downsampling
   try {
     const pathname = src.startsWith('/') ? src : `/${src}`;
     const fullUrl = src.startsWith('http://') || src.startsWith('https://')
@@ -439,11 +532,10 @@ async function getOptimizedPdfImage(src: string, isLogo = false): Promise<string
     const blob = await res.blob();
     if (!blob || blob.size === 0) return TRANSPARENT_PIXEL;
 
-    // Try canvas downscaling using local same-origin blob URL (never tainted)
     const optimizedUri = await new Promise<string>((resolve) => {
       const blobUrl = URL.createObjectURL(blob);
       const img = new window.Image();
-      
+
       const cleanup = () => {
         try {
           URL.revokeObjectURL(blobUrl);
@@ -452,8 +544,6 @@ async function getOptimizedPdfImage(src: string, isLogo = false): Promise<string
 
       img.onload = () => {
         try {
-          const maxW = isLogo ? 120 : 360;
-          const maxH = isLogo ? 120 : 270;
           let w = img.naturalWidth || img.width || maxW;
           let h = img.naturalHeight || img.height || maxH;
 
@@ -475,7 +565,6 @@ async function getOptimizedPdfImage(src: string, isLogo = false): Promise<string
 
           ctx.drawImage(img, 0, 0, w, h);
           const mimeType = isLogo ? 'image/png' : 'image/jpeg';
-          const quality = isLogo ? undefined : 0.85;
           const result = canvas.toDataURL(mimeType, quality);
           cleanup();
           resolve(result);
@@ -494,7 +583,7 @@ async function getOptimizedPdfImage(src: string, isLogo = false): Promise<string
       img.src = blobUrl;
     });
 
-    pdfImageCache.set(src, optimizedUri);
+    pdfImageCache.set(cacheKey, optimizedUri);
     return optimizedUri;
   } catch (err) {
     console.warn(`[PDF Image] Error processing image ${src}:`, err);
@@ -503,7 +592,10 @@ async function getOptimizedPdfImage(src: string, isLogo = false): Promise<string
 }
 
 /** Pre-optimizes all image URLs in the enquiry into fast, lightweight Data URIs */
-async function prepareDetailsForPdf(details: EnquiryDetails): Promise<{ details: EnquiryDetails; logoDataUri: string }> {
+async function prepareDetailsForPdf(
+  details: EnquiryDetails,
+  scaleFactor = 1.0
+): Promise<{ details: EnquiryDetails; logoDataUri: string }> {
   const urlMap = new Map<string, string>();
   const allUrls = new Set<string>();
 
@@ -515,17 +607,19 @@ async function prepareDetailsForPdf(details: EnquiryDetails): Promise<{ details:
     }
   }
 
-  // Optimize all unique images concurrently via fast Canvas downscaling
+  const budget = calculateImageBudget(allUrls.size, scaleFactor);
+
+  // Optimize all unique images concurrently via fast budgeted compression
   await Promise.all(
     Array.from(allUrls).map(async (url) => {
-      const optimized = await getOptimizedPdfImage(url, false);
+      const optimized = await getOptimizedPdfImage(url, false, budget);
       urlMap.set(url, optimized);
     })
   );
 
   const logoDataUri = await getOptimizedPdfImage('/logo-circle.png', true);
 
-  // Return cloned details with expanded, single-image lines so commas in base64 never break splitting
+  // Return cloned details with expanded, single-image lines
   const clonedSections = details.sections.map((section) => ({
     ...section,
     lines: section.lines.flatMap((line) => {
@@ -552,13 +646,38 @@ async function prepareDetailsForPdf(details: EnquiryDetails): Promise<{ details:
   };
 }
 
-/** Renders the PDF to a Blob with guaranteed fast, crisp image rendering */
+/**
+ * Compresses a raw PDF using pdf-lib stream and object stream optimization.
+ */
+export async function compressPdfDocument(rawPdfBytes: Uint8Array | ArrayBuffer): Promise<Uint8Array> {
+  try {
+    const { PDFDocument } = await import('pdf-lib');
+    const doc = await PDFDocument.load(rawPdfBytes, { ignoreEncryption: true });
+    doc.setTitle('SID Events Event Quotation');
+    doc.setProducer('SID Events Planner & CRM');
+    doc.setCreator('SID Events');
+
+    const compressed = await doc.save({
+      useObjectStreams: true,
+      addDefaultPage: false,
+    });
+    return compressed;
+  } catch (err) {
+    console.warn('[PDF Compression] pdf-lib compression fallback:', err);
+    return new Uint8Array(rawPdfBytes);
+  }
+}
+
+/**
+ * Renders the PDF to a Blob with guaranteed compression targeting the 500KB - 1MB range.
+ */
 export async function generateEnquiryPdfBlob(
   details: EnquiryDetails,
   refCode: string,
   submittedAtIso: string
 ): Promise<Blob> {
-  const { details: optimizedDetails, logoDataUri } = await prepareDetailsForPdf(details);
+  // Pass 1: Standard budgeted compression
+  const { details: optimizedDetails, logoDataUri } = await prepareDetailsForPdf(details, 1.0);
   const instance = pdf(
     <EnquiryPdfDocument
       details={optimizedDetails}
@@ -567,5 +686,46 @@ export async function generateEnquiryPdfBlob(
       logoDataUri={logoDataUri}
     />
   );
-  return instance.toBlob();
+  const rawBlob = await instance.toBlob();
+  const rawArrayBuffer = await rawBlob.arrayBuffer();
+
+  // Compress streams and indirect objects
+  let compressedBytes = await compressPdfDocument(rawArrayBuffer);
+
+  // If the PDF exceeds 1MB (1024KB), run adaptive second pass with tighter image budget
+  if (compressedBytes.length > 1024 * 1024) {
+    try {
+      const { details: adaptiveDetails, logoDataUri: adaptiveLogo } = await prepareDetailsForPdf(details, 0.75);
+      const adaptiveInstance = pdf(
+        <EnquiryPdfDocument
+          details={adaptiveDetails}
+          refCode={refCode}
+          submittedAtIso={submittedAtIso}
+          logoDataUri={adaptiveLogo}
+        />
+      );
+      const adaptiveBlob = await adaptiveInstance.toBlob();
+      const adaptiveBytes = await compressPdfDocument(await adaptiveBlob.arrayBuffer());
+      if (adaptiveBytes.length < compressedBytes.length) {
+        compressedBytes = adaptiveBytes;
+      }
+    } catch (adaptiveErr) {
+      console.warn('[PDF Compression] Adaptive pass fallback:', adaptiveErr);
+    }
+  }
+
+  return new Blob([compressedBytes as unknown as BlobPart], { type: 'application/pdf' });
+}
+
+/**
+ * Renders the PDF to a Node Buffer for server-side storage and background sync.
+ */
+export async function generateEnquiryPdfBuffer(
+  details: EnquiryDetails,
+  refCode: string,
+  submittedAtIso: string
+): Promise<Buffer> {
+  const blob = await generateEnquiryPdfBlob(details, refCode, submittedAtIso);
+  const arrayBuffer = await blob.arrayBuffer();
+  return Buffer.from(arrayBuffer);
 }

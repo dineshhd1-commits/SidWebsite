@@ -33,5 +33,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt
+     * - Static asset extensions (.jpg, .jpeg, .png, .webp, .avif, .gif, .svg, .ico, .css, .js, .woff, .woff2, .ttf, .eot, .pdf, .mp4)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|css|js|woff2?|ttf|eot|pdf|mp4)).*)',
+  ],
 };

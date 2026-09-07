@@ -45,16 +45,27 @@ function toRow(input: z.infer<typeof catalogItemSchema>) {
   };
 }
 
+import { cacheGet, cacheSet, cacheDel } from '@/lib/redis';
+
 export async function GET(request: NextRequest) {
   if (!(await requireAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const eventTypeId = request.nextUrl.searchParams.get('eventTypeId');
+  const cacheKey = `admin:catalog_items:${eventTypeId || 'all'}`;
+
+  const cached = await cacheGet<unknown[]>(cacheKey);
+  if (cached && Array.isArray(cached)) {
+    return NextResponse.json({ items: cached, cached: true });
+  }
+
   const admin = getSupabaseAdminClient();
   let query = admin.from('catalog_items').select('*').order('display_order', { ascending: true });
   if (eventTypeId) query = query.contains('supported_event_types', [eventTypeId]);
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await cacheSet(cacheKey, data, 120).catch(() => {});
   return NextResponse.json({ items: data });
 }
 
@@ -71,5 +82,9 @@ export async function POST(request: NextRequest) {
   const admin = getSupabaseAdminClient();
   const { data, error } = await admin.from('catalog_items').upsert(toRow(parsed.data)).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Invalidate Redis caches for catalog items
+  await cacheDel(['admin:catalog_items:all', 'data:catalog_items:all', 'data:catalog_groups:all']).catch(() => {});
+
   return NextResponse.json({ item: data });
 }

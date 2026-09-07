@@ -14,6 +14,7 @@ import { getPackageGroupLimits, getPackageIncludedItems, getCatalogItems } from 
 import { getCateringCategoryById } from '../data/catering-menu';
 import { getEventTypes } from '../data/event-types';
 import { cleanEventBuilderState } from '../builder/event-rules';
+import { setBuilderDraftCookie, getBuilderDraftCookie, deleteCookie } from '../cookies';
 
 /** Fired whenever something genuinely new lands in the cart/catering
  * selections (not on removal, not on a quantity-only change) - purely
@@ -126,6 +127,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     if (typeof window !== 'undefined') {
       const savedSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
       const savedLocal = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const savedCookie = getBuilderDraftCookie();
       const saved = savedSession || savedLocal;
       if (saved) {
         try {
@@ -133,6 +135,8 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
         } catch (e) {
           console.error('Failed to parse saved builder draft:', e);
         }
+      } else if (savedCookie) {
+        setState(mergeWithDefaultState(savedCookie));
       }
       setIsLoaded(true);
     }
@@ -144,6 +148,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
       try {
         sessionStorage.setItem(SESSION_STORAGE_KEY, serialized);
         localStorage.setItem(LOCAL_STORAGE_KEY, serialized);
+        setBuilderDraftCookie(state as unknown as Record<string, unknown>);
       } catch (e) {
         console.error('Error saving builder draft to browser cache:', e);
       }
@@ -373,6 +378,7 @@ export const EventBuilderProvider: React.FC<{ children: React.ReactNode }> = ({ 
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem(SESSION_STORAGE_KEY);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
+      deleteCookie('sid_builder_draft');
     }
   }, []);
 

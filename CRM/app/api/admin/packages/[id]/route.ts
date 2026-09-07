@@ -54,5 +54,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  const { cacheDel } = await import('@/lib/redis');
+  await cacheDel([
+    'admin:packages:list',
+    `admin:package:${id}`,
+    'data:package_definitions:wedding',
+    'data:package_definitions:all',
+  ]).catch(() => {});
+
   return NextResponse.json({ success: true });
 }

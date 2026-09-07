@@ -1,10 +1,9 @@
+import { cacheRateLimit } from './redis';
+
 /**
- * Best-effort in-memory rate limiter for Route Handlers. Vercel serverless
- * functions are not guaranteed to share memory across invocations/regions,
- * so this does NOT provide a hard guarantee under distributed load - it's a
- * pragmatic first line of defense (stops naive single-origin brute-force /
- * spam scripts) rather than a substitute for an edge-level WAF or a shared
- * store like Upstash Redis. Documented as a known limitation.
+ * Dual rate limiter:
+ * 1. Distributed rate limiting via Redis (when REDIS_URL is configured).
+ * 2. In-memory sliding bucket fallback for zero-config local dev or edge fallback.
  */
 
 interface Bucket {
@@ -14,8 +13,6 @@ interface Bucket {
 
 const buckets = new Map<string, Bucket>();
 
-// Periodically forget old buckets so this map can't grow unbounded across
-// the lifetime of a warm serverless instance.
 function sweep(now: number) {
   if (buckets.size < 5000) return;
   for (const [key, bucket] of buckets) {
@@ -29,9 +26,7 @@ export function getClientIp(request: Request): string {
   return request.headers.get('x-real-ip') || 'unknown';
 }
 
-/** Returns true if the request is allowed, false if it should be rejected
- * (429). `key` should combine the route name and client identifier so
- * different endpoints don't share a budget. */
+/** Synchronous in-memory rate limit check */
 export function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
   sweep(now);
@@ -44,3 +39,14 @@ export function checkRateLimit(key: string, limit: number, windowMs: number): bo
   existing.count += 1;
   return true;
 }
+
+/** Asynchronous Redis-backed rate limit check with in-memory fallback */
+export async function checkRateLimitAsync(key: string, limit: number, windowMs: number): Promise<boolean> {
+  const windowSeconds = Math.max(1, Math.round(windowMs / 1000));
+  try {
+    return await cacheRateLimit(`rate:${key}`, limit, windowSeconds);
+  } catch {
+    return checkRateLimit(key, limit, windowMs);
+  }
+}
+

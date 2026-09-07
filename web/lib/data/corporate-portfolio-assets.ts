@@ -18,15 +18,6 @@ export const CORPORATE_PORTFOLIO_ASSETS: string[] = [
   "/decotion/Corporate Events/IMG_20190324_135842_BURST002.jpg",
   "/decotion/Corporate Events/IMG_20190324_161508.jpg",
   "/decotion/Corporate Events/IMG_20190324_161714.jpg",
-  "/decotion/Corporate Events/VID_20190310_174650.mp4",
-  "/decotion/Corporate Events/VID_20190310_174650_s01.mp4",
-  "/decotion/Corporate Events/VID_20190310_175639.mp4",
-  "/decotion/Corporate Events/VID_20190310_175757.mp4",
-  // VID_20190310_180007.mp4 (72.6MB) deliberately excluded - exceeds the
-  // site-assets Storage bucket's per-object size limit (the other, smaller
-  // videos above all uploaded fine), so it can never actually be served
-  // once NEXT_PUBLIC_USE_SUPABASE_ASSETS is on. Left in web/public as a
-  // backup file, just not referenced.
   "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.06.jpeg",
   "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.07 (1).jpeg",
   "/decotion/Corporate Events/WhatsApp Image 2019-07-03 at 12.03.07.jpeg",

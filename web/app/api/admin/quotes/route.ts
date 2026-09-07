@@ -12,13 +12,27 @@ import { requireAdminSession } from '@/lib/admin-auth';
  * details straight out of Supabase.
  */
 
+import { cacheGet, cacheSet, cacheDel } from '@/lib/redis';
+
+const CACHE_KEY_QUOTES = 'admin:quotes:list';
+
 export async function GET(request: NextRequest) {
   if (!(await requireAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  // Check Redis cache first to reduce Supabase database edge requests
+  const cached = await cacheGet<unknown[]>(CACHE_KEY_QUOTES);
+  if (cached && Array.isArray(cached)) {
+    return NextResponse.json({ items: cached, cached: true });
+  }
+
   const admin = getSupabaseAdminClient();
   const { data, error } = await admin.from('quotations').select('*').order('created_at', { ascending: false });
   if (error) return NextResponse.json({ error: 'Failed to load quotes.' }, { status: 500 });
+
+  await cacheSet(CACHE_KEY_QUOTES, data, 60);
+
   return NextResponse.json({ items: data });
 }
 
@@ -52,6 +66,7 @@ export async function PATCH(request: NextRequest) {
   const admin = getSupabaseAdminClient();
   const { error } = await admin.from('quotations').update(row).eq('id', parsed.data.refCode);
   if (error) return NextResponse.json({ error: 'Failed to update quote.' }, { status: 500 });
+  await cacheDel(CACHE_KEY_QUOTES).catch(() => {});
   return NextResponse.json({ success: true });
 }
 
@@ -65,5 +80,6 @@ export async function DELETE(request: NextRequest) {
   const admin = getSupabaseAdminClient();
   const { error } = await admin.from('quotations').delete().eq('id', refCode);
   if (error) return NextResponse.json({ error: 'Failed to delete quote.' }, { status: 500 });
+  await cacheDel(CACHE_KEY_QUOTES).catch(() => {});
   return NextResponse.json({ success: true });
 }

@@ -142,12 +142,19 @@ export function CatalogChecklistRow({
         </button>
 
         {isStepper && isSelected && (
-          <QuantityStepper
-            value={quantity}
-            onChange={(qty) => (qty <= 0 ? onRemove() : onUpdateQuantity(qty))}
-            min={0}
-            max={item.maxQuantity ?? undefined}
-          />
+          <div className="flex items-center gap-2 shrink-0">
+            {item.unit && (
+              <span className="text-[11px] font-semibold text-maroon-700/70 hidden sm:inline">
+                ({item.unit})
+              </span>
+            )}
+            <QuantityStepper
+              value={quantity}
+              onChange={(qty) => (qty <= 0 ? onRemove() : onUpdateQuantity(qty))}
+              min={0}
+              max={item.maxQuantity ?? undefined}
+            />
+          </div>
         )}
       </div>
 

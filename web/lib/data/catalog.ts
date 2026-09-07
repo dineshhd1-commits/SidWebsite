@@ -84,7 +84,17 @@ function mapPackageDefinition(row: any): PackageDefinition {
   };
 }
 
+import { cacheGet, cacheSet } from '../redis';
+
 async function getCatalogGroupsUncached(eventTypeId: string, categoryKey?: CatalogCategoryKey): Promise<CatalogGroup[]> {
+  const cacheKey = `data:catalog_groups:${eventTypeId}:${categoryKey || 'all'}`;
+  try {
+    const cached = await cacheGet<CatalogGroup[]>(cacheKey);
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      return cached;
+    }
+  } catch {}
+
   const mockFallback = () =>
     MOCK_CATALOG_GROUPS.filter((g) => g.supportedEventTypes.includes(eventTypeId) && (!categoryKey || g.categoryKey === categoryKey));
 
@@ -95,7 +105,9 @@ async function getCatalogGroupsUncached(eventTypeId: string, categoryKey?: Catal
     const { data, error } = await query.order('display_order', { ascending: true });
     if (error) throw error;
     if (!data || data.length === 0) return mockFallback();
-    return data.map(mapGroup);
+    const mapped = data.map(mapGroup);
+    await cacheSet(cacheKey, mapped, 300).catch(() => {});
+    return mapped;
   } catch (e) {
     console.warn('getCatalogGroups failed, falling back to mock data:', e);
     return mockFallback();
@@ -113,6 +125,14 @@ export function getCatalogGroups(eventTypeId: string, categoryKey?: CatalogCateg
 }
 
 async function getCatalogItemsUncached(eventTypeId: string, categoryKey?: CatalogCategoryKey): Promise<CatalogItem[]> {
+  const cacheKey = `data:catalog_items:${eventTypeId}:${categoryKey || 'all'}`;
+  try {
+    const cached = await cacheGet<CatalogItem[]>(cacheKey);
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      return cached;
+    }
+  } catch {}
+
   const mockFallback = () =>
     MOCK_CATALOG_ITEMS.filter((i) => i.supportedEventTypes.includes(eventTypeId) && (!categoryKey || i.categoryKey === categoryKey));
 
@@ -123,7 +143,9 @@ async function getCatalogItemsUncached(eventTypeId: string, categoryKey?: Catalo
     const { data, error } = await query.order('display_order', { ascending: true });
     if (error) throw error;
     if (!data || data.length === 0) return mockFallback();
-    return data.map(mapItem);
+    const mapped = data.map(mapItem);
+    await cacheSet(cacheKey, mapped, 300).catch(() => {});
+    return mapped;
   } catch (e) {
     console.warn('getCatalogItems failed, falling back to mock data:', e);
     return mockFallback();

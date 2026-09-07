@@ -1,5 +1,4 @@
 export const WEDDING_PORTFOLIO_ASSETS: string[] = [
-  "/sid-video2.mp4",
   "/sid-party7.jpeg",
   "/sid-party18.jpeg",
   "/sid-party1.jpeg",
@@ -27,6 +26,6 @@ export const WEDDING_PORTFOLIO_ASSETS: string[] = [
   "/decotion/saptapadi/1.jpg",
   "/decotion/saptapadi/10.jpg",
   "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (1).jpeg",
-  "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (1).jpg",
+  "/decotion/chapra with flower/IMG-20190205-WA0039.jpg",
   "/decotion/muhurtha mantapa decortion/Muhurtha manatapa  (10).jpg"
 ];

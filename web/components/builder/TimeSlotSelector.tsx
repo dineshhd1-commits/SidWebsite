@@ -23,10 +23,10 @@ interface TimeSlotSelectorProps {
 }
 
 /**
- * Global Time-Slot Selector adhering to the locking specification:
- * - When one slot is selected, all other available slots become greyed out and disabled.
- * - Clicking the currently selected slot again deselects it and unlocks all other slots.
- * - Semantic disabled state + keyboard accessible.
+ * Global Time-Slot Selector:
+ * - Allows direct, seamless switching between available daytime periods (Morning, Afternoon, Evening).
+ * - Clearly highlights the active time slot.
+ * - Semantic radio buttons + fully keyboard accessible.
  */
 export function TimeSlotSelector({
   availableSlots,
@@ -36,13 +36,8 @@ export function TimeSlotSelector({
 }: TimeSlotSelectorProps) {
   const handleClick = (slot: CateringTiming) => {
     if (disabled) return;
-    if (selectedSlot === slot) {
-      // Re-clicking selected slot unlocks and deselects
-      onSelectSlot(null);
-    } else if (selectedSlot === null) {
-      // Selecting slot locks others
-      onSelectSlot(slot);
-    }
+    // Direct switching between time slots
+    onSelectSlot(slot);
   };
 
   return (
@@ -50,8 +45,6 @@ export function TimeSlotSelector({
       {availableSlots.map((slotId) => {
         const option = ALL_TIME_SLOTS[slotId];
         const isSelected = selectedSlot === slotId;
-        const isLockedOut = selectedSlot !== null && !isSelected;
-        const isDisabled = disabled || isLockedOut;
 
         return (
           <button
@@ -59,23 +52,15 @@ export function TimeSlotSelector({
             type="button"
             role="radio"
             aria-checked={isSelected}
-            aria-disabled={isDisabled}
-            disabled={isDisabled}
+            aria-disabled={disabled}
+            disabled={disabled}
             onClick={() => handleClick(slotId)}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border text-left cursor-pointer min-w-[130px] ${
               isSelected
-                ? 'bg-maroon-800 text-gold-300 border-gold-400 shadow-md ring-2 ring-gold-400/40'
-                : isLockedOut
-                ? 'bg-gray-100/70 text-gray-400 border-gray-200 opacity-45 cursor-not-allowed'
+                ? 'bg-maroon-800 text-gold-300 border-gold-400 shadow-md ring-2 ring-gold-400/40 scale-[1.02]'
                 : 'bg-white text-maroon-900 border-gold-300 hover:bg-gold-50/80 hover:border-gold-400 shadow-sm'
             }`}
-            title={
-              isSelected
-                ? 'Click again to deselect and unlock other time slots'
-                : isLockedOut
-                ? 'Deselect the currently active time slot first to choose this option'
-                : undefined
-            }
+            title={`Switch to ${option?.label || slotId} menu`}
           >
             <div className="flex items-center justify-between gap-1">
               <span className="block font-bold">{option?.label || slotId}</span>

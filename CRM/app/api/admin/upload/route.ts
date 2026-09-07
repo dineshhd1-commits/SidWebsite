@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     const { error: uploadError } = await admin.storage
       .from(CATALOG_IMAGES_BUCKET)
-      .upload(path, file, { contentType: file.type, upsert: false });
+      .upload(path, file, { contentType: file.type, cacheControl: '31536000', upsert: false });
 
     if (uploadError) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });

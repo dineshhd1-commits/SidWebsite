@@ -758,9 +758,6 @@ export default function AdminDashboardPage() {
             <span className="text-gold-600 font-bold text-xs uppercase tracking-widest bg-gold-100 px-3 py-1 rounded-full border border-gold-300">
               Admin Portal
             </span>
-            <span className="inline-flex items-center gap-1 text-xs text-emerald-700 font-bold">
-              Supabase Live Data Sync
-            </span>
           </div>
           <h1 className="font-playfair text-3xl sm:text-5xl font-bold text-maroon-900 mt-2">
             SID Events Control Center

@@ -6,6 +6,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
+  serverExternalPackages: ['ioredis'],
   poweredByHeader: false,
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -63,6 +64,18 @@ const nextConfig = {
     ].join('; ');
 
     return [
+      {
+        source: '/(decotion|services|catering|icons)/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/(.*\\.(?:jpg|jpeg|png|webp|avif|gif|svg|ico|woff|woff2|ttf|eot))',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
       {
         source: '/:path*',
         headers: [

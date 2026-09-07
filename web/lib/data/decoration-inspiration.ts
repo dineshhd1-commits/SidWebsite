@@ -224,8 +224,14 @@ export function getDecorationPhotosForItem(item: CatalogItem | { id: string; nam
   const name = (item.name || '').toLowerCase();
   const groupId = (item.groupId || '').toLowerCase();
 
-  // 1. Special Garlands -> /decotion/Garlands/
-  if (id.includes('special-garland') || name.includes('special garland') || name.includes('special garlands')) {
+  // 1. Special Garlands & Garlands -> /decotion/Garlands/
+  if (
+    id.includes('special-garland') ||
+    name.includes('special garland') ||
+    name.includes('special garlands') ||
+    id.includes('garland') ||
+    name.includes('garland')
+  ) {
     return getDecorationPhotosByCategory('garlands');
   }
 

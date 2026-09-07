@@ -1,6 +1,4 @@
 export const RECEPTION_PORTFOLIO_ASSETS: string[] = [
-  "/sid-video3.mp4",
-  "/sid-video4.mp4",
   "/sid-party15.jpeg",
   "/sid-party25.jpeg",
   "/sid-party29.jpeg",
@@ -10,8 +8,6 @@ export const RECEPTION_PORTFOLIO_ASSETS: string[] = [
   "/sid-party40.jpeg",
   "/decotion/couple-entry/images (2).jpg",
   "/decotion/couple-entry/IMG-20251101-WA0037.jpg",
-  "/decotion/couple-entry/VID-20251101-WA0044.mp4",
-  "/decotion/couple-entry/VID-20251101-WA0045.mp4",
   "/decotion/bridal entry idea/1.jpg",
   "/decotion/bridal entry idea/2.jpg",
   "/decotion/bridal entry idea/3.jpg",

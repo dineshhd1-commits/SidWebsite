@@ -59,7 +59,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Bright yellow marigold backdrop, brass urlis with flower petals & hand-painted mats.',
     price: 30000,
     unit: 'setup',
-    imageUrl: '/WhatsApp Image 2026-07-26 at 4.47.06 PM (1).jpeg',
+    imageUrl: '/sid-party17.jpeg',
     popular: true,
   },
   {
@@ -202,7 +202,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Full live orchestra with vocalists performing South Indian film songs & classical melodies during reception.',
     price: 60000,
     unit: 'performance',
-    imageUrl: '/Gemini_Generated_Image_8f6wrb8f6wrb8f6w.webp',
+    imageUrl: '/sid-party18.jpeg',
   },
   {
     id: 'dec-cold-fire',
@@ -212,7 +212,7 @@ export const MOCK_SERVICES: WeddingService[] = [
     description: 'Stunning 6 cold sparkler pyro jets for grand varmala & couple entry moments.',
     price: 18000,
     unit: 'event',
-    imageUrl: '/Gemini_Generated_Image_la9ccmla9ccmla9c.webp',
+    imageUrl: '/decotion/cold fire/1.jpg',
   },
   {
     id: 'dec-crackers',

@@ -19,7 +19,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: 'Invalid reference code.' }, { status: 400 });
   }
 
+  const cacheKey = `quote:public:${refCode}`;
   try {
+    const { cacheGet, cacheSet } = await import('@/lib/redis');
+    const cached = await cacheGet<Record<string, unknown>>(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      });
+    }
+
     const admin = getSupabaseAdminClient();
     const { data, error } = await admin
       .from('quotations')
@@ -34,11 +45,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const builderState = data.builder_state || {};
     const fullDetails = builderState.fullDetails || null;
 
-    return NextResponse.json({
+    const payload = {
       refCode,
       guestCount: builderState.guestCount ?? fullDetails?.guestCount ?? 0,
       sections: fullDetails?.sections || [],
       requestedExtras: fullDetails?.requestedExtras || [],
+    };
+
+    await cacheSet(cacheKey, payload, 600).catch(() => {});
+
+    return NextResponse.json(payload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
     });
   } catch (e) {
     console.error('Quotation lookup error:', e);

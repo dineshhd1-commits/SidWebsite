@@ -14,13 +14,25 @@ const gallerySchema = z.object({
   displayOrder: z.number().default(0),
 });
 
+import { cacheGet, cacheSet, cacheDel } from '@/lib/redis';
+
+const CACHE_KEY_GALLERY = 'admin:gallery:list';
+
 export async function GET(request: NextRequest) {
   if (!(await requireAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const cached = await cacheGet<unknown[]>(CACHE_KEY_GALLERY);
+  if (cached && Array.isArray(cached)) {
+    return NextResponse.json({ items: cached, cached: true });
+  }
+
   const admin = getSupabaseAdminClient();
   const { data, error } = await admin.from('gallery_items').select('*').order('display_order', { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await cacheSet(CACHE_KEY_GALLERY, data, 300).catch(() => {});
   return NextResponse.json({ items: data });
 }
 
@@ -48,5 +60,7 @@ export async function POST(request: NextRequest) {
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  await cacheDel([CACHE_KEY_GALLERY, 'data:gallery:all']).catch(() => {});
   return NextResponse.json({ item: data });
 }

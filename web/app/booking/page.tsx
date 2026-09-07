@@ -54,6 +54,7 @@ export default function BookingPage() {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [friendlyErrors, setFriendlyErrors] = useState<string[]>([]);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
     // Preload the PDF generator module in the background while user fills the form
@@ -70,6 +71,9 @@ export default function BookingPage() {
     // be bypassed - this is the actual last gate before an enquiry goes out.
     if (state.eventDetails.guestCount > MAX_GUEST_COUNT) {
       errors.push(`Maximum guest capacity is ${MAX_GUEST_COUNT.toLocaleString('en-IN')}.`);
+    }
+    if (!acceptedTerms) {
+      errors.push('Please accept the Terms and Conditions & Privacy Policy to submit your booking request.');
     }
     return errors;
   };
@@ -100,6 +104,7 @@ export default function BookingPage() {
     // server actually issued, not one generated in this component.
     let refCode: string;
     let savedToBackend = false;
+    let pdfUrl: string | null = null;
     try {
       const res = await fetch('/api/enquiry', {
         method: 'POST',
@@ -133,6 +138,7 @@ export default function BookingPage() {
       }
       refCode = body.refCode;
       savedToBackend = !!body.savedToBackend;
+      pdfUrl = body.pdfUrl || null;
     } catch {
       setFriendlyErrors(['Something went wrong submitting your enquiry. Please check your connection and try again.']);
       setIsSubmitting(false);
@@ -146,32 +152,47 @@ export default function BookingPage() {
       console.warn('Enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
     }
 
-    // Generate the professional Event Enquiry PDF and store it in the CRM
+    // Ensure the compressed Event Enquiry PDF is stored in the CRM
     const submittedAtIso = new Date().toISOString();
-    let pdfUrl: string | null = null;
-    setIsGeneratingPdf(true);
-    try {
-      const { generateEnquiryPdfBlob } = await import('@/lib/builder/enquiry-pdf');
-      const pdfBlob = await generateEnquiryPdfBlob(fullDetails, refCode, submittedAtIso);
-      
+    if (!pdfUrl) {
+      setIsGeneratingPdf(true);
       try {
-        const uploadPromise = uploadEnquiryPdf(pdfBlob, refCode);
-        const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000));
-        pdfUrl = await Promise.race([uploadPromise, timeoutPromise]);
-        if (pdfUrl) {
-          await fetch('/api/enquiry', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refCode, pdfUrl }),
-          }).catch(() => {});
+        const { generateEnquiryPdfBlob } = await import('@/lib/builder/enquiry-pdf');
+        const pdfBlob = await generateEnquiryPdfBlob(fullDetails, refCode, submittedAtIso);
+
+        try {
+          const uploadPromise = uploadEnquiryPdf(pdfBlob, refCode);
+          // 30 seconds timeout to accommodate slower mobile uploads
+          const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 30000));
+          pdfUrl = await Promise.race([uploadPromise, timeoutPromise]);
+          if (pdfUrl) {
+            await fetch('/api/enquiry', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refCode, pdfUrl }),
+            }).catch(() => {});
+          }
+        } catch (uploadErr) {
+          console.warn('PDF upload to CRM storage skipped or timed out:', uploadErr);
         }
-      } catch (uploadErr) {
-        console.warn('PDF upload to CRM storage skipped or timed out:', uploadErr);
+      } catch (err) {
+        console.error('Enquiry PDF generation failed:', err);
       }
-    } catch (err) {
-      console.error('Enquiry PDF generation failed:', err);
+      setIsGeneratingPdf(false);
     }
-    setIsGeneratingPdf(false);
+
+    // Save booking reference in cookie for instant return recognition
+    const { setLastBookingCookie } = await import('@/lib/cookies');
+    setLastBookingCookie({
+      refCode,
+      customerName: formData.fullName,
+      customerPhone: formData.phone,
+      weddingDate: formData.weddingDate,
+      venueCity: formData.venueCity,
+      guestCount: state.eventDetails.guestCount,
+      submittedAt: submittedAtIso,
+      pdfUrl,
+    });
 
     setHasSubmitted(true);
     setIsSubmitting(false);
@@ -333,6 +354,40 @@ export default function BookingPage() {
                   }}
                   className="w-full bg-white border border-gold-300 rounded-xl px-4 py-2.5 text-sm text-maroon-900 transition-all duration-200 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30"
                 />
+              </div>
+
+              <div className="pt-2">
+                <label className="flex items-start gap-3 p-3 rounded-xl bg-gold-50/60 border border-gold-300/80 cursor-pointer group select-none hover:bg-gold-100/50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded text-maroon-800 border-gold-400 focus:ring-gold-500 focus:ring-2 cursor-pointer accent-maroon-800"
+                  />
+                  <span className="text-xs text-maroon-900/90 leading-relaxed">
+                    I accept the{' '}
+                    <a
+                      href="/terms-and-conditions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-maroon-950 font-bold underline hover:text-gold-700 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Terms &amp; Conditions
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-maroon-950 font-bold underline hover:text-gold-700 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Privacy Policy
+                    </a>
+                    . <span className="text-rose-600">*</span>
+                  </span>
+                </label>
               </div>
 
               <div className="pt-2">

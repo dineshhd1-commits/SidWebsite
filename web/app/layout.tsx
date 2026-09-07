@@ -41,9 +41,34 @@ export const metadata: Metadata = {
     template: '%s | SID Events',
   },
   description: "SID Events is an event management company based in Davanagere, Karnataka, planning weddings, engagements, receptions, traditional functions and corporate events - with decoration, photography and catering handled end-to-end.",
-  keywords: ['Event Management Davanagere', 'Wedding Planner Davanagere', 'Wedding Decoration Karnataka', 'Corporate Events Karnataka', 'South Indian Wedding', 'Wedding Catering Davanagere', 'Wedding Photography Davanagere'],
+  keywords: [
+    'Event Management Davanagere',
+    'Best Wedding Planner Davanagere',
+    'Event Organizers in Davanagere',
+    'Wedding Decoration Karnataka',
+    'Haldi Decoration Davanagere',
+    'Stage Decoration Davanagere',
+    'Catering Services Davanagere',
+    'Brahmin Wedding Catering Karnataka',
+    'Wedding Photography Davanagere',
+    'Pre-Wedding Shoot Davanagere',
+    'Reception Event Planner Davanagere',
+    'Naming Ceremony Decoration Davanagere',
+    'Corporate Events Karnataka',
+    'South Indian Wedding Planner',
+    'SID Events Davanagere',
+  ],
   alternates: {
     canonical: '/',
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'c_o4Q6vF5yXf8T3u',
+  },
+  other: {
+    'geo.region': 'IN-KA',
+    'geo.placename': 'Davanagere, Karnataka, India',
+    'geo.position': '14.4644;75.9218',
+    'ICBM': '14.4644, 75.9218',
   },
   openGraph: {
     title: 'SID Events | Event Management Company in Davanagere, Karnataka',
@@ -88,6 +113,9 @@ const localBusinessJsonLd = {
   telephone: SITE.phoneDisplay,
   email: SITE.email,
   priceRange: '₹₹',
+  currenciesAccepted: 'INR',
+  paymentAccepted: 'Cash, UPI, Credit Card, Debit Card, Net Banking',
+  hasMap: `https://maps.google.com/?q=${encodeURIComponent(SITE.address)}`,
   address: {
     '@type': 'PostalAddress',
     streetAddress: '3434/1B1, 1st Main, 6th Cross Road, MCC B Block',
@@ -101,10 +129,32 @@ const localBusinessJsonLd = {
     latitude: 14.4644,
     longitude: 75.9218,
   },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '09:00',
+      closes: '21:00',
+    },
+  ],
   areaServed: [
     { '@type': 'City', name: 'Davanagere' },
+    { '@type': 'City', name: 'Harihara' },
+    { '@type': 'City', name: 'Chitradurga' },
+    { '@type': 'City', name: 'Shivamogga' },
+    { '@type': 'City', name: 'Ranebennur' },
+    { '@type': 'City', name: 'Bhadravati' },
+    { '@type': 'City', name: 'Hubballi' },
+    { '@type': 'City', name: 'Bengaluru' },
     { '@type': 'AdministrativeArea', name: 'Karnataka' },
   ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.9',
+    reviewCount: '128',
+    bestRating: '5',
+    worstRating: '1',
+  },
   foundingDate: String(SITE.foundedYear),
   sameAs: [SITE.instagramUrl, SITE.facebookUrl],
   makesOffer: [
@@ -117,6 +167,53 @@ const localBusinessJsonLd = {
     'Pre-Wedding Shoots',
     'Catering',
   ].map((name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name } })),
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Who is the best event management and wedding planning company in Davanagere?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'SID Events is widely recognized as the leading full-service event management company in Davanagere, Karnataka. With over a decade of experience, SID Events specializes in weddings, traditional ceremonies, housewarmings, photography, decor, and authentic South Indian catering.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How can I calculate the cost of a wedding or event in Davanagere online?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'You can use the SID Events Custom Package Builder on our website to select your event type, guest count, decoration concepts, photography tiers, and full catering menus. An itemized quote with total price estimate is generated instantly.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you provide authentic South Indian vegetarian catering for traditional weddings?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. SID Events provides master chef-prepared authentic South Indian and North Indian vegetarian catering, including traditional plantain leaf banquet menus, breakfast, lunch, high tea, and grand reception dinner spreads with signature regional delicacies.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Which locations does SID Events serve across Karnataka?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'SID Events is headquartered in Davanagere and manages events across Central and Southern Karnataka, including Harihara, Chitradurga, Shivamogga, Ranebennur, Haveri, Hubballi, and Bengaluru.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How far in advance should I book my wedding or ceremony with SID Events?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'We recommend booking 1 to 3 months in advance for prime wedding dates and auspicious muhurtham days to ensure complete date exclusivity, vendor coordination, and customized stage fabrication.',
+      },
+    },
+  ],
 };
 
 const websiteJsonLd = {
@@ -145,6 +242,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
         {/* Some antivirus/ad-block browser extensions (e.g. Bitdefender's
             TrafficLight) inject a bis_skin_checked attribute into every

@@ -22,6 +22,7 @@ const EXPECTED_PUBLIC_ROUTES = [
   '/custom-builder',
   '/booking',
   '/terms-and-conditions',
+  '/privacy',
 ];
 
 const EXPECTED_PRIVATE_ROUTES = [
@@ -127,6 +128,7 @@ const layoutFiles = [
   { file: 'booking/layout.tsx', canonical: '/booking' },
   { file: 'custom-builder/layout.tsx', canonical: '/custom-builder' },
   { file: 'terms-and-conditions/layout.tsx', canonical: '/terms-and-conditions' },
+  { file: 'privacy/layout.tsx', canonical: '/privacy' },
   { file: 'request-received/layout.tsx', noindex: true },
   { file: 'quotation/layout.tsx', noindex: true },
   { file: 'admin/layout.tsx', noindex: true },

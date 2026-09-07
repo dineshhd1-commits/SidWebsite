@@ -146,17 +146,22 @@ export async function POST(request: NextRequest) {
         },
         price_breakdown: { estimatedCost: data.estimatedCost },
         status: 'New',
+        // Pinned to the same submittedAtIso baked into the PDF above, instead
+        // of letting the DB default now() - PDF generation/upload takes real
+        // time, so a DB-assigned created_at would drift a few seconds/minutes
+        // later than the timestamp already printed on the customer's PDF.
+        created_at: submittedAtIso,
       },
     ]);
     if (error) {
       console.error('Enquiry insert failed:', error.message);
-      return NextResponse.json({ refCode, savedToBackend: false, pdfUrl });
+      return NextResponse.json({ refCode, savedToBackend: false, pdfUrl, submittedAtIso });
     }
 
     // Invalidate CRM cache in Redis so quotes update immediately
     await cacheDel('admin:quotes:list').catch(() => {});
 
-    return NextResponse.json({ refCode, savedToBackend: true, pdfUrl });
+    return NextResponse.json({ refCode, savedToBackend: true, pdfUrl, submittedAtIso });
   } catch (e) {
     console.error('Enquiry submission error:', e);
     return NextResponse.json({ refCode, savedToBackend: false });

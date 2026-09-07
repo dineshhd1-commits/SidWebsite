@@ -105,6 +105,7 @@ export default function BookingPage() {
     let refCode: string;
     let savedToBackend = false;
     let pdfUrl: string | null = null;
+    let submittedAtIso: string | null = null;
     try {
       const res = await fetch('/api/enquiry', {
         method: 'POST',
@@ -139,6 +140,7 @@ export default function BookingPage() {
       refCode = body.refCode;
       savedToBackend = !!body.savedToBackend;
       pdfUrl = body.pdfUrl || null;
+      submittedAtIso = body.submittedAtIso || null;
     } catch {
       setFriendlyErrors(['Something went wrong submitting your enquiry. Please check your connection and try again.']);
       setIsSubmitting(false);
@@ -152,8 +154,12 @@ export default function BookingPage() {
       console.warn('Enquiry was not saved to the admin CRM backend; relying on WhatsApp notification only.');
     }
 
-    // Ensure the compressed Event Enquiry PDF is stored in the CRM
-    const submittedAtIso = new Date().toISOString();
+    // Ensure the compressed Event Enquiry PDF is stored in the CRM. Reuses
+    // the server's submittedAtIso (same one baked into any server-generated
+    // PDF and the DB row's created_at) so every "Submitted" timestamp shown
+    // for this booking - PDF, WhatsApp message, CRM record - agrees; only
+    // falls back to a fresh timestamp if the server didn't return one.
+    submittedAtIso = submittedAtIso || new Date().toISOString();
     if (!pdfUrl) {
       setIsGeneratingPdf(true);
       try {

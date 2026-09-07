@@ -277,12 +277,8 @@ export function formatEnquiryMessage(details: EnquiryDetails, refCode: string, s
     }
   }
 
-  lines.push('');
-  lines.push(divider);
-  lines.push(`*ESTIMATED TOTAL:* Rs. ${details.estimatedTotal.toLocaleString('en-IN')}`);
-  lines.push('(Final pricing confirmed after review)');
-  lines.push(divider);
-
+  // Pricing is deliberately left out of the WhatsApp enquiry message - the
+  // team quotes over a call/PDF, not in the chat text.
   lines.push('');
   lines.push(`*Reference Code:* #${refCode}`);
   lines.push(`*Submitted:* ${formatDateTime(submittedAtIso)}`);

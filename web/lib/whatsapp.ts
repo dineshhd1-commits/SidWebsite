@@ -151,8 +151,6 @@ function formatShortEnquiryNotification(
   lines.push('*VIEW / DOWNLOAD QUOTATION PDF:*');
   lines.push(pdfUrl);
   lines.push('');
-  lines.push(`*Estimated Total:* Rs. ${details.estimatedTotal.toLocaleString('en-IN')}`);
-  lines.push('');
   lines.push('Please review the attached event quotation PDF and contact the customer.');
   return lines.join('\n');
 }

@@ -151,16 +151,47 @@ function mapSupabaseQuoteRow(row: any): AdminQuoteRequest {
   };
 }
 
+export interface AdminQuotesStats {
+  total: number;
+  pending: number;
+  confirmed: number;
+  pipelineValue: number;
+}
+
+export interface AdminQuotesPage {
+  items: AdminQuoteRequest[];
+  total: number;
+  page: number;
+  pageSize: number;
+  stats: AdminQuotesStats;
+}
+
+const EMPTY_STATS: AdminQuotesStats = { total: 0, pending: 0, confirmed: 0, pipelineValue: 0 };
+
 /** The real source of truth for the admin CRM: every enquiry submitted by
- * any customer, from any device, read straight from Supabase. Falls back to
- * the local browser cache only when Supabase isn't configured (matching the
- * fallback pattern used everywhere else in this codebase) or the request
- * fails, so the dashboard never just shows a blank screen. */
-export async function getAdminQuotesFromBackend(): Promise<AdminQuoteRequest[]> {
+ * any customer, from any device, read straight from Supabase - paginated
+ * server-side (see app/api/admin/quotes/route.ts) so the dashboard never
+ * pulls every row's full builder_state (selection breakdown + photo URLs)
+ * in one request as the table grows. Falls back to the local browser cache
+ * only when Supabase isn't configured (matching the fallback pattern used
+ * everywhere else in this codebase) or the request fails, so the dashboard
+ * never just shows a blank screen. */
+export async function getAdminQuotesFromBackend(opts: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: string;
+} = {}): Promise<AdminQuotesPage> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-    const res = await fetch('/api/admin/quotes', { signal: controller.signal });
+    const params = new URLSearchParams();
+    if (opts.page) params.set('page', String(opts.page));
+    if (opts.pageSize) params.set('pageSize', String(opts.pageSize));
+    if (opts.search) params.set('search', opts.search);
+    if (opts.status && opts.status !== 'all') params.set('status', opts.status);
+
+    const res = await fetch(`/api/admin/quotes?${params.toString()}`, { signal: controller.signal });
     clearTimeout(timeoutId);
 
     if (res.status === 401) {
@@ -170,11 +201,18 @@ export async function getAdminQuotesFromBackend(): Promise<AdminQuoteRequest[]> 
       throw new Error('Not authenticated as admin.');
     }
     if (!res.ok) throw new Error(`Failed to load quotes: ${res.status}`);
-    const { items } = await res.json();
-    return (items || []).map(mapSupabaseQuoteRow);
+    const { items, total, page, pageSize, stats } = await res.json();
+    return {
+      items: (items || []).map(mapSupabaseQuoteRow),
+      total: total ?? 0,
+      page: page ?? 1,
+      pageSize: pageSize ?? 20,
+      stats: stats || EMPTY_STATS,
+    };
   } catch (e) {
     console.error('Failed to load quotes from backend, falling back to local cache:', e);
-    return getAdminQuotes();
+    const items = getAdminQuotes();
+    return { items, total: items.length, page: 1, pageSize: items.length, stats: EMPTY_STATS };
   }
 }
 

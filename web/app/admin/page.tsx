@@ -16,6 +16,7 @@ import {
   deleteAdminInquiry,
   AdminQuoteRequest,
   AdminQuoteStatus,
+  AdminQuotesStats,
   AdminInquiry,
 } from '@/lib/store/admin-store';
 import {
@@ -324,6 +325,10 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [quotes, setQuotes] = useState<AdminQuoteRequest[]>([]);
+  const [quotesStats, setQuotesStats] = useState<AdminQuotesStats>({ total: 0, pending: 0, confirmed: 0, pipelineValue: 0 });
+  const [quotesPage, setQuotesPage] = useState(1);
+  const [quotesTotal, setQuotesTotal] = useState(0);
+  const QUOTES_PAGE_SIZE = 20;
   const [quotesActionError, setQuotesActionError] = useState<string | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(true);
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
@@ -378,10 +383,16 @@ export default function AdminDashboardPage() {
   // Real access control is enforced server-side by middleware.ts (checks the
   // httpOnly admin session cookie) - reaching this component at all means the
   // request already passed that check. This effect just loads the initial data.
-  const loadQuotes = async () => {
+  // Paginated server-side (see app/api/admin/quotes/route.ts) - defaults to
+  // the current page/search/status unless a specific page is requested.
+  const loadQuotes = async (page = quotesPage) => {
     setQuotesLoading(true);
     try {
-      setQuotes(await getAdminQuotesFromBackend());
+      const result = await getAdminQuotesFromBackend({ page, pageSize: QUOTES_PAGE_SIZE, search: searchQuery, status: statusFilter });
+      setQuotes(result.items);
+      setQuotesStats(result.stats);
+      setQuotesTotal(result.total);
+      setQuotesPage(result.page);
     } finally {
       setQuotesLoading(false);
     }
@@ -389,10 +400,24 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     setIsAuthenticated(true);
-    loadQuotes();
+    loadQuotes(1);
     loadCatalogData();
     setInquiries(getAdminInquiries());
   }, []);
+
+  // Re-runs the (paginated) quotes query, reset to page 1, whenever the
+  // search text or status filter changes - debounced so a customer typing a
+  // name doesn't fire a request per keystroke. Skips the very first render
+  // so it doesn't duplicate the mount effect's initial load above.
+  const isFirstSearchRender = React.useRef(true);
+  useEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    const t = setTimeout(() => loadQuotes(1), 350);
+    return () => clearTimeout(t);
+  }, [searchQuery, statusFilter]);
 
   const loadCatalogData = async () => {
     setCatalogLoading(true);
@@ -734,19 +759,14 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const filteredQuotes = quotes.filter((q) => {
-    const matchesSearch =
-      q.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.refCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.customerPhone.includes(searchQuery) ||
-      q.venueCity.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || q.status.toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesStatus;
-  });
+  // Search and status filtering now happen server-side (see loadQuotes) so
+  // `quotes` is already exactly the current page's filtered rows.
+  const filteredQuotes = quotes;
+  const totalQuotesPages = Math.max(1, Math.ceil(quotesTotal / QUOTES_PAGE_SIZE));
 
-  const totalRevenuePipeline = quotes.reduce((acc, q) => acc + q.estimatedCost, 0);
-  const pendingCount = quotes.filter((q) => q.status === 'New').length;
-  const confirmedCount = quotes.filter((q) => q.status === 'Confirmed').length;
+  const totalRevenuePipeline = quotesStats.pipelineValue;
+  const pendingCount = quotesStats.pending;
+  const confirmedCount = quotesStats.confirmed;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 min-h-screen">
@@ -781,7 +801,7 @@ export default function AdminDashboardPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Quote Requests</span>
             <FileText className="w-5 h-5 text-gold-600" />
           </div>
-          <p className="font-playfair text-3xl font-bold text-maroon-900">{quotes.length}</p>
+          <p className="font-playfair text-3xl font-bold text-maroon-900">{quotesStats.total}</p>
           <p className="text-[11px] text-maroon-700/70">{pendingCount} pending review</p>
         </GlassCard>
 
@@ -825,7 +845,7 @@ export default function AdminDashboardPage() {
               : 'border-transparent text-maroon-700/60 hover:text-maroon-900'
           }`}
         >
-          Quote Requests ({quotes.length})
+          Quote Requests ({quotesStats.total})
         </button>
 
         <button
@@ -927,7 +947,7 @@ export default function AdminDashboardPage() {
 
               <button
                 type="button"
-                onClick={loadQuotes}
+                onClick={() => loadQuotes()}
                 disabled={quotesLoading}
                 className="p-2 rounded-lg bg-white border border-gold-300 text-gold-700 hover:bg-gold-50 transition-colors disabled:opacity-50"
                 title="Refresh enquiries"
@@ -1181,6 +1201,28 @@ export default function AdminDashboardPage() {
               </GlassCard>
             ))}
           </div>
+          )}
+
+          {totalQuotesPages > 1 && (
+            <div className="flex items-center justify-center gap-4 pt-2">
+              <button
+                type="button"
+                onClick={() => loadQuotes(quotesPage - 1)}
+                disabled={quotesPage <= 1 || quotesLoading}
+                className="px-3 py-1.5 rounded-lg bg-white border border-gold-300 text-xs font-bold text-maroon-800 hover:bg-gold-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-xs text-maroon-700/80">Page {quotesPage} of {totalQuotesPages}</span>
+              <button
+                type="button"
+                onClick={() => loadQuotes(quotesPage + 1)}
+                disabled={quotesPage >= totalQuotesPages || quotesLoading}
+                className="px-3 py-1.5 rounded-lg bg-white border border-gold-300 text-xs font-bold text-maroon-800 hover:bg-gold-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
           )}
         </div>
       )}

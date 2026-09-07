@@ -14,26 +14,58 @@ import { requireAdminSession } from '@/lib/admin-auth';
 
 import { cacheGet, cacheSet, cacheDel } from '@/lib/redis';
 
-const CACHE_KEY_QUOTES = 'admin:quotes:list';
+// Separate, unfiltered aggregate (counts + pipeline value) so the dashboard's
+// summary cards don't need every row's full builder_state (which carries the
+// entire selection breakdown + photo URLs, the actual weight behind the old
+// unbounded `select('*')` over the whole table) - just two small columns.
+const CACHE_KEY_STATS = 'admin:quotes:stats';
+
+const DEFAULT_PAGE_SIZE = 20;
+const MAX_PAGE_SIZE = 100;
+
+async function getQuotesStats() {
+  const cached = await cacheGet<{ total: number; pending: number; confirmed: number; pipelineValue: number }>(CACHE_KEY_STATS);
+  if (cached) return cached;
+
+  const admin = getSupabaseAdminClient();
+  const { data } = await admin.from('quotations').select('status, price_breakdown');
+  const rows = data || [];
+  const stats = {
+    total: rows.length,
+    pending: rows.filter((r) => r.status === 'New').length,
+    confirmed: rows.filter((r) => r.status === 'Confirmed').length,
+    pipelineValue: rows.reduce((acc, r) => acc + (r.price_breakdown?.estimatedCost || 0), 0),
+  };
+  await cacheSet(CACHE_KEY_STATS, stats, 60);
+  return stats;
+}
 
 export async function GET(request: NextRequest) {
   if (!(await requireAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Check Redis cache first to reduce Supabase database edge requests
-  const cached = await cacheGet<unknown[]>(CACHE_KEY_QUOTES);
-  if (cached && Array.isArray(cached)) {
-    return NextResponse.json({ items: cached, cached: true });
-  }
+  const page = Math.max(1, parseInt(request.nextUrl.searchParams.get('page') || '1', 10) || 1);
+  const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, parseInt(request.nextUrl.searchParams.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10) || DEFAULT_PAGE_SIZE));
+  const search = (request.nextUrl.searchParams.get('search') || '').trim();
+  const status = (request.nextUrl.searchParams.get('status') || '').trim();
+  const stats = await getQuotesStats();
 
   const admin = getSupabaseAdminClient();
-  const { data, error } = await admin.from('quotations').select('*').order('created_at', { ascending: false });
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  let query = admin.from('quotations').select('*', { count: 'exact' }).order('created_at', { ascending: false }).range(from, to);
+  // ilike, not eq - the status filter dropdown sends lowercase values
+  // ('new', 'confirmed') while the DB column stores them capitalized.
+  if (status) query = query.ilike('status', status);
+  if (search) {
+    const like = `%${search.replace(/[%,]/g, '')}%`;
+    query = query.or(`customer_name.ilike.${like},id.ilike.${like},customer_phone.ilike.${like},venue_city.ilike.${like}`);
+  }
+  const { data, error, count } = await query;
   if (error) return NextResponse.json({ error: 'Failed to load quotes.' }, { status: 500 });
 
-  await cacheSet(CACHE_KEY_QUOTES, data, 60);
-
-  return NextResponse.json({ items: data });
+  return NextResponse.json({ items: data, total: count ?? data.length, page, pageSize, stats });
 }
 
 const patchSchema = z
@@ -66,7 +98,7 @@ export async function PATCH(request: NextRequest) {
   const admin = getSupabaseAdminClient();
   const { error } = await admin.from('quotations').update(row).eq('id', parsed.data.refCode);
   if (error) return NextResponse.json({ error: 'Failed to update quote.' }, { status: 500 });
-  await cacheDel(CACHE_KEY_QUOTES).catch(() => {});
+  await cacheDel(CACHE_KEY_STATS).catch(() => {});
   return NextResponse.json({ success: true });
 }
 
@@ -80,6 +112,6 @@ export async function DELETE(request: NextRequest) {
   const admin = getSupabaseAdminClient();
   const { error } = await admin.from('quotations').delete().eq('id', refCode);
   if (error) return NextResponse.json({ error: 'Failed to delete quote.' }, { status: 500 });
-  await cacheDel(CACHE_KEY_QUOTES).catch(() => {});
+  await cacheDel(CACHE_KEY_STATS).catch(() => {});
   return NextResponse.json({ success: true });
 }

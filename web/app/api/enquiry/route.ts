@@ -158,8 +158,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ refCode, savedToBackend: false, pdfUrl, submittedAtIso });
     }
 
-    // Invalidate CRM cache in Redis so quotes update immediately
-    await cacheDel('admin:quotes:list').catch(() => {});
+    // Invalidate the admin dashboard's cached stats (counts/pipeline value)
+    // so a new enquiry shows up immediately - the paginated list itself
+    // isn't cached, see app/api/admin/quotes/route.ts.
+    await cacheDel('admin:quotes:stats').catch(() => {});
 
     return NextResponse.json({ refCode, savedToBackend: true, pdfUrl, submittedAtIso });
   } catch (e) {

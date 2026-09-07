@@ -14,6 +14,8 @@ export interface LastBookingCookie {
   guestCount?: number;
   submittedAt: string;
   pdfUrl?: string | null;
+  whatsappUrl?: string;
+  fullMessage?: string;
 }
 
 const COOKIE_LAST_BOOKING = 'sid_last_booking';

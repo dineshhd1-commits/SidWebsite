@@ -181,6 +181,11 @@ export default function BookingPage() {
       setIsGeneratingPdf(false);
     }
 
+    // Build full start-to-finish WhatsApp message with all details
+    const { formatEnquiryMessage } = await import('@/lib/builder/enquiry');
+    const fullMessage = formatEnquiryMessage(fullDetails, refCode, submittedAtIso);
+    const whatsappUrl = `https://wa.me/${SITE.whatsappNumber || '918095408404'}?text=${encodeURIComponent(fullMessage)}`;
+
     // Save booking reference in cookie for instant return recognition
     const { setLastBookingCookie } = await import('@/lib/cookies');
     setLastBookingCookie({
@@ -192,7 +197,20 @@ export default function BookingPage() {
       guestCount: state.eventDetails.guestCount,
       submittedAt: submittedAtIso,
       pdfUrl,
+      whatsappUrl,
+      fullMessage,
     });
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(`sid_whatsapp_url_${refCode}`, whatsappUrl);
+        localStorage.setItem(`sid_full_message_${refCode}`, fullMessage);
+        localStorage.setItem('sid_last_whatsapp_url', whatsappUrl);
+        localStorage.setItem('sid_last_full_message', fullMessage);
+      } catch (err) {
+        console.warn('Could not store booking details to localStorage:', err);
+      }
+    }
 
     setHasSubmitted(true);
     setIsSubmitting(false);

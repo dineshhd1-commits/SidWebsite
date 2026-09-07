@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "audit": "node scripts/seo-audit.js && node scripts/comprehensive-audit.js"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.6.1",
